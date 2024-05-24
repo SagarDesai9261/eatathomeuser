@@ -1,0 +1,182 @@
+import 'package:flutter/material.dart';
+import 'package:food_delivery_app/src/pages/dine_in_restaurant.dart';
+import 'package:mvc_pattern/mvc_pattern.dart';
+
+import '../../generated/l10n.dart';
+import '../controllers/restaurant_controller.dart';
+import '../elements/CircularLoadingWidget.dart';
+import '../elements/DrawerWidget.dart';
+import '../elements/PermissionDeniedWidget.dart';
+import '../models/conversation.dart';
+import '../models/restaurant.dart';
+import '../models/route_argument.dart';
+import '../repository/user_repository.dart';
+import 'chat.dart';
+import 'map.dart';
+import 'menu_list.dart';
+import 'restaurant.dart';
+
+class DetailsWidget extends StatefulWidget {
+  RouteArgument routeArgument;
+  dynamic currentTab;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  Widget currentPage;
+
+  DetailsWidget({
+    Key key,
+    this.currentTab,
+    this.scaffoldKey
+  }) {
+    if (currentTab != null) {
+      if (currentTab is RouteArgument) {
+        routeArgument = currentTab;
+        currentTab = int.parse(currentTab.id);
+
+      }
+    } else {
+      currentTab = 0;
+    }
+  }
+
+  @override
+  _DetailsWidgetState createState() {
+    return _DetailsWidgetState();
+  }
+}
+
+class _DetailsWidgetState extends StateMVC<DetailsWidget> {
+  RestaurantController _con;
+
+  _DetailsWidgetState() : super(RestaurantController()) {
+    _con = controller;
+  }
+
+  initState() {
+    _selectTab(widget.currentTab);
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(DetailsWidget oldWidget) {
+    _selectTab(oldWidget.currentTab);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _selectTab(int tabItem) {
+    setState(() {
+      widget.currentTab = tabItem;
+      switch (tabItem) {
+        case 0:
+        //  // print("DS>>> isDelivery"+widget.routeArgument.isDelivery.toString()+ " "+widget.routeArgument.heroTag);
+          _con.listenForRestaurant(id: widget.routeArgument.param).then((value) {
+
+            setState(() {
+              _con.restaurant = value as Restaurant;
+              // print(_con.restaurant.toMap());
+
+              //widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
+              if(widget.routeArgument.isDelivery)
+                {
+                  widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,
+                  ),);
+                }
+              else{
+                // print("time:"+widget.routeArgument.selectedTime);
+                widget.currentPage = DineInRestaurantWidget(parentScaffoldKey: widget.scaffoldKey,
+                    routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,
+                      products: widget.routeArgument.products
+                    ),
+                    SelectedDate: widget.routeArgument.selectedDate,
+                  selectedPeople: widget.routeArgument.selectedPeople,
+                  SelectedTime: widget.routeArgument.selectedTime,
+                );
+              }
+            });
+          });
+          break;
+        case 1:
+          if (currentUser.value.apiToken == null) {
+            widget.currentPage = PermissionDeniedWidget();
+          } else {
+            Conversation _conversation = new Conversation(
+                _con.restaurant.users.map((e) {
+                  e.image = _con.restaurant.image;
+                  return e;
+                }).toList(),
+                name: _con.restaurant.name);
+            widget.currentPage = ChatWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: _con.restaurant.id, param: _conversation));
+          }
+          break;
+        case 2:
+          widget.currentPage = MapWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
+          break;
+        case 3:
+          widget.currentPage = MenuWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        key: widget.scaffoldKey,
+        drawer: DrawerWidget(),
+
+
+        /*
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Theme.of(context).accentColor,
+          selectedFontSize: 0,
+          unselectedFontSize: 0,
+          iconSize: 22,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          //selectedIconTheme: IconThemeData(size: 28),
+          unselectedItemColor: Theme.of(context).focusColor.withOpacity(1),
+          currentIndex: widget.currentTab,
+          onTap: (int i) {
+            this._selectTab(i);
+            // print(i);
+          },
+          // this will be set when a new tab is tapped
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.store),
+              title: new Container(height: 0.0),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              title: new Container(height: 0.0),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.directions),
+              title: new Container(height: 0.0),
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                margin: EdgeInsetsDirectional.only(end: 10),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Wrap(
+                  spacing: 10,
+                  children: [
+                    Icon(Icons.restaurant, color: Theme.of(context).primaryColor),
+                    Text(
+                      S.of(context).menu,
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    )
+                  ],
+                ),
+              ),
+              title: SizedBox(height: 0),
+            ),
+          ],
+        ),*/
+        body: widget.currentPage ?? CircularLoadingWidget(height: 400));
+  }
+}

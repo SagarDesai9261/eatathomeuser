@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_decline_low.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_decline_low.xml"
+    },
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_answer_video.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_answer_video.xml"
+    },
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_answer_video_low.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_answer_video_low.xml"
+    },
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_answer.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_answer.xml"
+    },
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_answer_low.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_answer_low.xml"
+    },
+    {
+        "merged": "F:\\flutter\\ComeEatHomeFlutter\\ComeEatHomeFlutter\\build\\image_picker_android\\intermediates\\merged_res\\debug\\drawable-anydpi-v21\\ic_call_decline.xml",
+        "source": "C:\\Users\\360\\.gradle\\caches\\transforms-3\\d3df7b108c9f242ebd0154e6cd9f9f2a\\transformed\\core-1.10.1\\res\\drawable-anydpi-v21\\ic_call_decline.xml"
+    }
+]

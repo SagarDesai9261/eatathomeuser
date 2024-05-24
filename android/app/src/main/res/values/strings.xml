@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="app_name">Come Eat Home</string>
+<string name="facebook_app_id">309982631619139</string>
+<string name="fb_login_protocol_scheme">fb309982631619139</string>
+<string name="facebook_client_token">debc5266d58f74b24a28e8b417353b63</string>
+    <string name="freshchat_file_provider_authority">com.comeeathome
+</string>
+</resources>
