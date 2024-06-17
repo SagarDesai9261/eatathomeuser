@@ -237,6 +237,7 @@ class Add_the_address with ChangeNotifier {
 
 
   void _savecurrentaddress()async{
+    print("save address calling");
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     _prefs.setString('selected_location', selectedlocation);
     _prefs.setDouble('selected_lat', selectedlocationLatlong.latitude);

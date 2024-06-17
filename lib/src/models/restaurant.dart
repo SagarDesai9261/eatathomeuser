@@ -30,6 +30,7 @@ class Restaurant {
   String average_price;
   String average_preparation_time;
   String restaurant_distance;
+  String fssai_number;
   Restaurant();
 
   Restaurant.fromJSON(Map<String, dynamic> jsonMap) {
@@ -60,6 +61,7 @@ class Restaurant {
       average_preparation_time = jsonMap['average_preparation_time'].toString()??"";
       phone = jsonMap['phone'];
       mobile = jsonMap['mobile'];
+      fssai_number = jsonMap['fssai_number']??"";
       defaultTax = jsonMap['default_tax'] != null ? jsonMap['default_tax'].toDouble() : 0.0;
       information = jsonMap['information'];
       latitude = jsonMap['latitude'];

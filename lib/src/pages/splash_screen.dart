@@ -37,12 +37,14 @@ class SplashScreenState extends StateMVC<SplashScreen> {
 
    //await Provider.of<Add_the_address>(context, listen: false).determinePosition();
     loadData();
+    _determinePosition();
     FirebaseApi().requestNotificationPermission();
     FirebaseApi().forgroundMessage();
     FirebaseApi().firebaseInit(context);
     FirebaseApi().setupInteractMessage(context);
     FirebaseApi().isTokenRefresh();
     print(await FirebaseApi().getDeviceToken());
+
   }
 
   Future<void> _determinePosition() async {

@@ -622,27 +622,35 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                               .start,
                                                       children: [
                                                         Container(
-                                                          width: 150,
+                                                          width: 170,
                                                           child:
+                                                          Row(
+                                                            children: [
+                                                              Text("FSSAI  ",style:TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 14
+                                                              )),
                                                               TranslationWidget(
-                                                            message: _con
+                                                                message: _con
                                                                     .restaurant
-                                                                    .address ??
-                                                                '',
-                                                            fromLanguage:
+                                                                    .fssai_number ??
+                                                                    '',
+                                                                fromLanguage:
                                                                 "English",
-                                                            toLanguage:
+                                                                toLanguage:
                                                                 defaultLanguage,
-                                                            builder: (translatedMessage) => Text(
-                                                                translatedMessage,
-                                                                maxLines: 3,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600)),
+                                                                builder: (translatedMessage) => Text(
+                                                                  translatedMessage,
+                                                                  maxLines: 3,
+                                                                  overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 14
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
                                                         SizedBox(

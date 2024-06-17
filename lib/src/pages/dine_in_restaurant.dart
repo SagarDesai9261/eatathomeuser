@@ -639,28 +639,36 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                           fontWeight: FontWeight.w600),
                                     )*/
                                                       Container(
-                                                        width: 150,
+                                                        width: 170,
                                                         child:
-                                                            TranslationWidget(
+                                                            Row(
+                                                              children: [
+                                                                Text("FSSAI  ",style:TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 14
+                                                                )),
+                                                                TranslationWidget(
                                                           message: _con
-                                                                  .restaurant
-                                                                  .address ??
-                                                              '',
+                                                                      .restaurant
+                                                                      .fssai_number ??
+                                                                  '',
                                                           fromLanguage:
-                                                              "English",
+                                                                  "English",
                                                           toLanguage:
-                                                              defaultLanguage,
+                                                                  defaultLanguage,
                                                           builder: (translatedMessage) => Text(
-                                                              translatedMessage,
-                                                              maxLines: 3,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600)),
+                                                                  translatedMessage,
+                                                                  maxLines: 3,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 14
+                                                                  ),
+                                                                  ),
                                                         ),
+                                                              ],
+                                                            ),
                                                       ),
                                                       /*Text(
                                       "Dubai, UAE",

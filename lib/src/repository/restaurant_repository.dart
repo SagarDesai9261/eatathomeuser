@@ -424,13 +424,11 @@ Future<Map<String, dynamic>> fetchAllKitchens() async {
   _queryParams['trending'] = 'week';
   _queryParams['kitchenType'] = '1';
   _queryParams['kitchenList'] = 'true';
-  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
-    // print("$latitude ----- $longitude");
- _queryParams['myLat'] = latitude;
+  _queryParams['myLat'] = latitude;
   _queryParams['myLon'] = longitude;
   _queryParams['areaLat'] = latitude;
   _queryParams['areaLon'] = longitude;
-  }
+
   _queryParams['popularKitchenType'] = '1';
  /* _queryParams['myLat'] = latitude;
   _queryParams['myLon'] = longitude;
@@ -528,13 +526,13 @@ Future<Map<String, dynamic>> fetchAllKitchensDelivery({int enjoy = 1}) async {
   _queryParams['trending'] = 'week';
   _queryParams['kitchenType'] = '2';
   _queryParams['kitchenList'] = 'true';
-  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
+  //if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
     // print("$latitude ----- $longitude");
     _queryParams['myLat'] = latitude;
     _queryParams['myLon'] = longitude;
     _queryParams['areaLat'] = latitude;
     _queryParams['areaLon'] = longitude;
-  }
+ // }
   _queryParams['popularKitchenType'] = '2';
   _queryParams["enjoy"] = enjoy.toString();
   uri = uri.replace(queryParameters: _queryParams);
