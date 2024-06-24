@@ -108,10 +108,7 @@ class UserController extends ControllerMVC {
          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VerificationScreen2(email: email,)));
           // Navigator.of(context).pushReplacementNamed('/Pages', arguments: 1);
         } else {
-          ScaffoldMessenger.of(scaffoldKey?.currentContext)
-              .showSnackBar(SnackBar(
-            content: Text(value),
-          ));
+
         }
       }).catchError((e) {
      //   print(e);

@@ -24,7 +24,8 @@ class CartController extends ControllerMVC {
   String delivery_address_text = "";
   String delivery_address_id = "";
   GlobalKey<ScaffoldState> scaffoldKey;
-
+  String average_preparation_time;
+  String is_hrs;
   CartController() {
 
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -76,6 +77,8 @@ class CartController extends ControllerMVC {
       double deliveryCharge =  data['data']['delivery_charge'].toDouble();
       String counpon_cd =   data['data']['coupon']["coupon_code"];
       double counpon_amt =   data['data']['coupon']["coupon_amount"];
+      String average_preparation_times = data['data']['average_preparation_time'].toString();
+      String is_hrss =data['data']['is_hrs'].toString();
       // Process the cart items
       if (items.isNotEmpty) {
         items.forEach((item) {
@@ -108,6 +111,8 @@ class CartController extends ControllerMVC {
         deliveryCharges = deliveryCharge;
         coupon_code = counpon_cd;
         coupon_amount = counpon_amt.toString() ;
+        average_preparation_time =average_preparation_times;
+        is_hrs = is_hrss;
         print("coupon ampo:-${coupon_amount}");
       });
       calculateSubtotal();

@@ -10,9 +10,10 @@ class People_count_Dailog extends StatefulWidget {
   bool isDelivery;
   String selectedDate;
   String selectedTime;
+  bool issearch;
 
   People_count_Dailog(
-      this.restaurantId, this.isDelivery, this.selectedDate, this.selectedTime);
+      this.restaurantId, this.isDelivery, this.selectedDate, this.selectedTime,this.issearch);
 
   @override
   _People_count_DailogState createState() => _People_count_DailogState();
@@ -326,11 +327,11 @@ class ProductItem {
 }
 
 
-void showProductListDialog(BuildContext context, String restaurantId, bool isDelivery, String selectedDate, String selectedTime) {
+void showProductListDialog(BuildContext context, String restaurantId, bool isDelivery, String selectedDate, String selectedTime,bool issearch) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return People_count_Dailog(restaurantId, isDelivery, selectedDate, selectedTime);
+      return People_count_Dailog(restaurantId, isDelivery, selectedDate, selectedTime,issearch);
     },
   );
 }

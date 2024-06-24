@@ -11,8 +11,8 @@ class TimePickerDialog extends StatefulWidget {
   bool isDelivery;
   String selectedDate;
   int selectedIndex;
-
-  TimePickerDialog(this.restaurantId, this.isDelivery, this.selectedDate,this.selectedIndex);
+  bool issearch;
+  TimePickerDialog(this.restaurantId, this.isDelivery, this.selectedDate,this.selectedIndex,this.issearch);
 
   @override
   State<TimePickerDialog> createState() => _TimePickerDialogState();
@@ -488,7 +488,10 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                             widget.restaurantId,
                             widget.isDelivery,
                             widget.selectedDate,
-                            selectedSession);
+                            selectedSession,
+                          widget.issearch
+
+                        );
                       }
                       else if(widget.selectedIndex > -1){
                         String session = widget.selectedIndex == 0 ? "Snacks" : widget.selectedIndex == 1 ? "Breakfast" :widget.selectedIndex == 2 ? "Lunch" :widget.selectedIndex == 3 ? "Dinner" : "null";
@@ -497,7 +500,10 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                             widget.restaurantId,
                             widget.isDelivery,
                             widget.selectedDate,
-                            session );
+                            session,
+                            widget.issearch
+
+                        );
                       }
                     },
                     child: Container(
@@ -551,12 +557,12 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
 }
 
 void showTimePickerDialog(
-    BuildContext context, String restaurantId, bool isDelivery, String date,int index) {
+    BuildContext context, String restaurantId, bool isDelivery, String date,int index,bool issearch) {
   print("DS>> ##" + isDelivery.toString());
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return TimePickerDialog(restaurantId, isDelivery, date,index);
+      return TimePickerDialog(restaurantId, isDelivery, date,index,issearch);
     },
   );
 }

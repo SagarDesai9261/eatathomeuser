@@ -29,14 +29,18 @@ import '../../utils/color.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/category_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/homecontroller_provider.dart';
+import '../controllers/homr_test.dart';
 import '../controllers/restaurant_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
 import '../helpers/helper.dart';
 import '../models/add_to_favourite_model.dart';
+import '../models/coupons.dart';
 import '../models/restaurant.dart';
 import '../models/route_argument.dart';
 import '../provider.dart';
 import '../repository/user_repository.dart';
+import 'coupen_restaurant.dart';
 import 'dinein_summary_page.dart';
 
 import '../repository/settings_repository.dart' as settingRepo;
@@ -49,7 +53,7 @@ class DineInRestaurantWidget extends StatefulWidget {
   String SelectedTime;
   String selectedPeople;
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
   bool isBreakfastVisible = false;
@@ -106,6 +110,31 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   DateTime currentTime = DateTime.now();
   int currentHour;
   int currentday;
+  var breakfastslot_start ;
+  var breakfastslot_end ;
+  var lunchslot_start ;
+  var lunchslot_end ;
+  var snacksslot_start ;
+  var snacksslot_end ;
+  var dinnerslot_start ;
+  var dinnerslot_end ;
+  var breakfastslotstart ="";
+  var breakfastslotend ="";
+  var lunchslotstart ="";
+  var lunchslotend ="";
+  var snacksslotstart ="";
+  var snacksslotend ="";
+  var dinnerslotstart ="";
+  var dinnerslotend ="";
+  DateTime b_startTime ;
+  DateTime b_endTime ;
+  DateTime l_startTime ;
+  DateTime l_endTime ;
+  DateTime s_startTime ;
+  DateTime s_endTime ;
+  DateTime d_startTime ;
+  DateTime d_endTime ;
+  Coupon selectedCoupon;
   bool isbreackfastLoadmore = false;
   bool islunchLoadmore = false;
   bool issnacksLoadmore = false;
@@ -149,6 +178,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     _foodcon.getKetchainDetails(widget.routeArgument.id, '1').then((value) {
       print("tacc");
     });
+    _scheduleButtonPress();
     Provider.of<LoaderProvider>(context, listen: false).startLoading();
     Future.delayed(Duration(seconds: 3), () {
       Provider.of<LoaderProvider>(context, listen: false).stopLoading();
@@ -204,6 +234,67 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
   void updateFoodList(Food food) {
     foodList.add(food);
+  }
+  DateTime todayWithTime(String time) {
+    var currentTime = DateTime.now();
+    final DateFormat timeFormat = DateFormat('HH:mm:ss');
+    final parsedTime = timeFormat.parse(time);
+    return DateTime(currentTime.year, currentTime.month, currentTime.day, parsedTime.hour, parsedTime.minute, parsedTime.second);
+  }
+  void _scheduleButtonPress() {
+    Future.delayed(Duration(seconds: 4), () {
+
+      breakfastslot_start = Provider.of<HomeProvider>(context,listen: false).categories[0].start_slot;
+      breakfastslot_end = Provider.of<HomeProvider>(context,listen: false).categories[0].end_slot;
+      lunchslot_start = Provider.of<HomeProvider>(context,listen: false).categories[1].start_slot;
+      lunchslot_end = Provider.of<HomeProvider>(context,listen: false).categories[1].end_slot;
+      snacksslot_start = Provider.of<HomeProvider>(context,listen: false).categories[2].start_slot;
+      snacksslot_end = Provider.of<HomeProvider>(context,listen: false).categories[2].end_slot;
+      dinnerslot_start = Provider.of<HomeProvider>(context,listen: false).categories[3].start_slot;
+      dinnerslot_end = Provider.of<HomeProvider>(context,listen: false).categories[3].end_slot;
+      print(breakfastslot_start);
+      print(breakfastslot_end);
+      var currentTime = DateTime.now();
+      final DateFormat dateFormat = DateFormat('HH:mm:ss');
+      b_startTime = todayWithTime(breakfastslot_start);
+      b_endTime = todayWithTime(breakfastslot_end);
+      l_startTime = todayWithTime(lunchslot_start);
+      l_endTime = todayWithTime(lunchslot_end);
+      s_startTime = todayWithTime(snacksslot_start);
+      s_endTime = todayWithTime(snacksslot_end);
+      d_startTime = todayWithTime(dinnerslot_start);
+      d_endTime = todayWithTime(dinnerslot_end);
+      final DateFormat timeFormat = DateFormat.Hm();
+      breakfastslotstart  = timeFormat.format(b_startTime);
+      breakfastslotend = timeFormat.format(b_endTime);
+      lunchslotstart = timeFormat.format(l_startTime);
+      lunchslotend = timeFormat.format(l_endTime);
+      snacksslotstart = timeFormat.format(s_startTime);
+      snacksslotend = timeFormat.format(s_endTime);
+      dinnerslotstart = timeFormat.format(d_startTime);
+      dinnerslotend = timeFormat.format(d_endTime);
+      print(l_startTime);
+      print(currentTime);
+      print( currentTime.isAfter(l_startTime));
+      print( currentTime.isAfter(b_startTime));
+
+
+
+      /*  if (currentHour >= 7 && currentHour <= 11) {
+        showBreakFastView();
+      }
+
+      if (currentHour >= 11 && currentHour <= 15) {
+        showLunchView();
+      }
+
+      if (currentHour >= 15 && currentHour <= 19) {
+        showSnacksView();
+      }
+      if (currentHour >= 19 && currentHour <= 23) {
+        showDinnerView();
+      }*/
+    });
   }
 
   void listenForFoodsByCategoryAndRestaurantHere(
@@ -458,9 +549,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             .width,
                                                     height: 350,
                                                     fit: BoxFit.fill,
-                                                    imageUrl: _con.restaurant.banner_image.isEmpty ?  _con.restaurant
-                                                            .image.url : _con.restaurant.banner_image ??
+                                                    imageUrl:   _con.restaurant
+                                                        .image.url ??
                                                         "https://picsum.photos/250?image=9",
+                                                    // imageUrl: _con.restaurant.banner_image.isEmpty ?  _con.restaurant
+                                                    //         .image.url : _con.restaurant.banner_image ??
+                                                    //     "https://picsum.photos/250?image=9",
                                                     placeholder:
                                                         (context, url) =>
                                                             Image.asset(
@@ -632,28 +726,36 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                           fontWeight: FontWeight.w600),
                                     )*/
                                                       Container(
-                                                        width: 150,
+                                                        width: 170,
                                                         child:
-                                                            TranslationWidget(
+                                                            Row(
+                                                              children: [
+                                                                Text("FSSAI  ",style:TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 14
+                                                                )),
+                                                                TranslationWidget(
                                                           message: _con
-                                                                  .restaurant
-                                                                  .address ??
-                                                              '',
+                                                                      .restaurant
+                                                                      .fssai_number ??
+                                                                  '',
                                                           fromLanguage:
-                                                              "English",
+                                                                  "English",
                                                           toLanguage:
-                                                              defaultLanguage,
+                                                                  defaultLanguage,
                                                           builder: (translatedMessage) => Text(
-                                                              translatedMessage,
-                                                              maxLines: 3,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600)),
+                                                                  translatedMessage,
+                                                                  maxLines: 3,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 14
+                                                                  ),
+                                                                  ),
                                                         ),
+                                                              ],
+                                                            ),
                                                       ),
                                                       /*Text(
                                       "Dubai, UAE",
@@ -728,7 +830,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             children: [
                                                               TextSpan(
                                                                 text:
-                                                                    "${min_price} - ₹${max_price}",
+                                                                    "${_con.restaurant.average_price}",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 20,
@@ -761,6 +863,60 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 ],
                                               ),
                                             ),
+                                            if(_con.restaurant.is_hrs == "0")
+                                              Container(
+                                                margin: const EdgeInsets.symmetric(
+                                                    vertical: 10) ,
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 20),
+                                                child: Row(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                          icon: Icons.timer,
+                                                          size: 20,
+                                                          color: Colors.green,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text("${_con.restaurant.average_preparation_time} mins  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                      ],
+                                                    ),
+
+
+                                                  ],
+                                                ),
+                                              ),
+                                            if(_con.restaurant.is_hrs == "1")
+                                              Container(
+                                                margin: const EdgeInsets.symmetric(
+                                                    vertical: 10) ,
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 20),
+                                                child: Row(
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                          icon: Icons.timer,
+                                                          size: 20,
+                                                          color: Colors.green,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text("${_con.restaurant.average_preparation_time} hrs  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                      ],
+                                                    ),
+
+
+                                                  ],
+                                                ),
+                                              ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -888,90 +1044,75 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                       width: 1,
                                                     ),
                                                     Expanded(
-                                                      child: Container(
-                                                        // width:237,
-                                                        //width: 79,
-
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius.only(
-                                                                    topRight: Radius.circular(4),
-                                                                    bottomRight: Radius.circular(4)),
-                                                            color: Colors.white,
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                  color: Colors
-                                                                      .grey,
-                                                                  blurRadius:
-                                                                      12,
-                                                                  spreadRadius:
-                                                                      -9)
-                                                            ]),
-                                                        child: TextButton(
-                                                          onPressed: () {
-                                                            //todo
-                                                            Share.share(
-                                                                _con.restaurant
-                                                                    .name,
-                                                                subject: _con
-                                                                    .restaurant
-                                                                    .description);
-                                                          },
-                                                          child:
-                                                              GestureDetector(
-                                                            onTap: () {
-                                                              // _openDialog(context);
-                                                            },
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.share,
-                                                                  size: 11,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .hintColor,
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                /*Text(
-                                                "Share",
-                                                style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                                    color: Theme
-                                                        .of(
-                                                        context)
-                                                        .hintColor),
-                                              )*/
-                                                                TranslationWidget(
-                                                                  message:
-                                                                      "Share",
-                                                                  fromLanguage:
-                                                                      "English",
-                                                                  toLanguage:
-                                                                      defaultLanguage,
-                                                                  builder:
-                                                                      (translatedMessage) =>
-                                                                          Text(
-                                                                    translatedMessage,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            10,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .normal,
-                                                                        color: Theme.of(context)
-                                                                            .hintColor),
+                                                      child: InkWell(
+                                                        onTap: ()async{
+                                                         var coupon = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CouponRestaurantPage()));
+                                                        setState(() {
+                                                          selectedCoupon = coupon;
+                                                          print(selectedCoupon.code);
+                                                        });
+                                                         },
+                                                        child: Container(
+                                                          // width:237,
+                                                          //width: 79,
+                                                          height: 48,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius.only(
+                                                                      topRight: Radius.circular(4),
+                                                                      bottomRight: Radius.circular(4),
+                                                                    topLeft: Radius.circular(4),
+                                                                    bottomLeft: Radius.circular(4),
                                                                   ),
-                                                                ),
-                                                              ],
+                                                              gradient: LinearGradient(
+                                                                colors: [
+                                                                  kPrimaryColororange,
+                                                                  kPrimaryColorLiteorange
+                                                                ],
+                                                              ),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    blurRadius:
+                                                                        12,
+                                                                    spreadRadius:
+                                                                        -9)
+                                                              ]),
+                                                          child: Row(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                          children: [
+
+                                                            Icon(
+                                                           Icons.card_giftcard,
+                                                            size: 16,
+                                                            color: Colors.white),
+                                                            SizedBox(
+                                                          width: 4,
                                                             ),
+                                                            TranslationWidget(
+                                                          message:
+                                                              "Offers",
+                                                          fromLanguage:
+                                                              "English",
+                                                          toLanguage:
+                                                              defaultLanguage,
+                                                          builder:
+                                                              (translatedMessage) =>
+                                                                  Text(
+                                                            translatedMessage,
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color:Colors.white),
+                                                          ),
+                                                            ),
+                                                          ],
                                                           ),
                                                         ),
                                                       ),
@@ -981,7 +1122,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                           Colors.grey.shade100,
                                                       thickness: 1,
                                                       indent: 0,
-                                                      width: 1,
+                                                      width: 2,
                                                     ),
                                                     Expanded(
                                                       child: Container(
@@ -1171,7 +1312,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                             .favorite
                                                                         : Icons
                                                                             .favorite_border,
-                                                                    size: 12,
+                                                                    size: 16,
                                                                     color: Provider.of<favourite_item_provider>(context, listen: false).restaurant_name.contains(_con
                                                                             .restaurant
                                                                             .name)
@@ -1207,7 +1348,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                     translatedMessage,
                                                                     style: TextStyle(
                                                                         fontSize:
-                                                                            10,
+                                                                            14,
                                                                         fontWeight:
                                                                             FontWeight
                                                                                 .normal,
@@ -1345,28 +1486,32 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                     ? Colors.white
                                                     : Colors.black),
                                           )*/
-                                                                  TranslationWidget(
-                                                                message:
-                                                                    "Breakfast",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isBreakfastSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                              TranslationWidget(
+                                                                message: "Breakfast\n7:30-11:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Breakfast\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${breakfastslotstart}-${breakfastslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
                                                             ),
@@ -1454,25 +1599,31 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 ),
                                               )*/
                                                                   TranslationWidget(
-                                                                    message:
-                                                                        "Lunch",
-                                                                    fromLanguage:
-                                                                        "English",
-                                                                    toLanguage:
-                                                                        defaultLanguage,
-                                                                    builder:
-                                                                        (translatedMessage) =>
-                                                                            Text(
-                                                                      translatedMessage,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .normal,
-                                                                          color: widget.isLunchSelected
-                                                                              ? Colors.white
-                                                                              : Colors.black),
+                                                                    message: "Lunch\n12:00-15:00",
+                                                                    fromLanguage: "English",
+                                                                    toLanguage: defaultLanguage,
+                                                                    builder: (translatedMessage) => Text.rich(
+                                                                      TextSpan(
+                                                                        children: [
+                                                                          TextSpan(
+                                                                            text: "Lunch\n",
+                                                                            style: TextStyle(
+                                                                              fontSize: 10,
+                                                                              fontWeight: FontWeight.normal,
+                                                                              color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                            ),
+                                                                          ),
+                                                                          TextSpan(
+                                                                            text: "${lunchslotstart}-${lunchslotend}",
+                                                                            style: TextStyle(
+                                                                              fontSize: 8, // Smaller font size for the time
+                                                                              fontWeight: FontWeight.normal,
+                                                                              color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      textAlign: TextAlign.center,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1555,28 +1706,32 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   ? Colors.white
                                                   : Colors.black,
                                             ),
-                                          )*/
-                                                                  TranslationWidget(
-                                                                message: "Snacks",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isSnacksSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                          )*/   TranslationWidget(
+                                                                message: "Snacks\n15:30-18:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Snacks\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${snacksslotstart}-${snacksslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
                                                             ),
@@ -1667,28 +1822,32 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   ? Colors.white
                                                   : Colors.black,
                                             ),
-                                          )*/
-                                                                  TranslationWidget(
-                                                                message: "Dinner",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isDinnerSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                          )*/  TranslationWidget(
+                                                                message: "Dinner\n19:00-23:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Dinner\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${dinnerslotstart}-${dinnerslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
                                                             ),
@@ -2536,56 +2695,90 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                   )
                 : widget.currentPage;
           }),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.grey,
-        selectedFontSize: 0,
-        unselectedFontSize: 0,
-        iconSize: 28,
-        elevation: 0,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.grey[100],
-        selectedIconTheme: IconThemeData(size: 28),
-        unselectedLabelStyle: TextStyle(color: Colors.grey),
-        currentIndex: 2,
-        onTap: (int i) {
-          print("DS>>> " + i.toString());
-          this._selectTab(i);
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton:   FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(
+                  parentScaffoldKey: widget.parentScaffoldKey,
+                  currentTab: 1,
+                  directedFrom: "forHome",
+                )),
+          );
         },
-        // this will be set when a new tab is tapped
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Orders',
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: 56.0,
+          height: 56.0,
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color:Colors.white,
+
           ),
-          /* BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/img/dinein.svg',
-              color: Colors.grey,
-              height: 17,
-            ),
-            label: '',
-          ),*/
-          BottomNavigationBarItem(
-              label: '',
-              icon: new SvgPicture.asset(
-                'assets/img/home.svg',
-                height: 80,
-              )),
-          /*BottomNavigationBarItem(
-            icon: new SvgPicture.asset(
-              'assets/img/delivery.svg',
-              color: Colors.grey,
-              height: 17,
-            ),
-            label: '',
-          ),*/
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Carts',
-          ),
-        ],
+          child: Image.asset("assets/img/logo_bottom.png"),
+        ),
       ),
+
+
+      bottomNavigationBar:
+
+      BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 5.0,
+        height: 65,
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        child: SizedBox(
+          height: kBottomNavigationBarHeight,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(right: 70),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.assignment,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    if (currentUser.value.apiToken != null) {
+                      Navigator.of(context).pushNamed('/orderPage', arguments: 0);
+                    } else {
+                      Navigator.of(context).pushNamed('/Login');
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if(currentUser.value.apiToken != null){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartWidget(
+                          parentScaffoldKey: widget.parentScaffoldKey,
+                        ),
+                      ),
+                    );}
+                  else{
+                    Navigator.of(context).pushNamed('/Login');
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      )
+      ,
     );
   }
 
@@ -2661,7 +2854,9 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                 foodList,
                 _con.restaurant.defaultTax.toString(),
                 widget.routeArgument.products,
-                fooditems
+                fooditems,
+                selectedCoupon
+
 
             ),
 
@@ -2698,7 +2893,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeWidget(
+                builder: (context) => HomePage(
                       parentScaffoldKey: widget.parentScaffoldKey,
                       currentTab: 1,
                       directedFrom: "forHome",
@@ -2944,7 +3139,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
     final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+    //provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
@@ -4766,4 +4961,35 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     );
   }
 
+}
+class HalfColoredIcon extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  final Color color;
+
+  HalfColoredIcon({
+    this.icon,
+    this.size,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return LinearGradient(
+          colors: [ color.withOpacity(0.0),color],
+          stops: [0.5, 0.5],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ).createShader(bounds);
+      },
+      blendMode: BlendMode.srcATop,
+      child: Icon(
+        icon,
+        size: size,
+        color: Colors.grey,
+      ),
+    );
+  }
 }

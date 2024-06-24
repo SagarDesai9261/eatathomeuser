@@ -23,6 +23,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../my_widget/calander_widget.dart';
 import '../../utils/color.dart';
 import 'package:http/http.dart' as http;
+import '../controllers/homr_test.dart';
 import '../helpers/helper.dart';
 import '../models/filter.dart';
 import '../provider.dart';
@@ -33,13 +34,14 @@ class KitchenListDineinWidget extends StatefulWidget {
   List<Restaurant> restaurantsList;
   String heroTag;
   bool delivery;
+  int category_id;
   HomeController _con = HomeController();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
   RouteArgument routeArgument;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
 
-  KitchenListDineinWidget({Key key, this.heroTag, this.delivery, this.restaurantsList})
+  KitchenListDineinWidget({Key key, this.heroTag, this.delivery, this.restaurantsList,this.category_id})
       : super(key: key);
 
   @override
@@ -65,7 +67,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDineinWidget> {
     getCurrentDefaultLanguage();
     if(widget.restaurantsList.length == 0){
       _con = HomeController();
-      _con.refreshSubHome();
+     // _con.refreshSubHome();
 
       fetchRestaurants_firsttime();
     }
@@ -92,7 +94,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDineinWidget> {
 
   Future<void> fetchRestaurants() async {
 
-
+    print("cat =====>"+widget.category_id.toString());
     String kitchenType = "1";
     String todayDate = DateTime.now().toString();
     String numberOfPerson = "0";
@@ -103,7 +105,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDineinWidget> {
     try {
       List<Restaurant> allRestaurants = [];
       while (true) {
-        Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset);
+        Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,category_id: widget.category_id);
         List<Restaurant> restaurants = await restaurantsStream.toList();
 
         if (restaurants.isEmpty) {
@@ -149,7 +151,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDineinWidget> {
     try {
       List<Restaurant> allRestaurants = [];
 
-        Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset);
+        Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,category_id: widget.category_id);
         List<Restaurant> restaurants = await restaurantsStream.toList();
 
         allRestaurants.addAll(restaurants);
@@ -715,7 +717,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDineinWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    HomeWidget(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
+                    HomePage(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
                       currentTab: 2,)
             ),
           );

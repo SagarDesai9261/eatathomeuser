@@ -21,6 +21,7 @@ class User {
   String country;
   File identity; // Add identity file
   bool auth;
+  String restoreid;
   User();
 
   User.fromJSON(Map<String, dynamic> jsonMap) {
@@ -35,6 +36,7 @@ class User {
       apiToken = jsonMap['api_token'] ?? "";
       deviceToken = jsonMap['device_token'] ?? "";
       country = jsonMap['country'] ?? "";
+      restoreid = jsonMap['restoreid'] ?? "";
       address = jsonMap['custom_fields']['address']['value'] ?? "";
       phone = jsonMap['custom_fields']['phone']['value'] ?? "";
       bio = jsonMap['custom_fields']['bio']['value'] ?? "";

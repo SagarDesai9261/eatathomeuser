@@ -18,6 +18,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controllers/home_controller.dart';
+import '../controllers/homr_test.dart';
 import '../elements/DrawerWidget.dart';
 import '../models/restaurant.dart';
 
@@ -387,7 +388,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeWidget(
+                builder: (context) => HomePage(
                       parentScaffoldKey: widget.scaffoldKey,
                       currentTab: tabItem,
                       directedFrom: "forHome",

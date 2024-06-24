@@ -20,6 +20,7 @@ import 'package:food_delivery_app/src/pages/pages.dart';
 import 'package:food_delivery_app/src/pages/settings.dart';
 import 'package:food_delivery_app/src/repository/food_repository.dart';
 import 'package:food_delivery_app/src/repository/translation_widget.dart';
+import 'package:intl/intl.dart';
 
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:share/share.dart';
@@ -30,9 +31,13 @@ import '../../utils/color.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/category_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/homecontroller_provider.dart';
+import '../controllers/homr_test.dart';
 import '../controllers/restaurant_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
 import '../helpers/helper.dart';
+import '../models/cart.dart';
+import '../models/coupons.dart';
 import '../models/restaurant.dart';
 import '../models/route_argument.dart';
 import '../provider.dart';
@@ -40,12 +45,13 @@ import '../repository/user_repository.dart';
 import 'package:provider/provider.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 import 'chatscreen.dart';
+import 'coupen_restaurant.dart';
 
 class RestaurantWidget extends StatefulWidget {
   final RouteArgument routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey;
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
   HomeController _con = HomeController();
@@ -83,6 +89,8 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   bool hasData = false;
   double min_price = 0;
   double max_price = 0;
+  String nextSessionStartTime = '';
+  bool showServiceMessage = false;
   bool isLoadmore = false;
   bool isbreackfastLoadmore = false;
   bool islunchLoadmore = false;
@@ -98,7 +106,35 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   List<FoodItem> lunch_food = <FoodItem>[];
   List<FoodItem> dinner_food = <FoodItem>[];
   Map<String, int> itemQuantities = {};
-
+  var breakfastslot_start ;
+  var breakfastslot_end ;
+  var lunchslot_start ;
+  var lunchslot_end ;
+  var snacksslot_start ;
+  var snacksslot_end ;
+  var dinnerslot_start ;
+  var dinnerslot_end ;
+  var breakfastslotstart ="";
+  var breakfastslotend ="";
+  var lunchslotstart ="";
+  var lunchslotend ="";
+  var snacksslotstart ="";
+  var snacksslotend ="";
+  var dinnerslotstart ="";
+  var dinnerslotend ="";
+   DateTime b_startTime ;
+   DateTime b_endTime ;
+   DateTime l_startTime ;
+   DateTime l_endTime ;
+   DateTime s_startTime ;
+   DateTime s_endTime ;
+   DateTime d_startTime ;
+   DateTime d_endTime ;
+  Coupon selectedCoupon;
+  bool isbreckfastenable =false;
+  bool islunchenable =false;
+  bool isdinnerenable =false;
+  bool issnacksenable =false;
   FoodItem breakfastFoodItem, lunchFoodItem, snacksFoodItem, dinnerFoodItem;
   bool isBreakfastAvailable = false,
       isLunchAvailable = false,
@@ -107,7 +143,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
 
   DateTime currentTime = DateTime.now();
   int currentHour;
-
+  String enjoy;
 /*  KitchenDetails kitchenDetails;
 
   // Access the separate items for each item (if available)
@@ -123,30 +159,151 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   }
 
   CartController _cartController = CartController();
-
+  DateTime todayWithTime(String time) {
+    var currentTime = DateTime.now();
+    final DateFormat timeFormat = DateFormat('HH:mm:ss');
+    final parsedTime = timeFormat.parse(time);
+    return DateTime(currentTime.year, currentTime.month, currentTime.day, parsedTime.hour, parsedTime.minute, parsedTime.second);
+  }
   void _scheduleButtonPress() {
     Future.delayed(Duration(seconds: 4), () {
       setState(() {
         widget.buttonPressed = true;
       });
+      showServiceMessage = false; // Reset message flag
+      bool allSessionsDisabled = false;
 
-      if (currentHour >= 7 && currentHour <= 11) {
-        showBreakFastView();
-      }
+      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+      breakfastslot_start = homeProvider.categories[0].start_slot;
+      breakfastslot_end = homeProvider.categories[0].end_slot;
+      lunchslot_start = homeProvider.categories[1].start_slot;
+      lunchslot_end = homeProvider.categories[1].end_slot;
+      snacksslot_start = homeProvider.categories[2].start_slot;
+      snacksslot_end = homeProvider.categories[2].end_slot;
+      dinnerslot_start = homeProvider.categories[3].start_slot;
+      dinnerslot_end = homeProvider.categories[3].end_slot;
 
-      if (currentHour >= 11 && currentHour <= 15) {
-        showLunchView();
-      }
+      var currentTime = DateTime.now();
+      final DateFormat timeFormat = DateFormat.Hm();
 
-      if (currentHour >= 15 && currentHour <= 19) {
-        showSnacksView();
+      b_startTime = todayWithTime(breakfastslot_start);
+      b_endTime = todayWithTime(breakfastslot_end);
+      l_startTime = todayWithTime(lunchslot_start);
+      l_endTime = todayWithTime(lunchslot_end);
+      s_startTime = todayWithTime(snacksslot_start);
+      s_endTime = todayWithTime(snacksslot_end);
+      d_startTime = todayWithTime(dinnerslot_start);
+      d_endTime = todayWithTime(dinnerslot_end);
+
+      breakfastslotstart = timeFormat.format(b_startTime);
+      breakfastslotend = timeFormat.format(b_endTime);
+      lunchslotstart = timeFormat.format(l_startTime);
+      lunchslotend = timeFormat.format(l_endTime);
+      snacksslotstart = timeFormat.format(s_startTime);
+      snacksslotend = timeFormat.format(s_endTime);
+      dinnerslotstart = timeFormat.format(d_startTime);
+      dinnerslotend = timeFormat.format(d_endTime);
+
+      if (enjoy == "1") {
+        // Enable current session only
+        if (currentTime.isAfter(d_startTime) && currentTime.isBefore(d_endTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = false;
+            issnacksenable = false;
+            isdinnerenable = true;
+          });
+          showDinnerView();
+        } else if (currentTime.isAfter(s_startTime) && currentTime.isBefore(s_endTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = false;
+            issnacksenable = true;
+            isdinnerenable = false;
+          });
+          showSnacksView();
+        } else if (currentTime.isAfter(l_startTime) && currentTime.isBefore(l_endTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = true;
+            issnacksenable = false;
+            isdinnerenable = false;
+          });
+          showLunchView();
+        } else if (currentTime.isAfter(b_startTime) && currentTime.isBefore(b_endTime)) {
+          setState(() {
+            isbreckfastenable = true;
+            islunchenable = false;
+            issnacksenable = false;
+            isdinnerenable = false;
+          });
+          showBreakFastView();
+        }
+        else {
+          allSessionsDisabled = true;
+          nextSessionStartTime = getNextSessionStartTime(currentTime);
+        }
       }
-      if (currentHour >= 19 && currentHour <= 23) {
-        showDinnerView();
+      else if (enjoy == "2") {
+        // Enable upcoming session only
+        if (currentTime.isAfter(d_startTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = false;
+            issnacksenable = false;
+            isdinnerenable = false;
+          });
+          //showBreakFastView();
+        } else if (currentTime.isAfter(s_startTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = false;
+            issnacksenable = false;
+            isdinnerenable = true;
+          });
+          showDinnerView();
+        } else if (currentTime.isAfter(l_startTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = false;
+            issnacksenable = true;
+            isdinnerenable = true;
+          });
+          showSnacksView();
+        } else if (currentTime.isAfter(b_startTime)) {
+          setState(() {
+            isbreckfastenable = false;
+            islunchenable = true;
+            issnacksenable = true;
+            isdinnerenable = true;
+          });
+          showLunchView();
+        }
+        else {
+          allSessionsDisabled = true;
+          nextSessionStartTime = getNextSessionStartTime(currentTime);
+        }
+      }
+      if (allSessionsDisabled) {
+        setState(() {
+          showServiceMessage = true;
+        });
       }
     });
   }
-
+  String getNextSessionStartTime(DateTime currentTime) {
+    if (currentTime.isBefore(b_startTime)) {
+      return breakfastslotstart;
+    } else if (currentTime.isBefore(l_startTime)) {
+      return lunchslotstart;
+    } else if (currentTime.isBefore(s_startTime)) {
+      return snacksslotstart;
+    } else if (currentTime.isBefore(d_startTime)) {
+      return dinnerslotstart;
+    } else {
+      return breakfastslotstart; // Next day's breakfast if all sessions are over for today
+    }
+  }
   getCurrentDefaultLanguage() async {
     settingRepo.getDefaultLanguageName().then((_langCode) {
       print("DS>> DefaultLanguageret " + _langCode);
@@ -160,9 +317,10 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   @override
   void initState() {
     getCurrentDefaultLanguage();
-    print("heelloo");
+   // print("heelloo ===> ${widget.routeArgument.selectedDate}");
     _foodcon.getKetchainDetails(widget.routeArgument.id, '2').then((value) {});
     _con.restaurant = widget.routeArgument.param as Restaurant;
+    enjoy = widget.routeArgument.selectedDate;
     /* _controller.listenForFoodsByCategoryAndRestaurant(
         id: "8", restaurantId: _con.restaurant.id);
     showBreakFastView();*/
@@ -178,7 +336,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
     _controller.listenForFoodsByCategoryAndKitchen(
         id: "7", restaurantId: _con.restaurant.id);*/
     listenForFoodsByCategoryAndRestaurantHere(
-        id: "8", restaurantId: _con.restaurant.id);
+        id: "8", restaurantId: _con.restaurant.id, );
     _selectTab(widget.currentTab);
 
     _scheduleButtonPress();
@@ -228,6 +386,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     String res_imag = "";
     print("DS>> length increase" + _controller.foods.length.toString());
 
@@ -301,6 +460,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       min_price = double.parse(dinnerFoodItem.restaurant.price.min);
       max_price = double.parse(dinnerFoodItem.restaurant.price.max);
     }
+    var totalQuantity = Provider.of<QuantityProvider>(context).getTotalQuantityForRestaurant(_con.restaurant.id);
 
     return Scaffold(
       // bottomNavigationBar: DetailsWidget(),
@@ -385,10 +545,13 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                               .width,
                                                       height: 350,
                                                       fit: BoxFit.fill,
-                                                      imageUrl: _con.restaurant.banner_image.isEmpty ?  _con.restaurant
-                                                          .image.url : _con.restaurant.banner_image ??
+                                                      imageUrl:   _con.restaurant
+                                                          .image.url ??
                                                           "https://picsum.photos/250?image=9",
-                                                      placeholder:
+                                                      // imageUrl: _con.restaurant.banner_image.isEmpty ?  _con.restaurant
+                                                      //     .image.url : _con.restaurant.banner_image ??
+                                                      //     "https://picsum.photos/250?image=9",
+                                                       placeholder:
                                                           (context, url) =>
                                                               Image.asset(
                                                         'assets/img/loading.gif',
@@ -528,27 +691,35 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                               .start,
                                                       children: [
                                                         Container(
-                                                          width: 150,
+                                                          width: 170,
                                                           child:
+                                                          Row(
+                                                            children: [
+                                                              Text("FSSAI  ",style:TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 14
+                                                              )),
                                                               TranslationWidget(
-                                                            message: _con
+                                                                message: _con
                                                                     .restaurant
-                                                                    .address ??
-                                                                '',
-                                                            fromLanguage:
+                                                                    .fssai_number ??
+                                                                    '',
+                                                                fromLanguage:
                                                                 "English",
-                                                            toLanguage:
+                                                                toLanguage:
                                                                 defaultLanguage,
-                                                            builder: (translatedMessage) => Text(
-                                                                translatedMessage,
-                                                                maxLines: 3,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600)),
+                                                                builder: (translatedMessage) => Text(
+                                                                  translatedMessage,
+                                                                  maxLines: 3,
+                                                                  overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize: 14
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
                                                         SizedBox(
@@ -611,7 +782,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                               children: [
                                                                 TextSpan(
                                                                   text:
-                                                                      "${min_price} - ₹${max_price}",
+                                                                      "${_con.restaurant.average_price}",
                                                                   style:
                                                                       TextStyle(
                                                                     fontSize:
@@ -642,6 +813,66 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                 ),
                                               ),
 
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              if(_con.restaurant.is_hrs == "0")
+                                              Container(
+                                                margin: const EdgeInsets.symmetric(
+                                                vertical: 10) ,
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 20),
+                                                child: Row(
+                                                    children: [
+                                                      Row(
+                                                          children: [
+                                                          double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                              icon: Icons.timer,
+                                                              size: 20,
+                                                              color: Colors.green,
+                                                            ),
+                                                            SizedBox(
+                                                              width: 5,
+                                                            ),
+                                                            Text("${_con.restaurant.average_preparation_time} mins  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                          ],
+                                                      ),
+
+
+                                                    ],
+                                                ),
+                                              ),
+                                              if(_con.restaurant.is_hrs == "1")
+                                                Container(
+                                                  margin: const EdgeInsets.symmetric(
+                                                      vertical: 10) ,
+                                                  padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
+                                                  child: Row(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                            icon: Icons.timer,
+                                                            size: 20,
+                                                            color: Colors.green,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 5,
+                                                          ),
+                                                          Text("${_con.restaurant.average_preparation_time} hrs  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                        ],
+                                                      ),
+
+
+                                                    ],
+                                                  ),
+                                                ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -657,83 +888,75 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                         width: 1,
                                                       ),
                                                       Expanded(
-                                                        child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  boxShadow: [
-                                                                BoxShadow(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    blurRadius:
-                                                                        12,
-                                                                    spreadRadius:
-                                                                        -9)
-                                                              ]),
-                                                          child: TextButton(
-                                                            onPressed: () {
-                                                              //todo
-                                                              Share.share(
-                                                                  _con.restaurant
-                                                                      .name,
-                                                                  subject: _con
-                                                                      .restaurant
-                                                                      .description);
-                                                            },
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                // _openDialog(context);
-                                                              },
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Icon(
-                                                                    Icons.share,
-                                                                    size: 11,
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .hintColor,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 4,
-                                                                  ),
-                                                                  /*Text(
-                                                            "Share",
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .hintColor),
-                                                          )*/
-                                                                  TranslationWidget(
-                                                                    message:
-                                                                        "Share",
-                                                                    fromLanguage:
-                                                                        "English",
-                                                                    toLanguage:
-                                                                        defaultLanguage,
-                                                                    builder:
-                                                                        (translatedMessage) =>
-                                                                            Text(
-                                                                      translatedMessage,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              10,
-                                                                          fontWeight: FontWeight
-                                                                              .normal,
-                                                                          color:
-                                                                              Theme.of(context).hintColor),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                        child: InkWell(
+                                                          onTap: ()async{
+                                                            var coupon = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CouponRestaurantPage()));
+                                                            setState(() {
+                                                              selectedCoupon = coupon;
+                                                              print(selectedCoupon.code);
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            // width:237,
+                                                            //width: 79,
+                                                            height: 48,
+                                                            decoration: BoxDecoration(
+                                                                borderRadius:
+                                                                BorderRadius.only(
+                                                                  topRight: Radius.circular(4),
+                                                                  bottomRight: Radius.circular(4),
+                                                                  topLeft: Radius.circular(4),
+                                                                  bottomLeft: Radius.circular(4),
+                                                                ),
+                                                                gradient: LinearGradient(
+                                                                  colors: [
+                                                                    kPrimaryColororange,
+                                                                    kPrimaryColorLiteorange
+                                                                  ],
+                                                                ),
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                      color: Colors
+                                                                          .grey,
+                                                                      blurRadius:
+                                                                      12,
+                                                                      spreadRadius:
+                                                                      -9)
+                                                                ]),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                              children: [
+
+                                                                Icon(
+                                                                    Icons.card_giftcard,
+                                                                    size: 16,
+                                                                    color: Colors.white),
+                                                                SizedBox(
+                                                                  width: 4,
+                                                                ),
+                                                                TranslationWidget(
+                                                                  message:
+                                                                  "Offers",
+                                                                  fromLanguage:
+                                                                  "English",
+                                                                  toLanguage:
+                                                                  defaultLanguage,
+                                                                  builder:
+                                                                      (translatedMessage) =>
+                                                                      Text(
+                                                                        translatedMessage,
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                            14,
+                                                                            fontWeight:
+                                                                            FontWeight
+                                                                                .normal,
+                                                                            color:Colors.white),
+                                                                      ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                         ),
@@ -919,7 +1142,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                   BorderRadius.only(
                                                                       topLeft: Radius.circular(0),
                                                                       bottomLeft: Radius.circular(0)),
-                                                              color: /*currentHour < 7 || */ widget.isBreakfastSelected ? kPrimaryColororange : Colors.white,
+                                                              color: /*currentHour < 7 || */ !isbreckfastenable ? Colors.grey[200] : widget.isBreakfastSelected ? kPrimaryColororange : Colors.white,
                                                               boxShadow: [
                                                                 BoxShadow(
                                                                     color: Colors
@@ -932,7 +1155,9 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           child: TextButton(
                                                             child:
                                                                 GestureDetector(
-                                                              onTap: () {
+                                                              onTap: !isbreckfastenable ? null : () {
+
+
                                                                 _controller
                                                                         .isDateUpdated =
                                                                     false;
@@ -940,31 +1165,36 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                 showBreakFastView();
                                                               },
                                                               child:
-                                                                  TranslationWidget(
-                                                                message:
-                                                                    "Breakfast",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isBreakfastSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                              TranslationWidget(
+                                                                message: "Breakfast\n7:30-11:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Breakfast\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${breakfastslotstart}-${breakfastslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
-                                                            ),
+
+                                                                ),
                                                           ),
                                                         ),
                                                       ),
@@ -978,7 +1208,9 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                       Expanded(
                                                         child: Container(
                                                           decoration: BoxDecoration(
-                                                              color: /*currentHour < 11 || */ widget
+                                                              color: /*currentHour < 11 || */
+                                                              !islunchenable ? Colors.grey[200]:
+                                                              widget
                                                                       .isLunchSelected
                                                                   ? kPrimaryColororange
                                                                   : Colors.white,
@@ -994,7 +1226,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           child: TextButton(
                                                             child:
                                                                 GestureDetector(
-                                                              onTap: () {
+                                                              onTap: !islunchenable ? null: () {
                                                                 _controller
                                                                         .isDateUpdated =
                                                                     false;
@@ -1007,26 +1239,34 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                         .center,
                                                                 children: [
                                                                   TranslationWidget(
-                                                                    message:
-                                                                        "Lunch",
-                                                                    fromLanguage:
-                                                                        "English",
-                                                                    toLanguage:
-                                                                        defaultLanguage,
-                                                                    builder:
-                                                                        (translatedMessage) =>
-                                                                            Text(
-                                                                      translatedMessage,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight: FontWeight
-                                                                              .normal,
-                                                                          color: widget.isLunchSelected
-                                                                              ? Colors.white
-                                                                              : Colors.black),
+                                                                    message: "Lunch\n12:00-15:00",
+                                                                    fromLanguage: "English",
+                                                                    toLanguage: defaultLanguage,
+                                                                    builder: (translatedMessage) => Text.rich(
+                                                                      TextSpan(
+                                                                        children: [
+                                                                          TextSpan(
+                                                                            text: "Lunch\n",
+                                                                            style: TextStyle(
+                                                                              fontSize: 10,
+                                                                              fontWeight: FontWeight.normal,
+                                                                              color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                            ),
+                                                                          ),
+                                                                          TextSpan(
+                                                                            text: "${lunchslotstart}-${lunchslotend}",
+                                                                            style: TextStyle(
+                                                                              fontSize: 8, // Smaller font size for the time
+                                                                              fontWeight: FontWeight.normal,
+                                                                              color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      textAlign: TextAlign.center,
                                                                     ),
                                                                   ),
+
                                                                 ],
                                                               ),
                                                             ),
@@ -1043,7 +1283,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                       Expanded(
                                                         child: Container(
                                                           decoration: BoxDecoration(
-                                                              color: /*currentHour < 15 ||*/ widget
+                                                              color: !issnacksenable ? Colors.grey[200]: widget
                                                                       .isSnacksSelected
                                                                   ? kPrimaryColororange
                                                                   : Colors.white,
@@ -1059,7 +1299,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           child: TextButton(
                                                             child:
                                                                 GestureDetector(
-                                                              onTap: () {
+                                                              onTap: !issnacksenable ?null : () {
                                                                 _controller
                                                                         .isDateUpdated =
                                                                     false;
@@ -1067,31 +1307,36 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                 showSnacksView();
                                                               },
                                                               child:
-                                                                  TranslationWidget(
-                                                                message:
-                                                                    "Snacks",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isSnacksSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                              TranslationWidget(
+                                                                message: "Snacks\n15:30-18:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Snacks\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${snacksslotstart}-${snacksslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
-                                                            ),
+
+                                                                ),
                                                           ),
                                                         ),
                                                       ),
@@ -1116,7 +1361,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                         Radius.circular(
                                                                             0),
                                                                   ),
-                                                                  color: /*currentHour < 19 || */ widget.isDinnerSelected ? kPrimaryColororange : Colors.white,
+                                                                  color: /*currentHour < 19 || */ !isdinnerenable ?  Colors.grey[200]  : widget.isDinnerSelected ? kPrimaryColororange : Colors.white,
                                                                   boxShadow: [
                                                                 BoxShadow(
                                                                     color: Colors
@@ -1129,7 +1374,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           child: TextButton(
                                                             child:
                                                                 GestureDetector(
-                                                              onTap: () {
+                                                              onTap: !isdinnerenable ? null : () {
                                                                 _controller
                                                                         .isDateUpdated =
                                                                     false;
@@ -1137,31 +1382,36 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                                 showDinnerView();
                                                               },
                                                               child:
-                                                                  TranslationWidget(
-                                                                message:
-                                                                    "Dinner",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isDinnerSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                              TranslationWidget(
+                                                                message: "Dinner\n19:00-23:00",
+                                                                fromLanguage: "English",
+                                                                toLanguage: defaultLanguage,
+                                                                builder: (translatedMessage) => Text.rich(
+                                                                  TextSpan(
+                                                                    children: [
+                                                                      TextSpan(
+                                                                        text: "Dinner\n",
+                                                                        style: TextStyle(
+                                                                          fontSize: 10,
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      TextSpan(
+                                                                        text: "${dinnerslotstart}-${dinnerslotend}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 8, // Smaller font size for the time
+                                                                          fontWeight: FontWeight.normal,
+                                                                          color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
                                                                 ),
                                                               ),
-                                                            ),
+
+                                                                ),
                                                           ),
                                                         ),
                                                       ),
@@ -1212,6 +1462,27 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           10,
                                                           _con.restaurant.id))
                                                   : SizedBox(),
+                                              if (showServiceMessage)
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width,
+                                                  padding: const EdgeInsets.all(0.0),
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    children: [
+                                                      Image.asset("assets/img/No-food.png", height: 100, width: 100),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(context).size.width * .7,
+                                                        child: Text(
+                                                          "Food service begins after $nextSessionStartTime. Thank you for your understanding.",
+                                                          style: TextStyle(fontSize: 12),
+                                                          textAlign: TextAlign.center,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 50,)
+                                                    ],
+                                                  ),
+                                                ),
 
                                               if (widget.isBreakfastVisible &&
                                                       breakfastFoodItem !=
@@ -1499,6 +1770,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                                           if (currentUser.value
                                                                   .apiToken ==
                                                               null) {
+
                                                             Navigator.of(
                                                                     context)
                                                                 .pushNamed(
@@ -1587,7 +1859,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                         ),
                                       ],
                                     ),
-                              if (foodList.isNotEmpty)
+                              if (foodList.isNotEmpty || (totalQuantity != null && totalQuantity > 0))
                                 Visibility(
                                   visible: true,
                                   child: Container(
@@ -1597,6 +1869,8 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                           if (currentUser.value
                                               .apiToken ==
                                               null) {
+                                            print("quantity remove");
+                                            Provider.of<QuantityProvider>(context,listen: false).clearQuantity();
                                             Navigator.of(
                                                 context)
                                                 .pushNamed(
@@ -1667,7 +1941,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                             children: [
 
 
-                                              Text("${foodList.length} Item added ",style: TextStyle(color: Colors.white,fontSize:
+                                              Text("${Provider.of<QuantityProvider>(context).getTotalQuantityForRestaurant(_con.restaurant.id)} Item added ",style: TextStyle(color: Colors.white,fontSize:
                                               16),),
                                               Icon(Icons.arrow_circle_right_outlined,color: Colors.white,)
                                             ],
@@ -1755,56 +2029,90 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                   )
                 : widget.currentPage;
           }),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.grey,
-        selectedFontSize: 0,
-        unselectedFontSize: 0,
-        iconSize: 28,
-        elevation: 0,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.grey[100],
-        selectedIconTheme: IconThemeData(size: 28),
-        unselectedLabelStyle: TextStyle(color: Colors.grey),
-        currentIndex: 2,
-        onTap: (int i) {
-          print("DS>>> " + i.toString());
-          this._selectTab(i);
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton:   FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(
+                  parentScaffoldKey: widget.parentScaffoldKey,
+                  currentTab: 1,
+                  directedFrom: "forHome",
+                )),
+          );
         },
-        // this will be set when a new tab is tapped
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Orders',
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: 56.0,
+          height: 56.0,
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color:Colors.white,
+
           ),
-          /* BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/img/dinein.svg',
-              color: Colors.grey,
-              height: 17,
-            ),
-            label: '',
-          ),*/
-          BottomNavigationBarItem(
-              label: '',
-              icon: new SvgPicture.asset(
-                'assets/img/home.svg',
-                height: 80,
-              )),
-          /*BottomNavigationBarItem(
-            icon: new SvgPicture.asset(
-              'assets/img/delivery.svg',
-              color: Colors.grey,
-              height: 17,
-            ),
-            label: '',
-          ),*/
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Carts',
-          ),
-        ],
+          child: Image.asset("assets/img/logo_bottom.png"),
+        ),
       ),
+
+
+      bottomNavigationBar:
+
+      BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 5.0,
+        height: 65,
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        child: SizedBox(
+          height: kBottomNavigationBarHeight,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(right: 70),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.assignment,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    if (currentUser.value.apiToken != null) {
+                      Navigator.of(context).pushNamed('/orderPage', arguments: 0);
+                    } else {
+                      Navigator.of(context).pushNamed('/Login');
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if(currentUser.value.apiToken != null){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartWidget(
+                          parentScaffoldKey: widget.parentScaffoldKey,
+                        ),
+                      ),
+                    );}
+                  else{
+                    Navigator.of(context).pushNamed('/Login');
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      )
+      ,
     );
   }
 
@@ -1813,9 +2121,68 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
     setState(() {
       iscartload =  true;
     });
-    if (foodList.isEmpty) {
+ //   print("object==============> ${foodListNew.length}");
+    if(foodListNew.isNotEmpty || foodList.isNotEmpty){
+      for (int i = 0; i < foodListNew.length; i++) {
+        int foodId = int.parse(foodListNew[i].id);
+        int quantity = Provider.of<QuantityProvider>(context, listen : false).getQuantity(foodListNew[i].restaurant.id, int.parse(foodListNew[i].id));
+    //    print(quantity);
+        groupedFood[foodId] = quantity.toDouble();
+
+      }
+      groupedFood.forEach((foodId, quantity) {
+        Food food = foodListNew.firstWhere((item) => item.id == foodId.toString());
+        // print(food.restaurant.id);
+        //print(_controller.kitchenDetails.id);
+        // print("object calling======>asa ${food.restaurant.name}");
+        //   print("${selectedCoupon.code} ++ ${selectedCoupon.id}");
+
+        _foodcon.addToCart(food,
+            quantity: quantity, restaurant_id: _controller.kitchenDetails.id,coupon_id:selectedCoupon != null? selectedCoupon.id: null);
+      });
+
+      if (currentUser.value.apiToken != null) {
+        Provider.of<CartProvider>(context, listen: false).loadCartItems();
+        Provider.of<CartProvider>(context, listen: false).listenForCartsCount();
+        //  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Items is Add in the Cart")));
+        Future.delayed(Duration(seconds: 3), () {
+          setState(() {
+            iscartload =  false;
+            foodListNew.clear();
+          });
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>
+                  CartWidget(parentScaffoldKey: widget.parentScaffoldKey),
+            ),
+          );
+        });
+      } else {
+
+        Navigator.of(context).pushNamed('/Login');
+      }
+
+
+    }
+    else{
+      Future.delayed(Duration(seconds: 3), () {
+        setState(() {
+          iscartload =  false;
+          foodListNew.clear();
+        });
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) =>
+                CartWidget(parentScaffoldKey: widget.parentScaffoldKey),
+          ),
+        );
+      });
+    }
+   /* if (foodList.isEmpty) {
       Fluttertoast.showToast(msg: "please select the food");
-    } else {
+    }
+    else
+    {
       for (int i = 0; i < foodList.length; i++) {
         int foodId = int.parse(foodList[i].id);
         double quantity = groupedFood[foodId] ?? 0.0;
@@ -1828,11 +2195,14 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       groupedFood.forEach((foodId, quantity) {
         Food food = foodList.firstWhere((item) => item.id == foodId.toString());
         // print(food.restaurant.id);
-        print(_controller.kitchenDetails.id);
-        print("object calling======>asa ${food.restaurant.name}");
+        //print(_controller.kitchenDetails.id);
+       // print("object calling======>asa ${food.restaurant.name}");
+     //   print("${selectedCoupon.code} ++ ${selectedCoupon.id}");
+
         _foodcon.addToCart(food,
-            quantity: quantity, restaurant_id: _controller.kitchenDetails.id);
+            quantity: quantity, restaurant_id: _controller.kitchenDetails.id,coupon_id:selectedCoupon != null? selectedCoupon.id: null);
       });
+
 
       if (currentUser.value.apiToken != null) {
         Provider.of<CartProvider>(context, listen: false).loadCartItems();
@@ -1852,7 +2222,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       } else {
         Navigator.of(context).pushNamed('/Login');
       }
-    }
+    }*/
     // Group the food items by their IDs and sum the quantities
   }
 
@@ -1880,7 +2250,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeWidget(
+                builder: (context) => HomePage(
                       parentScaffoldKey: widget.parentScaffoldKey,
                       currentTab: 1,
                       directedFrom: "forHome",
@@ -1929,7 +2299,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       isbreackfastLoad = true;
     });
     List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(8, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(8, _con.restaurant.id,enjoy: enjoy).then((value) {
       setState(() {
         breakfast_food.clear();
         breakfast_food.addAll(value);
@@ -1957,7 +2327,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       islunchLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(9, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(9, _con.restaurant.id,enjoy: enjoy).then((value) {
       setState(() {
         lunch_food.clear();
         lunch_food.addAll(value);
@@ -1987,7 +2357,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       issnacksLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(7, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(7, _con.restaurant.id,enjoy: enjoy).then((value) {
       setState(() {
         snack_food.clear();
         snack_food.addAll(value);
@@ -2017,7 +2387,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       isdinnerLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(10, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(10, _con.restaurant.id,enjoy: enjoy).then((value) {
       setState(() {
         dinner_food.clear();
         dinner_food.addAll(value);
@@ -2030,11 +2400,12 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
     final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+ //   provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
           categoryId, RestaurantId,
+          enjoy: enjoy,
           limit: 4, offset: breakfastFoods.length);
 
       if (moreFoods.length == 0) {
@@ -2096,7 +2467,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                   }
                   // final index = entry.key;
                   int quantity =
-                      itemQuantities[breakfastFoodItem.id.toString()] ?? 0;
+                        itemQuantities[breakfastFoodItem.id.toString()] ?? 0;
                   // print(itemQuantities[breakfastFoodItem.id.toString()]);
                   return Padding(
                     padding:
@@ -2209,65 +2580,89 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
-                                                setState(() {
-                                                  print("hello");
-                                                  if (quantity > 0) {
-                                                    quantity--;
-                                                    itemQuantities[breakfastFoodItem
-                                                        .id
-                                                        .toString()] = quantity;
-                                                  }
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  removeFoodFromList(Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  /*updateFoodList(new Food.withId(
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD decrement");
+                                            _foodcon.decrementQuantity();
+                                            setState(() {
+                                              print("hello");
+                                              if (quantity > 0) {
+                                                quantity--;
+                                                itemQuantities[breakfastFoodItem
+                                                    .id
+                                                    .toString()] = quantity;
+                                              }
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    restaurant: _con.restaurant,
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
+                                                        ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                        : breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              removeFoodFromList(Food.withId(
                                                   id: breakfastFoodItem.id
                                                       .toString(),
                                                   foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
                                                       .comboMedia[0].url,
                                                   name: breakfastFoodItem.name,
                                                   price: double.parse(
                                                       breakfastFoodItem.price
-                                                          .toString())));*/
-                                                });
-                                              } //provider.decrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                                          .toString())));
+                                              /*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*/
+                                            });
+                                          } //provider.decrementQuantity(index);
+
+                                          provider.decrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+
+
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2279,66 +2674,89 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: Text(
-                                              quantity.toString(),
+                                              provider.getQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id).toString(),
+
                                               style: TextStyle(fontSize: 15),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
-                                                setState(() {
-                                                  print(breakfastFoodItem.restaurant.image.url);
-                                                  //  print("hello");
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  updateFoodList(new Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      restaurant: breakfastFoodItem
-                                                          .restaurant,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  quantity++;
-                                                  itemQuantities[breakfastFoodItem
-                                                      .id
-                                                      .toString()] = quantity;
-                                                });
-                                                setState(() {});
-                                                //    provider.incrementQuantity(index);
-                                              }
-                                            },
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD increment" +
+                                                _foodcon.quantity.toString());
+                                            _foodcon.incrementQuantity();
+                                            setState(() {
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    restaurant: _con.restaurant,
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
+                                                        ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                        : breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));
+                                              //  print("hello");
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              updateFoodList(new Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  restaurant: breakfastFoodItem
+                                                      .restaurant,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              quantity++;
+                                              itemQuantities[breakfastFoodItem
+                                                  .id
+                                                  .toString()] = quantity;
+                                            });
+
+
+                                            setState(() {});
+                                          }
+                                          provider.incrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+                                          //    provider.incrementQuantity(index);
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2432,12 +2850,13 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   Widget buildLunchFoods(
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
-    final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+    final provider = Provider.of<QuantityProvider>(context);
+   // provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
           categoryId, RestaurantId,
+          enjoy: enjoy,
           limit: 4, offset: breakfastFoods.length);
 
       if (moreFoods.length == 0) {
@@ -2612,65 +3031,89 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
-                                                setState(() {
-                                                  print("hello");
-                                                  if (quantity > 0) {
-                                                    quantity--;
-                                                    itemQuantities[breakfastFoodItem
-                                                        .id
-                                                        .toString()] = quantity;
-                                                  }
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  removeFoodFromList(Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  /*updateFoodList(new Food.withId(
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD decrement");
+                                            _foodcon.decrementQuantity();
+                                            setState(() {
+                                              print("hello");
+                                              if (quantity > 0) {
+                                                quantity--;
+                                                itemQuantities[breakfastFoodItem
+                                                    .id
+                                                    .toString()] = quantity;
+                                              }
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                              foodListNew.add(Food.withId(
                                                   id: breakfastFoodItem.id
                                                       .toString(),
+                                                  restaurant: _con.restaurant,
                                                   foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
                                                       .comboMedia[0].url,
                                                   name: breakfastFoodItem.name,
                                                   price: double.parse(
                                                       breakfastFoodItem.price
-                                                          .toString())));*/
-                                                });
-                                              } //provider.decrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                                          .toString())));
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              removeFoodFromList(Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              /*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*/
+                                            });
+                                          } //provider.decrementQuantity(index);
+
+                                          provider.decrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+
+
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2682,64 +3125,88 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: Text(
-                                              quantity.toString(),
+                                              provider.getQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id).toString(),
                                               style: TextStyle(fontSize: 15),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
-                                                setState(() {
-                                                  //  print("hello");
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  updateFoodList(new Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      restaurant: breakfastFoodItem
-                                                          .restaurant,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  quantity++;
-                                                  itemQuantities[breakfastFoodItem
-                                                      .id
-                                                      .toString()] = quantity;
-                                                });
-                                                setState(() {});
-                                              } //    provider.incrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD increment" +
+                                                _foodcon.quantity.toString());
+                                            _foodcon.incrementQuantity();
+                                            setState(() {
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                              foodListNew.add(Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  restaurant: _con.restaurant,
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              //  print("hello");
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              updateFoodList(new Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  restaurant: breakfastFoodItem
+                                                      .restaurant,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              quantity++;
+                                              itemQuantities[breakfastFoodItem
+                                                  .id
+                                                  .toString()] = quantity;
+                                            });
+
+
+                                            setState(() {});
+                                          }
+                                          provider.incrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+                                          //    provider.incrementQuantity(index);
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -2811,11 +3278,12 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
     final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+   // provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
           categoryId, RestaurantId,
+          enjoy: enjoy,
           limit: 4, offset: breakfastFoods.length);
 
       if (moreFoods.length == 0) {
@@ -2990,65 +3458,135 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
-                                                setState(() {
-                                                  print("hello");
-                                                  if (quantity > 0) {
-                                                    quantity--;
-                                                    itemQuantities[breakfastFoodItem
-                                                        .id
-                                                        .toString()] = quantity;
-                                                  }
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  removeFoodFromList(Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  /*updateFoodList(new Food.withId(
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD decrement");
+                                            _foodcon.decrementQuantity();
+                                            setState(() {
+                                              print("hello");
+                                              if (quantity > 0) {
+                                                quantity--;
+                                                itemQuantities[breakfastFoodItem
+                                                    .id
+                                                    .toString()] = quantity;
+                                              }
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    restaurant: _con.restaurant,
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
+                                                        ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                        : breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));
+                                              // updatedQuantity = _foodcon
+                                              //     .quantity
+                                              //     .toInt()
+                                              //     .toString();
+                                             /* removeFoodFromList(Food.withId(
                                                   id: breakfastFoodItem.id
                                                       .toString(),
                                                   foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
                                                       .comboMedia[0].url,
                                                   name: breakfastFoodItem.name,
                                                   price: double.parse(
                                                       breakfastFoodItem.price
                                                           .toString())));*/
-                                                });
-                                              } //provider.decrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                              /*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*/
+                                              provider.decrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+                                            });
+                                          } //provider.decrementQuantity(index);
+
+
+
+
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+                                              /*onTap: () {
+                                                if (_con.restaurant.closed == "1") {
+                                                  _showClosedDialog(context);
+                                                } else {
+                                                  print("DS>> GD decrement");
+                                                  _foodcon.decrementQuantity();
+                                                  setState(() {
+                                                    print("hello");
+                                                    if (quantity > 0) {
+                                                      quantity--;
+                                                      itemQuantities[breakfastFoodItem
+                                                          .id
+                                                          .toString()] = quantity;
+                                                    }
+                                                    updatedQuantity = _foodcon
+                                                        .quantity
+                                                        .toInt()
+                                                        .toString();
+                                                    removeFoodFromList(Food.withId(
+                                                        id: breakfastFoodItem.id
+                                                            .toString(),
+                                                        foodImg: breakfastFoodItem
+                                                                    .comboMedia
+                                                                    .length ==
+                                                                0
+                                                            ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                            : breakfastFoodItem
+                                                                .comboMedia[0].url,
+                                                        name: breakfastFoodItem.name,
+                                                        price: double.parse(
+                                                            breakfastFoodItem.price
+                                                                .toString())));
+                                                    */
+                                              /*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*/
+                                              /*
+                                                  });
+                                                } //provider.decrementQuantity(index);
+                                              },*/
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3060,64 +3598,125 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: Text(
-                                              quantity.toString(),
+                                              Provider.of<QuantityProvider>(context).getQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id).toString(),
                                               style: TextStyle(fontSize: 15),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
-                                                setState(() {
-                                                  //  print("hello");
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  updateFoodList(new Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      restaurant: breakfastFoodItem
-                                                          .restaurant,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  quantity++;
-                                                  itemQuantities[breakfastFoodItem
-                                                      .id
-                                                      .toString()] = quantity;
-                                                });
-                                                setState(() {});
-                                              } //    provider.incrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD increment" +
+                                                _foodcon.quantity.toString());
+                                           // _foodcon.incrementQuantity();
+                                            setState(() {
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    restaurant: _con.restaurant,
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
+                                                        ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                        : breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));
+                                              //  print("hello");
+                                              // updatedQuantity = _foodcon
+                                              //     .quantity
+                                              //     .toInt()
+                                              //     .toString();
+                                             /* updateFoodList(new Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  restaurant: breakfastFoodItem
+                                                      .restaurant,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              quantity++;
+                                              itemQuantities[breakfastFoodItem
+                                                  .id
+                                                  .toString()] = quantity;*/
+                                              provider.incrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+                                            });
+
+
+
+                                          }
+
+                                          //    provider.incrementQuantity(index);
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+                                            /*  onTap: () {
+                                                if (_con.restaurant.closed == "1") {
+                                                  _showClosedDialog(context);
+                                                } else {
+                                                  print("DS>> GD increment" +
+                                                      _foodcon.quantity.toString());
+                                                  _foodcon.incrementQuantity();
+                                                  setState(() {
+                                                    //  print("hello");
+                                                    updatedQuantity = _foodcon
+                                                        .quantity
+                                                        .toInt()
+                                                        .toString();
+                                                    updateFoodList(new Food.withId(
+                                                        id: breakfastFoodItem.id
+                                                            .toString(),
+                                                        foodImg: breakfastFoodItem
+                                                                    .comboMedia
+                                                                    .length ==
+                                                                0
+                                                            ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                            : breakfastFoodItem
+                                                                .comboMedia[0].url,
+                                                        name: breakfastFoodItem.name,
+                                                        restaurant: breakfastFoodItem
+                                                            .restaurant,
+                                                        price: double.parse(
+                                                            breakfastFoodItem.price
+                                                                .toString())));
+                                                    quantity++;
+                                                    itemQuantities[breakfastFoodItem
+                                                        .id
+                                                        .toString()] = quantity;
+                                                  });
+                                                  setState(() {});
+                                                } //    provider.incrementQuantity(index);
+                                              },*/
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3189,11 +3788,12 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
     final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+   // provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
           categoryId, RestaurantId,
+          enjoy: enjoy,
           limit: 4, offset: breakfastFoods.length);
 
       if (moreFoods.length == 0) {
@@ -3368,61 +3968,128 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              print("DS>> GD decrement");
-                                              _foodcon.decrementQuantity();
-                                              setState(() {
-                                                print("hello");
-                                                if (quantity > 0) {
-                                                  quantity--;
-                                                  itemQuantities[breakfastFoodItem
-                                                      .id
-                                                      .toString()] = quantity;
-                                                }
-                                                updatedQuantity = _foodcon.quantity
-                                                    .toInt()
-                                                    .toString();
-                                                removeFoodFromList(Food.withId(
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD decrement");
+                                            _foodcon.decrementQuantity();
+                                            setState(() {
+                                              print("hello");
+                                              if (quantity > 0) {
+                                                quantity--;
+                                                itemQuantities[breakfastFoodItem
+                                                    .id
+                                                    .toString()] = quantity;
+                                              }
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
                                                     id: breakfastFoodItem.id
                                                         .toString(),
+                                                    restaurant: _con.restaurant,
                                                     foodImg: breakfastFoodItem
-                                                                .comboMedia
-                                                                .length ==
-                                                            0
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
                                                         ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
                                                         : breakfastFoodItem
-                                                            .comboMedia[0].url,
+                                                        .comboMedia[0].url,
                                                     name: breakfastFoodItem.name,
                                                     price: double.parse(
                                                         breakfastFoodItem.price
                                                             .toString())));
-                                                /*updateFoodList(new Food.withId(
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              removeFoodFromList(Food.withId(
                                                   id: breakfastFoodItem.id
                                                       .toString(),
                                                   foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
                                                       .comboMedia[0].url,
                                                   name: breakfastFoodItem.name,
                                                   price: double.parse(
                                                       breakfastFoodItem.price
-                                                          .toString())));*/
-                                              });
-                                              //provider.decrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                                          .toString())));
+                                              /*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*/
+                                            });
+                                          } //provider.decrementQuantity(index);
+
+                                          provider.decrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+
+
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+                                             /* onTap: () {
+                                                print("DS>> GD decrement");
+                                                _foodcon.decrementQuantity();
+                                                setState(() {
+                                                  print("hello");
+                                                  if (quantity > 0) {
+                                                    quantity--;
+                                                    itemQuantities[breakfastFoodItem
+                                                        .id
+                                                        .toString()] = quantity;
+                                                  }
+                                                  updatedQuantity = _foodcon.quantity
+                                                      .toInt()
+                                                      .toString();
+                                                  removeFoodFromList(Food.withId(
+                                                      id: breakfastFoodItem.id
+                                                          .toString(),
+                                                      foodImg: breakfastFoodItem
+                                                                  .comboMedia
+                                                                  .length ==
+                                                              0
+                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                          : breakfastFoodItem
+                                                              .comboMedia[0].url,
+                                                      name: breakfastFoodItem.name,
+                                                      price: double.parse(
+                                                          breakfastFoodItem.price
+                                                              .toString())));
+                                                  *//*updateFoodList(new Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));*//*
+                                                });
+                                                //provider.decrementQuantity(index);
+                                              },*/
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3434,64 +4101,88 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: Text(
-                                              quantity.toString(),
+                                              Provider.of<QuantityProvider>(context).getQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id).toString(),
                                               style: TextStyle(fontSize: 15),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              color: Theme.of(context).hintColor),
-                                          color: Colors.white,
-                                        ),
-                                        child: InkWell(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              if (_con.restaurant.closed == "1") {
-                                                _showClosedDialog(context);
-                                              } else {
-                                                print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
-                                                setState(() {
-                                                  //  print("hello");
-                                                  updatedQuantity = _foodcon
-                                                      .quantity
-                                                      .toInt()
-                                                      .toString();
-                                                  updateFoodList(new Food.withId(
-                                                      id: breakfastFoodItem.id
-                                                          .toString(),
-                                                      foodImg: breakfastFoodItem
-                                                                  .comboMedia
-                                                                  .length ==
-                                                              0
-                                                          ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
-                                                          : breakfastFoodItem
-                                                              .comboMedia[0].url,
-                                                      name: breakfastFoodItem.name,
-                                                      restaurant: breakfastFoodItem
-                                                          .restaurant,
-                                                      price: double.parse(
-                                                          breakfastFoodItem.price
-                                                              .toString())));
-                                                  quantity++;
-                                                  itemQuantities[breakfastFoodItem
-                                                      .id
-                                                      .toString()] = quantity;
-                                                });
-                                                setState(() {});
-                                              } //    provider.incrementQuantity(index);
-                                            },
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 15,
-                                              color: Theme.of(context).hintColor,
+                                      InkWell(
+                                        onTap: () {
+                                          if (_con.restaurant.closed == "1") {
+                                            _showClosedDialog(context);
+                                          } else {
+                                            print("DS>> GD increment" +
+                                                _foodcon.quantity.toString());
+                                            _foodcon.incrementQuantity();
+                                            setState(() {
+                                              bool foodExists = foodListNew.any((food) => food.id == breakfastFoodItem.id.toString());
+                                              if (!foodExists)
+                                                foodListNew.add(Food.withId(
+                                                    id: breakfastFoodItem.id
+                                                        .toString(),
+                                                    restaurant: _con.restaurant,
+                                                    foodImg: breakfastFoodItem
+                                                        .comboMedia
+                                                        .length ==
+                                                        0
+                                                        ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                        : breakfastFoodItem
+                                                        .comboMedia[0].url,
+                                                    name: breakfastFoodItem.name,
+                                                    price: double.parse(
+                                                        breakfastFoodItem.price
+                                                            .toString())));
+                                              //  print("hello");
+                                              updatedQuantity = _foodcon
+                                                  .quantity
+                                                  .toInt()
+                                                  .toString();
+                                              updateFoodList(new Food.withId(
+                                                  id: breakfastFoodItem.id
+                                                      .toString(),
+                                                  foodImg: breakfastFoodItem
+                                                      .comboMedia
+                                                      .length ==
+                                                      0
+                                                      ? "https://firebasestorage.googleapis.com/v0/b/comeeathome-bd91c.appspot.com/o/No_imge_food.png?alt=media&token=2a6c3b21-f3aa-4779-81d3-5192d1e7029c"
+                                                      : breakfastFoodItem
+                                                      .comboMedia[0].url,
+                                                  name: breakfastFoodItem.name,
+                                                  restaurant: breakfastFoodItem
+                                                      .restaurant,
+                                                  price: double.parse(
+                                                      breakfastFoodItem.price
+                                                          .toString())));
+                                              quantity++;
+                                              itemQuantities[breakfastFoodItem
+                                                  .id
+                                                  .toString()] = quantity;
+                                            });
+
+
+                                            setState(() {});
+                                          }
+                                          provider.incrementQuantity(breakfastFoodItem.restaurant.id,breakfastFoodItem.id);
+                                          //    provider.incrementQuantity(index);
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Theme.of(context).hintColor),
+                                            color: Colors.white,
+                                          ),
+                                          child: InkWell(
+                                            child: GestureDetector(
+
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 15,
+                                                color: Theme.of(context).hintColor,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -3695,26 +4386,101 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
   }
 }
 
+
+
 class QuantityProvider extends ChangeNotifier {
-  List<int> _quantities = [];
+  Map<String, Map<int, int>> _quantities = {};
 
-  void initializeQuantities(int length) {
-    _quantities = List<int>.filled(length, 0);
-  }
-
-  int getQuantity(int index) {
-    return _quantities[index];
-  }
-
-  void incrementQuantity(int index) {
-    _quantities[index]++;
+  void initializeQuantities(String restaurantId, List<int> foodIds) {
+    _quantities[restaurantId] = {for (var id in foodIds) id: 0};
+    print('Initialized quantities for restaurant $restaurantId: $_quantities');
     notifyListeners();
   }
 
-  void decrementQuantity(int index) {
-    if (_quantities[index] > 0) {
-      _quantities[index]--;
+  int getQuantity(String restaurantId, int foodId) {
+    if (_quantities.containsKey(restaurantId)) {
+      return _quantities[restaurantId][foodId] ?? 0;
+    } else {
+      return 0;
+    }
+  }
+
+  void incrementQuantity(String restaurantId, int foodId) {
+    _ensureRestaurantInitialized(restaurantId);
+    _quantities[restaurantId][foodId] = (_quantities[restaurantId][foodId] ?? 0) + 1;
+    print('Incremented quantity for food $foodId at restaurant $restaurantId: ${_quantities[restaurantId]}');
+    notifyListeners();
+  }
+
+  void _ensureRestaurantInitialized(String restaurantId) {
+    if (!_quantities.containsKey(restaurantId)) {
+      _quantities[restaurantId] = {};
+    }
+  }
+
+  void decrementQuantity(String restaurantId, int foodId) {
+    if (_quantities.containsKey(restaurantId) && _quantities[restaurantId][foodId] > 0) {
+      _quantities[restaurantId][foodId] = _quantities[restaurantId][foodId] - 1;
+      print('Decremented quantity for food $foodId at restaurant $restaurantId: ${_quantities[restaurantId]}');
       notifyListeners();
     }
+  }
+
+  void setQuantitiesFromCart(String restaurantId, List<Cart> cartItems) {
+    _ensureRestaurantInitialized(restaurantId);
+    for (var item in cartItems) {
+      _quantities[restaurantId][int.parse(item.food.id)] = item.quantity.toInt();
+    }
+    print('Set quantities from cart for restaurant $restaurantId: ${_quantities[restaurantId]}');
+    notifyListeners();
+  }
+
+  void clearQuantity() {
+    print("Clearing quantities");
+    _quantities.clear();
+    notifyListeners();
+  }
+
+  Map<int, int> getAllQuantities(String restaurantId) {
+    return _quantities[restaurantId] ?? {};
+  }
+
+  int getTotalQuantityForRestaurant(String restaurantId) {
+    if (_quantities.containsKey(restaurantId)) {
+      return _quantities[restaurantId].values.fold(0, (sum, quantity) => sum + quantity) ?? 0;
+    }
+    return 0;
+  }
+}
+
+class HalfColoredIcon extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  final Color color;
+
+  HalfColoredIcon({
+     this.icon,
+     this.size,
+     this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return LinearGradient(
+          colors: [ color.withOpacity(0.0),color],
+          stops: [0.5, 0.5],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ).createShader(bounds);
+      },
+      blendMode: BlendMode.srcATop,
+      child: Icon(
+        icon,
+        size: size,
+        color: Colors.grey,
+      ),
+    );
   }
 }

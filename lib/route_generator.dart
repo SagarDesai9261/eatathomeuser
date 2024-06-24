@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/my_widget/calendar_widget_withoutRestId.dart';
+import 'package:food_delivery_app/src/controllers/homr_test.dart';
 import 'package:food_delivery_app/src/elements/track_order_delivery.dart';
 import 'package:food_delivery_app/src/pages/checkoutPage.dart';
 import 'package:food_delivery_app/src/pages/notifications.dart';
@@ -68,7 +69,7 @@ class RouteGenerator {
       case '/Pages':
         return MaterialPageRoute(builder: (_) => PagesWidget(currentTab: args));
       case '/Home':
-        return MaterialPageRoute(builder: (_) => HomeWidget(currentTab: args));
+        return MaterialPageRoute(builder: (_) => HomePage(currentTab: args));
       case '/Favorites':
         return MaterialPageRoute(builder: (_) => FavoritesWidget());
       case '/Chat':

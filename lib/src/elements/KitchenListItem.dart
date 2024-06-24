@@ -85,7 +85,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                 borderRadius: BorderRadius.all(
                     Radius.circular(10)),
                 child: CachedNetworkImage(
-                  height: 100,
+                  height: 120,
                   width: 300,
                   fit: BoxFit.fill,
                   imageUrl: widget.restaurant.image.url,
@@ -111,7 +111,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                       children: [
                         SizedBox(
                           width:120,
-                          height: 17,
+                          height: 25,
                           child: /*Text(
                             restaurant.name,
                             overflow: TextOverflow.fade,
@@ -139,7 +139,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                       /* SizedBox(
                           width: 120,
                           height: 17,
                           child: Text(
@@ -153,7 +153,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                                 fontSize: 10
                             )),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
@@ -250,7 +250,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                             ),
                             children: [
                               TextSpan(
-                                text: '${widget.restaurant.price.min} - ₹${widget.restaurant.price.max} ',
+                                text: '${widget.restaurant.average_price}',
                                 style: TextStyle(
                                   fontSize: 7,
                                 ),

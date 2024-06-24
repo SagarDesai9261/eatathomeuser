@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="gcm_defaultSenderId" translatable="false">709555697915</string>
-    <string name="google_api_key" translatable="false">AIzaSyCpIB_9tewil3GD3SMMs9gaCZfwgMz8Ajg</string>
-    <string name="google_app_id" translatable="false">1:709555697915:android:a870198ac293f34806985e</string>
-    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCpIB_9tewil3GD3SMMs9gaCZfwgMz8Ajg</string>
-    <string name="google_storage_bucket" translatable="false">comeeathome-bd91c.appspot.com</string>
-    <string name="project_id" translatable="false">comeeathome-bd91c</string>
-</resources>

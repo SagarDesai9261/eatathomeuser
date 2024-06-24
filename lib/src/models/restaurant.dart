@@ -26,7 +26,11 @@ class Restaurant {
   String banner_image;
   Price price;
   String is_open;
-
+  String is_hrs;
+  String average_price;
+  String average_preparation_time;
+  String restaurant_distance;
+  String fssai_number;
   Restaurant();
 
   Restaurant.fromJSON(Map<String, dynamic> jsonMap) {
@@ -53,13 +57,18 @@ class Restaurant {
       deliveryRange = jsonMap['delivery_range'] != null ? jsonMap['delivery_range'].toDouble() : 0.0;
       address = jsonMap['address'];
       description = jsonMap['description'];
+      restaurant_distance = jsonMap['restaurant_distance'] ??"";
+      average_preparation_time = jsonMap['average_preparation_time'].toString()??"";
       phone = jsonMap['phone'];
       mobile = jsonMap['mobile'];
+      fssai_number = jsonMap['fssai_number']??"";
       defaultTax = jsonMap['default_tax'] != null ? jsonMap['default_tax'].toDouble() : 0.0;
       information = jsonMap['information'];
       latitude = jsonMap['latitude'];
       longitude = jsonMap['longitude'];
       closed = jsonMap['closed'] ?? "";
+      is_hrs = jsonMap['is_hrs'].toString() ?? "";
+      average_price = jsonMap['average_price'].toString() ?? "";
       banner_image = jsonMap["banners"][0] ??"";
       //price = Price.fromJson(jsonMap['price_range']) ?? Price(min:"0",max: "0");
       availableForDelivery = jsonMap['available_for_delivery'] ?? false;

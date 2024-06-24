@@ -126,7 +126,8 @@ class FoodController extends ControllerMVC {
     return true;
   }
 
-  void addToCart(Food food, {double quantity = 1.0, bool reset = false,String restaurant_id}) async {
+  void addToCart(Food food, {double quantity = 1.0, bool reset = false,String restaurant_id,String coupon_id}) async {
+    print(coupon_id);
     setState(() {
       this.loadCart = true;
     });
@@ -156,8 +157,10 @@ class FoodController extends ControllerMVC {
         if(same_restaurant == true){
           if (existingIndex != -1) {
             print("Food already in cart. Updating quantity.");
+
             // Update the quantity if the food item already exists in the cart
-            carts[existingIndex].quantity += quantity;
+            carts[existingIndex].quantity = quantity;
+            carts[existingIndex].Couponid = coupon_id;
             updateCart(carts[existingIndex]).then((value) {
               setState(() {
                 this.loadCart = false;
@@ -176,6 +179,7 @@ class FoodController extends ControllerMVC {
             newCart.food = food;
             newCart.extras = [];
             newCart.quantity = quantity;
+            newCart.Couponid = coupon_id;
 
             addCart(newCart, false).then((value) {
               setState(() {
@@ -204,7 +208,7 @@ class FoodController extends ControllerMVC {
           newCart.food = food;
           newCart.extras = [];
           newCart.quantity = quantity;
-
+          newCart.Couponid = coupon_id;
           addCart(newCart, false).then((value) {
             setState(() {
               this.loadCart = false;
@@ -222,16 +226,14 @@ class FoodController extends ControllerMVC {
         newCart.food = food;
         newCart.extras = [];
         newCart.quantity = quantity;
-
+        newCart.Couponid = coupon_id;
         addCart(newCart, false).then((value) {
           setState(() {
             this.loadCart = false;
           });
           Provider.of<CartProvider>(settingRepo.navigatorKey.currentState.context,listen: false).cartassignfromcarrt([newCart]);
         }).whenComplete(() {
-          ScaffoldMessenger.of(settingRepo.navigatorKey.currentState.context).showSnackBar(SnackBar(
-            content: Text(S.of(state.context).this_food_was_added_to_cart),
-          ));
+
         });
       }
 
@@ -244,7 +246,7 @@ class FoodController extends ControllerMVC {
       newCart.food = food;
       newCart.extras = [];
       newCart.quantity = quantity;
-
+      newCart.Couponid = coupon_id;
       addCart(newCart, false).then((value) {
         setState(() {
           this.loadCart = false;

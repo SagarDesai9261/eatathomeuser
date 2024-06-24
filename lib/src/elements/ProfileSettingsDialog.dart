@@ -121,7 +121,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                               hintText:  S.of(context).phone,
                               labelText:  S.of(context).phone),
                           initialValue: widget.user.phone,
-                          enabled: true,
+                          enabled: false,
                           validator: (phoneNumber) {
                             if (phoneNumber == "") {
                               return S.of(context).not_a_valid_phone;
@@ -253,7 +253,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                         children: [
                                           Icon(Icons.upload, size: 30),
                                           Text(
-                                              "Please upload Aadhar or Driving \n Licence  for verification"),
+                                              "Please upload a government-issued \n ID card for verification.",textAlign: TextAlign.center,),
                                           _identityFile != null
                                               ? Row(
                                                   mainAxisAlignment:

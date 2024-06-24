@@ -9,7 +9,8 @@ import '../repository/settings_repository.dart' as settingsRepo;
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged onClickFilter;
   final bool isDinein ;
-  const SearchBarWidget({Key key, this.onClickFilter,this.isDinein}) : super(key: key);
+  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  const SearchBarWidget({Key key, this.onClickFilter,this.isDinein,this.parentScaffoldKey}) : super(key: key);
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
@@ -21,6 +22,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   @override
   void initState() {
     getCurrentDefaultLanguage();
+
     super.initState();
   }
 

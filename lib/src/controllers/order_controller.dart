@@ -11,7 +11,7 @@ class OrderController extends ControllerMVC {
 
   OrderController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
-    listenForOrders();
+  //  listenForOrders();
   }
 
   void listenForOrders({String message}) async {

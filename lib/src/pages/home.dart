@@ -92,77 +92,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
 
   bool isPositionDetermined = false;
 
-  Future<void> _determinePosition() async {
-    if (isPositionDetermined) {
-      // Position has already been determined, no need to repeat.
-      return;
-    }
 
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // print('Please enable your Location Service');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString("permission", "LocationPermission.denied");
-      // Fluttertoast.showToast(msg: 'Please enable Your Location Service');
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    //  print('Location permissions are $permission');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // print("permission is set ${permission.toString()}");
-    prefs.setString("permission", permission.toString());
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      // print('Requested location permission. New status: $permission');
-      if (permission == LocationPermission.denied) {
-        // Fluttertoast.showToast(msg: 'Location permissions are denied');
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Fluttertoast.showToast(
-      //     msg: 'Location permissions are permanently denied, we cannot request permissions.');
-      return;
-    }
-
-    Position position;
-    try {
-      position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      SharedPreferences prefss = await SharedPreferences.getInstance();
-      prefss.setString("longitude", position.longitude.toString());
-      prefss.setString("latitude", position.latitude.toString());
-
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-
-      Placemark place = placemarks[0];
-      //   print("latitude: ${position.latitude}\nlongitude: ${position.longitude}");
-
-      setState(() {
-        currentposition = position;
-        currentAddress =
-            "${place.locality}, ${place.postalCode}, ${place.country}";
-        // print("DS>>> location: $currentAddress");
-      });
-
-      // Set the flag to true indicating that the position has been determined.
-      isPositionDetermined = true;
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   void initState() {
@@ -176,12 +106,12 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
     // _controller.listenForFoodsByCategory(id: '7');
 
     getCurrentDefaultLanguage();
-    _determinePosition();
+  //  _determinePosition();
     getId();
-    _con.refreshSubHome();
+  //  _con.refreshSubHome();
    /* Future.delayed(Duration(seconds: 1), () {
 
-      //  setState(() { });
+
     });*/
   }
 
@@ -194,9 +124,9 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
   getCurrentDefaultLanguage() async {
     settingsRepo.getDefaultLanguageName().then((_langCode) {
       //   print("DS>> DefaultLanguageret "+_langCode);
-      setState(() {
+   /*   setState(() {
         defaultLanguage = _langCode;
-      });
+      });*/
     });
   }
 
@@ -308,7 +238,9 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
         }
       });
     }
-
+    // return Scaffold(
+    //   body: Container(),
+    // );
     return isCurrentKitchen
         ? DefaultTabController(
             length: 2,
@@ -1985,6 +1917,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                                                     CircularProgressIndicator(color: Colors.deepOrangeAccent,));*/
                                                           } else {
                                                             return FoodsCarouselWidget(
+                                                              enjoy: 1,
                                                               delivery: true,
                                                               foodsList: _con
                                                                   .trendingFoodItemsDelivery,
@@ -3524,6 +3457,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                                                             ));
                                                           } else {
                                                             return FoodsCarouselWidget(
+                                                              enjoy:1,
                                                               delivery: false,
                                                               foodsList: _con
                                                                   .trendingFoodItems,
@@ -4141,497 +4075,6 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
     }
   }
 
-  _openDialog(BuildContext context, List<Cuisine> cuisineList,
-      String fromDineInorDelivery) {
-    showDialog(
-      useSafeArea: true,
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController searchController = TextEditingController();
-        return StatefulBuilder(builder: (context, setState) {
-          List<Cuisine> filteredCuisineList;
-          if (searchController.text.isNotEmpty) {
-            filteredCuisineList = cuisineList
-                .where((cuisine) => cuisine.name.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ))
-                .toList();
-          } else {
-            filteredCuisineList = cuisineList;
-          }
-          //    print(filteredCuisineList.length);
-          //  print(searchController.text);
-          return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
-            title: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(""),
-                    TranslationWidget(
-                      message: "Select Cuisine",
-                      fromLanguage: "English",
-                      toLanguage: defaultLanguage,
-                      builder: (translatedMessage) => Text(
-                        translatedMessage,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                      ),
-                    ),
-                    InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(Icons.close))
-                  ],
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                    height: 34,
-                    margin: EdgeInsets.only(right: 8, left: 8, top: 8),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.8),
-                          spreadRadius: -8,
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: searchController, // Assign the controller
-                      onChanged: (value) {
-                        // Call setState to trigger a rebuild when the user types
-                        setState(() {});
-                      },
-                      cursorColor: Colors.grey,
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintText: 'Search',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
-                        prefixIcon: Icon(Icons.search),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.all(0),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 3,
-                  child: ListView.builder(
-                    itemCount: filteredCuisineList.length,
-                    itemBuilder: (context, index) => CheckboxListTile(
-                        controlAffinity: ListTileControlAffinity.leading,
-                        dense: true,
-                        title: TranslationWidget(
-                          message: filteredCuisineList[index].name,
-                          fromLanguage: "English",
-                          toLanguage: defaultLanguage,
-                          builder: (translatedMessage) => Text(
-                            translatedMessage,
-                            overflow: TextOverflow.fade,
-                            softWrap: false,
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        value: filteredCuisineList[index].selected,
-                        onChanged: (value) {
-                          Provider.of<CuisineProvider>(context, listen: false)
-                              .toggleCuisine(
-                                  filteredCuisineList[index].id.toString());
-                          setState(() {
-                            filteredCuisineList[index].selected = value;
-                          });
-                        }
-                        /*onChanged: (value) {
-                            */ /*setState(() {
-                              print("DS>>> selected " +
-                                  value.toString() +
-                                  "index " +
-                                  cuisineList[index].id.toString());
-                              cuisineList[index].selected = value;
-                              // toggleCuisine(int.parse(cuisineList[index].id));
-                            });*/ /*
-
-                          },*/
-                        ),
-                  ),
-                )
-              ],
-            ),
-            actions: [
-              InkWell(
-                onTap: () {
-                  List<String> selectedCuisines =
-                      Provider.of<CuisineProvider>(context, listen: false)
-                          .selectedCuisines;
-                  filterWithCuisine(fromDineInorDelivery, selectedCuisines);
-
-                  Navigator.of(context).pop();
-                },
-                child: SizedBox(
-                  height: 40,
-                  width: 100,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: LinearGradient(
-                        colors: [kPrimaryColororange, kPrimaryColorLiteorange],
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        TranslationWidget(
-                          message: "Apply" ?? '',
-                          fromLanguage: "English",
-                          toLanguage: defaultLanguage,
-                          builder: (translatedMessage) => Text(
-                              translatedMessage,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .merge(TextStyle(
-                                      color: Theme.of(context).primaryColor))),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              /*     ElevatedButton(
-                  onPressed: () {
-                    // filterWithCuisine(fromDineInorDelivery);
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: TranslationWidget(
-                    message: "Apply",
-                    fromLanguage: "English",
-                    toLanguage: defaultLanguage,
-                    builder: (translatedMessage) => Text(
-                      translatedMessage,
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                    ),
-                  ),
-                ),*/
-            ],
-          );
-        });
-      },
-    );
-  }
-
-  filterWithCuisine(
-      String fromDineInorDelivery, List<String> selectedCuisines) {
-    //  print("tap");
-    for (int i = 0; i < selectedCuisines.length; i++) {
-      // print("" + selectedCuisines[i].toString());
-    }
-    List<String> selectedLocations =
-        Provider.of<LocationProvider>(context, listen: false).selectedLocations;
-
-    // Construct the query parameter string for selected cuisines
-    String cuisinesQueryParam =
-        selectedCuisines.map((cuisineId) => 'cuisines[]=$cuisineId').join('&');
-    //  print("cuisineParam " + cuisinesQueryParam);
-    String locationQueryParam;
-    if (selectedLocations.length > 0) {
-      locationQueryParam = selectedLocations
-          .map((locationValues) => 'location[]=$locationValues')
-          .join('&');
-    }
-    if (selectedCuisines.length > 0 && selectedLocation.length > 0) {
-      cuisinesQueryParam = cuisinesQueryParam + "&" + locationQueryParam;
-    } else if (selectedCuisines.length == 0 && selectedLocation.length > 0) {
-      cuisinesQueryParam = locationQueryParam;
-    }
-
-    _con.fetchKitchensWithCuisine(cuisinesQueryParam, fromDineInorDelivery);
-    _con.listenForCategories();
-    //_con.refreshHome();
-    // _con.refreshSubHome();
-    //  print("length kitchen" + _con.topKitchens.length.toString());
-  }
-
-  filterWithLocation(
-      String fromDineInorDelivery, List<String> selectedLocations) {
-    // print(selectedLocations.length);
-    for (int i = 0; i < selectedLocations.length; i++) {
-      //   print("" + selectedLocations[i].toString());
-    }
-    List<String> selectedCusions =
-        Provider.of<CuisineProvider>(context, listen: false).selectedCuisines;
-    String cuisinesQueryParam;
-    if (selectedCusions.length > 0) {
-      cuisinesQueryParam =
-          selectedCusions.map((cuisineId) => 'cuisines[]=$cuisineId').join('&');
-    }
-    //   print(cuisinesQueryParam);
-    // Construct the query parameter string for selected locations
-    String locationQueryParam = selectedLocations
-        .map((locationValues) => 'location[]=$locationValues')
-        .join('&');
-    //  print("locationParam " + locationQueryParam);
-
-    if (selectedCusions.length > 0 && selectedLocations.length > 0) {
-      locationQueryParam = cuisinesQueryParam + "&" + locationQueryParam;
-    } else if (selectedCusions.length > 0 && selectedLocations.length == 0) {
-      locationQueryParam = cuisinesQueryParam;
-    }
-    //   print("locationParam " + locationQueryParam);
-    _con.fetchKitchensWithLocation(locationQueryParam, fromDineInorDelivery);
-    _con.listenForCategories();
-
-    // _con.refreshHome();
-  }
-
-  _openDialogForLocation(BuildContext context, List<LocationModel> locationList,
-      String fromDineInorDelivery) {
-    showDialog(
-      useSafeArea: true,
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController searchController = TextEditingController();
-        return StatefulBuilder(builder: (context, setState) {
-          List<LocationModel> filteredLocationList;
-          if (searchController.text.isNotEmpty) {
-            filteredLocationList = locationList
-                .where((cuisine) => cuisine.address.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ))
-                .toList();
-          } else {
-            filteredLocationList = locationList;
-          }
-          //print(filteredLocationList.length);
-
-          return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
-            title: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(""),
-                    /*Text('Select Cuisine')*/
-                    TranslationWidget(
-                      message: "Select Location",
-                      fromLanguage: "English",
-                      toLanguage: defaultLanguage,
-                      builder: (translatedMessage) => Text(
-                        translatedMessage,
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        //style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                    ),
-                    InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(Icons.close))
-                  ],
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                    height: 34,
-                    margin: EdgeInsets.only(right: 8, left: 8, top: 8),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.8),
-                          spreadRadius: -8,
-                          blurRadius: 10,
-                          // offset: Offset(0, 3), // changes the shadow position
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: searchController, // Assign the controller
-                      onChanged: (value) {
-                        // Call setState to trigger a rebuild when the user types
-                        setState(() {});
-                      },
-                      cursorColor: Colors.grey,
-                      decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none),
-                          hintText: 'Search',
-                          hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 10),
-                          prefixIcon: Icon(Icons.search)),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.all(0),
-                  // padding: EdgeInsets.all(),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 3,
-                  child: ListView.builder(
-                    itemCount: filteredLocationList.length,
-                    itemBuilder: (context, index) => CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.leading,
-                      dense: true,
-                      title: /*Text(
-                            locationList[index].address,
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                            ),
-                          )*/
-                          TranslationWidget(
-                        message: filteredLocationList[index].address,
-                        fromLanguage: "English",
-                        toLanguage: defaultLanguage,
-                        builder: (translatedMessage) => Text(
-                          translatedMessage,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      value: filteredLocationList[index].selected,
-                      onChanged: (value) {
-                        setState(() {
-                          filteredLocationList[index].selected =
-                              value; // Update the state of the selected cuisine
-                          toggleLocation(
-                              filteredLocationList[index].address.toString());
-                          Provider.of<LocationProvider>(context, listen: false)
-                              .toggleLocation(filteredLocationList[index]
-                                  .address
-                                  .toString());
-                        });
-                      },
-                    ),
-                  ),
-                )
-              ],
-            ),
-            actions: [
-              InkWell(
-                onTap: () {
-                  List<String> selectedLocations =
-                      Provider.of<LocationProvider>(context, listen: false)
-                          .selectedLocations;
-                  filterWithLocation(fromDineInorDelivery, selectedLocations);
-                  Navigator.of(context).pop(); // Close the dialog
-                  /*  List<String> selectedCuisines =
-                        Provider.of<CuisineProvider>(context, listen: false)
-                            .selectedCuisines;
-                    filterWithCuisine(fromDineInorDelivery, selectedCuisines);
-                    Provider.of<CuisineProvider>(context, listen: false)
-                        .clearSelectedCuisines();
-                    Navigator.of(context).pop();*/
-                },
-                child: SizedBox(
-                  height: 40,
-                  width: 100,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: LinearGradient(
-                        colors: [kPrimaryColororange, kPrimaryColorLiteorange],
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        TranslationWidget(
-                          message: "Apply" ?? '',
-                          fromLanguage: "English",
-                          toLanguage: defaultLanguage,
-                          builder: (translatedMessage) => Text(
-                              translatedMessage,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  .merge(TextStyle(
-                                      color: Theme.of(context).primaryColor))),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              /* Row(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        filterWithLocation(fromDineInorDelivery);
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: */
-              /*Text('Apply')*/ /*
-                          TranslationWidget(
-                        message: "Apply",
-                        fromLanguage: "English",
-                        toLanguage: defaultLanguage,
-                        builder: (translatedMessage) => Text(
-                          translatedMessage,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                        ),
-                      ),
-                    ),
-                    Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: */ /*Text('Close')*/ /*
-                          TranslationWidget(
-                        message: "Close",
-                        fromLanguage: "English",
-                        toLanguage: defaultLanguage,
-                        builder: (translatedMessage) => Text(
-                          translatedMessage,
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                        ),
-                      ),
-                    ),
-                  ],
-                )*/
-            ],
-          );
-        });
-      },
-    );
-  }
 
   Future<String> _getAddressFromLocation(LatLng location) async {
     try {

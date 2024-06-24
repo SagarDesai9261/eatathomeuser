@@ -5,6 +5,7 @@ import 'package:food_delivery_app/my_widget/calendar_widget_withoutRestId.dart';
 import 'package:food_delivery_app/src/controllers/home_controller.dart';
 import 'package:food_delivery_app/src/pages/KitchenListDelivery.dart';
 import '../../utils/color.dart';
+import '../controllers/homr_test.dart';
 import '../elements/DrawerWidget.dart';
 import '../elements/FilterWidget.dart';
 import '../models/route_argument.dart';
@@ -17,7 +18,7 @@ import 'settings.dart';
 class PagesWidget extends StatefulWidget {
   dynamic currentTab;
   RouteArgument routeArgument;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   HomeController _con = HomeController();
 
@@ -83,7 +84,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                 builder: (context) => HomeWidget(parentScaffoldKey: widget.scaffoldKey, currentTab: tabItem,)
             ),
           );*/
-          widget.currentPage = HomeWidget(parentScaffoldKey: widget.scaffoldKey, currentTab: tabItem,
+          widget.currentPage = HomePage(parentScaffoldKey: widget.scaffoldKey, currentTab: tabItem,
           directedFrom: "",);
           break;
         case 3:
@@ -174,48 +175,83 @@ class _PagesWidgetState extends State<PagesWidget> {
         //   Navigator.of(context).pushReplacementNamed('/Pages', arguments: widget.currentTab);
         // }),
         body: widget.currentPage,
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Theme.of(context).accentColor,
-          selectedFontSize: 0,
-          unselectedFontSize: 0,
-          iconSize: 28,
-          elevation: 0,
-          backgroundColor: Colors.grey[100],
-         // selectedIconTheme: IconThemeData(size: 28),
-       unselectedLabelStyle: TextStyle(
-         color: Colors.grey
-       ),
-       //   unselectedItemColor: Theme.of(context).focusColor.withOpacity(1),
-          currentIndex: 1,
-          onTap: (int i) {
-            this._selectTab(i);
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:   FloatingActionButton(
+          onPressed: () {
+            widget.currentPage = HomePage(parentScaffoldKey: widget.scaffoldKey, currentTab: 1,
+              directedFrom: "",);
           },
-          // this will be set when a new tab is tapped
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(
-                  Icons.assignment
-              ),
-              label: 'Orders',
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            width: 56.0,
+            height: 56.0,
+            padding: EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color:Colors.white,
+
             ),
-           /* BottomNavigationBarItem(
-              icon: SvgPicture.asset('assets/img/dinein.svg',color: Colors.grey,height: 17,),
-              label: '',
-            ),*/
-            BottomNavigationBarItem(
-                label: '',
-                icon: new SvgPicture.asset('assets/img/home.svg',height: 80,)),
-           /* BottomNavigationBarItem(
-              icon: new SvgPicture.asset('assets/img/delivery.svg',color: Colors.grey,height: 17,),
-              label: '',
-            ),*/
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined),
-              label: 'Carts',
-            ),
-          ],
+            child: Image.asset("assets/img/logo_bottom.png"),
+          ),
         ),
+
+
+        bottomNavigationBar:
+
+        BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 5.0,
+          height: 65,
+          color: Colors.white,
+          clipBehavior: Clip.antiAlias,
+          child: SizedBox(
+            height: kBottomNavigationBarHeight,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(right: 70),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.assignment,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      if (currentUser.value.apiToken != null) {
+                        Navigator.of(context).pushNamed('/orderPage', arguments: 0);
+                      } else {
+                        Navigator.of(context).pushNamed('/Login');
+                      }
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.shopping_bag_outlined,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    if(currentUser.value.apiToken != null){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartWidget(
+                            parentScaffoldKey: widget.scaffoldKey,
+                          ),
+                        ),
+                      );}
+                    else{
+                      Navigator.of(context).pushNamed('/Login');
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        )
+           ,
       ),
     );
   }

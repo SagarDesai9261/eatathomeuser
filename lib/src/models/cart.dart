@@ -8,6 +8,10 @@ class Cart {
   double quantity;
   List<Extra> extras;
   String userId;
+  String Couponid;
+  String average_preparation_time;
+  String is_hrs;
+
 
   Cart();
 
@@ -15,8 +19,12 @@ class Cart {
     try {
       print("cart model calling");
       id = jsonMap['id'].toString();
+      Couponid = jsonMap['coupon_id'].toString();
+      average_preparation_time = jsonMap['average_preparation_time'].toString();
+      is_hrs = jsonMap['is_hrs'].toString();
       quantity = jsonMap['quantity'] != null ? jsonMap['quantity'].toDouble() : 0.0;
       food = jsonMap['food'] != null ? Food.fromJSON(jsonMap['food']) : Food.fromJSON({});
+
       extras = jsonMap['extras'] != null ? List.from(jsonMap['extras']).map((element) => Extra.fromJSON(element)).toList() : [];
     } catch (e) {
       print("error in cart model");
@@ -34,6 +42,7 @@ class Cart {
     map["quantity"] = quantity;
     map["food_id"] = food.id;
     map["user_id"] = userId;
+    map["coupon_id"] = Couponid;
     map["extras"] = extras.map((element) => element.id).toList();
     return map;
   }

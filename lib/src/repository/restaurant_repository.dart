@@ -84,7 +84,7 @@ Future<Stream<Restaurant>> getNearRestaurantsforDelivery(Address myLocation, Add
   }
 }
 
-Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDate, String numberOfPerson, String category, {int limit = 8, int offset = 0}) async {
+Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDate, String numberOfPerson, String category, {int limit = 8, int offset = 0,int enjoy_now = 1,int category_id }) async {
   Uri uri = Helper.getUri('api/restaurants');
   Map<String, dynamic> _queryParams = {};
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -99,7 +99,7 @@ Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDat
   _queryParams['kitchenType'] = kitchenType;
   _queryParams['DeliveryDate'] = todayDate;
   _queryParams['numberOfPerson'] = numberOfPerson;
-  _queryParams['category'] = category;
+ // _queryParams['category'] = category;
   if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
     // print("$latitude ----- $longitude");
     _queryParams['myLat'] = latitude;
@@ -109,6 +109,11 @@ Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDat
   }
   _queryParams['limit'] = '$limit';
   _queryParams['offset'] = '$offset';
+  if(kitchenType == "1")
+  _queryParams['category'] = '$category_id';
+  if(kitchenType == "2")
+  _queryParams['enjoy'] = '$enjoy_now';
+
   _queryParams.addAll(filter.toQuery());
   _queryParams.remove('searchJoin');
   uri = uri.replace(queryParameters: _queryParams);
@@ -241,6 +246,10 @@ Future<Stream<RestaurantModel>> searchRestaurants(String search, Address address
 }
 
 Future<Stream<Restaurant>> getRestaurant(String id, Address address) async {
+  SharedPreferences prefs =await  SharedPreferences.getInstance();
+  String latitude = prefs.getDouble("selected_lat").toString();
+  String longitude = prefs.getDouble("selected_lng").toString();
+  String permission = prefs.getString("permission");
   Uri uri = Helper.getUri('api/restaurants/$id');
   Map<String, dynamic> _queryParams = {};
   if (!address.isUnknown()) {
@@ -249,18 +258,25 @@ Future<Stream<Restaurant>> getRestaurant(String id, Address address) async {
     _queryParams['areaLon'] = address.longitude.toString();
     _queryParams['areaLat'] = address.latitude.toString();
   }
+  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
+    // print("$latitude ----- $longitude");
+    _queryParams['myLat'] = latitude;
+    _queryParams['myLong'] = longitude;
+    _queryParams['areaLat'] = latitude;
+    _queryParams['areaLong'] = longitude;
+  }
   _queryParams['with'] = 'users';
   uri = uri.replace(queryParameters: _queryParams);
   print(uri);
-  try {
+ // try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
     return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) => Restaurant.fromJSON(data));
-  } catch (e) {
+  //} catch (e) {
     // print(CustomTrace(StackTrace.current, message: uri.toString()).toString());
     return new Stream.value(new Restaurant.fromJSON({}));
-  }
+//  }
 }
 
 Future<Stream<Review>> getRestaurantReviews(String id) async {
@@ -404,17 +420,15 @@ Future<Map<String, dynamic>> fetchAllKitchens() async {
   Map<String, dynamic> _queryParams = {};
   _queryParams['with'] = 'active,popular';
   _queryParams['main_content'] = 'true';
-  _queryParams['limit'] = '6';
+  _queryParams['limit'] = '8';
   _queryParams['trending'] = 'week';
   _queryParams['kitchenType'] = '1';
   _queryParams['kitchenList'] = 'true';
-  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
-    // print("$latitude ----- $longitude");
- _queryParams['myLat'] = latitude;
+  _queryParams['myLat'] = latitude;
   _queryParams['myLon'] = longitude;
   _queryParams['areaLat'] = latitude;
   _queryParams['areaLon'] = longitude;
-  }
+
   _queryParams['popularKitchenType'] = '1';
  /* _queryParams['myLat'] = latitude;
   _queryParams['myLon'] = longitude;
@@ -433,8 +447,72 @@ Future<Map<String, dynamic>> fetchAllKitchens() async {
     throw Exception('Failed to fetch kitchens');
   }
 }
+Future<Map<String, dynamic>> fetchAllKitchensfromcategory({String category_id}) async {
 
-Future<Map<String, dynamic>> fetchAllKitchensDelivery() async {
+
+  // print("Fetch Kitchen is called ");
+  //var location = new Location();
+  SharedPreferences prefs =await  SharedPreferences.getInstance();
+  String latitude = prefs.getDouble("selected_lat").toString();
+  String longitude = prefs.getDouble("selected_lng").toString();
+  String permission = prefs.getString("permission");
+  print( prefs.getDouble("selected_lat"));
+  // print("current permission  + ${permission} ");
+/*  var location = new Location();
+  location.requestService().then((value) async {
+    location.getLocation().then((_locationData) async {
+      // print(_locationData.latitude);
+      // print(_locationData.longitude);
+      String _addressName = await mapsUtil.getAddressName(new LatLng(_locationData?.latitude, _locationData?.longitude), setting.value.googleMapsKey);
+      _address = Address.fromJSON({'address': _addressName, 'latitude': _locationData?.latitude, 'longitude': _locationData?.longitude});
+      await changeCurrentLocation(_address);
+      whenDone.complete(_address);
+    }).timeout(Duration(seconds: 10), onTimeout: () async {
+      await changeCurrentLocation(_address);
+      whenDone.complete(_address);
+      return null;
+    }).catchError((e) {
+    //  whenDone.complete(_address);
+    });
+  });*/
+  //// print("Address latlong -- -----> ${Address().getLatLng()}");
+  Uri uri = Helper.getUri('api/kitchens');
+  Map<String, dynamic> _queryParams = {};
+  _queryParams['with'] = 'active,popular';
+  _queryParams['main_content'] = 'true';
+  _queryParams['limit'] = '8';
+  _queryParams['trending'] = 'week';
+  _queryParams['kitchenType'] = '1';
+  _queryParams['kitchenList'] = 'true';
+  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
+    // print("$latitude ----- $longitude");
+    _queryParams['myLat'] = latitude;
+    _queryParams['myLon'] = longitude;
+    _queryParams['areaLat'] = latitude;
+    _queryParams['areaLon'] = longitude;
+  }
+  _queryParams['popularKitchenType'] = '1';
+  if(category_id != null){
+    _queryParams['category'] = category_id;
+  }
+  /* _queryParams['myLat'] = latitude;
+  _queryParams['myLon'] = longitude;
+  _queryParams['areaLat'] = latitude;
+  _queryParams['areaLon'] = longitude;*/
+  uri = uri.replace(queryParameters: _queryParams);
+
+  // // print the constructed URL before making the request
+  // print('Request URL dinein home: ${uri.toString()}');
+  print(uri);
+  final response = await http.get(uri);
+  // print(response.body);
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to fetch kitchens');
+  }
+}
+Future<Map<String, dynamic>> fetchAllKitchensDelivery({int enjoy = 1}) async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
@@ -444,18 +522,19 @@ Future<Map<String, dynamic>> fetchAllKitchensDelivery() async {
   Map<String, dynamic> _queryParams = {};
   _queryParams['with'] = 'active,popular';
   _queryParams['main_content'] = 'true';
-  _queryParams['limit'] = '6';
+  _queryParams['limit'] = '8';
   _queryParams['trending'] = 'week';
   _queryParams['kitchenType'] = '2';
   _queryParams['kitchenList'] = 'true';
-  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
+  //if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
     // print("$latitude ----- $longitude");
     _queryParams['myLat'] = latitude;
     _queryParams['myLon'] = longitude;
     _queryParams['areaLat'] = latitude;
     _queryParams['areaLon'] = longitude;
-  }
+ // }
   _queryParams['popularKitchenType'] = '2';
+  _queryParams["enjoy"] = enjoy.toString();
   uri = uri.replace(queryParameters: _queryParams);
 
   // // print the constructed URL before making the request

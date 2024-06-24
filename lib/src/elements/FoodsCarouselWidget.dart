@@ -12,8 +12,8 @@ class FoodsCarouselWidget extends StatefulWidget {
   final List<FoodItem> foodsList;
   final String heroTag;
   bool delivery;
-
-  FoodsCarouselWidget({Key key, this.foodsList, this.heroTag, this.delivery,})
+  int enjoy;
+  FoodsCarouselWidget({Key key, this.foodsList, this.heroTag, this.delivery,this.enjoy})
       : super(key: key);
 
   @override
@@ -26,6 +26,7 @@ class _FoodsCarouselWidgetState extends State<FoodsCarouselWidget> {
     if (widget.foodsList != null && widget.foodsList.isNotEmpty) {
       // print("DS>> foodlist length: ${widget.foodsList[0].name}");
     }
+    print("enjoy in foodcarousl ==> ${widget.enjoy}");
 
     return widget.foodsList.isEmpty
         ? FoodsCarouselLoaderWidget()
@@ -48,7 +49,7 @@ class _FoodsCarouselWidgetState extends State<FoodsCarouselWidget> {
                           param: widget.foodsList.elementAt(index).restaurant.id,
                           heroTag: widget.heroTag,
                           isDelivery: true,
-                          selectedDate: "",
+                          selectedDate: widget.enjoy.toString(),
                         ));
                   },
                   child: FoodsCarouselItemWidget(

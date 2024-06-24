@@ -18,7 +18,7 @@ import '../repository/user_repository.dart' as userRepo;
 
 ValueNotifier<userModel.User> currentUser = new ValueNotifier(userModel.User());
 
-Future<userModel.User> login(userModel.User user,BuildContext context) async {
+Future<userModel.User> login(userModel.User user, BuildContext context) async {
   print("sdsdsdsf ====>   " + user.deviceToken);
   final String url = '${GlobalConfiguration().getValue('api_base_url')}login';
   final client = new http.Client();
@@ -30,64 +30,97 @@ Future<userModel.User> login(userModel.User user,BuildContext context) async {
   print(url);
   print({HttpHeaders.contentTypeHeader: 'application/json'});
   print(json.encode(user.toMap()));
-  if (response.statusCode == 200 || json.decode(response.body)["success"] == true) {
-   print(json.decode(response.body));
-   print(json.decode(response.body)["data"]["email_verified"]);
-   print(json.decode(response.body)["data"]["email_verified"].runtimeType);
-   print(json.decode(response.body)["data"]["email_verified"] == "0");
+  if (response.statusCode == 200 ||
+      json.decode(response.body)["success"] == true) {
+    print(json.decode(response.body));
+    print(json.decode(response.body)["data"]["email_verified"]);
+    print(json.decode(response.body)["data"]["email_verified"].runtimeType);
+    print(json.decode(response.body)["data"]["email_verified"] == "0");
 
-   if(json.decode(response.body)["data"]["email_verified"] == "0" )
-   {
-     print("calling");
-     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VerificationScreen2(email: user.email,)));
-   }
+    if (json.decode(response.body)["data"]["email_verified"] == "0") {
+      print("calling");
+      resendOtp(user.email).then((value) {
+        if (value == "resend") {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => VerificationScreen2(
+                    email: user.email,
+                  )));
+        }
+      });
+    }
 
-    if(json.decode(response.body)["data"]["email_verified"] == "1")
-      {
-        //  print("DS>>>"+userModel.User.fromJSON(json.decode(response.body)['data']).name);
-        setCurrentUser(response.body);
-        // print(response.body + "f4d5s4f5");
+    if (json.decode(response.body)["data"]["email_verified"] == "1") {
+      //  print("DS>>>"+userModel.User.fromJSON(json.decode(response.body)['data']).name);
+      setCurrentUser(response.body);
+      // print(response.body + "f4d5s4f5");
 
-        currentUser.value = userModel.User.fromJSON(json.decode(response.body)['data']);
-        // print(json.decode(response.body)['data']["custom_fields"]["address"]["value"]);
-        print(currentUser.value.name);
-      }
+      currentUser.value =
+          userModel.User.fromJSON(json.decode(response.body)['data']);
+      // print(json.decode(response.body)['data']["custom_fields"]["address"]["value"]);
+      print(currentUser.value.name);
+    }
 
-   // print(currentUser.value.bio);
- //   print(currentUser.value.latitude.toString() + currentUser.value.longitude.toString()+ currentUser.value.country);
+    // print(currentUser.value.bio);
+    //   print(currentUser.value.latitude.toString() + currentUser.value.longitude.toString()+ currentUser.value.country);
   } else {
-    if(jsonDecode(response.body)["message"] == "Invalid Credenitials"){
-      return null;
-    }
-    else{
-     // throw new Exception(response.body);
-    }
-  //  print(jsonDecode(response.body)["message"]);
-    // if(jsonDecode(response.body)["message"]){}
+    Fluttertoast.showToast(msg: "${jsonDecode(response.body)["message"]}");
 
+    if (jsonDecode(response.body)["message"] == "Invalid Credenitials") {
+      return null;
+    } else {
+      // throw new Exception(response.body);
+    }
+    //  print(jsonDecode(response.body)["message"]);
+    // if(jsonDecode(response.body)["message"]){}
   }
   print(currentUser.value.name);
   return currentUser.value;
 }
 
+Future<void> saveRestoreId(String restoreId) async {
+  final String url = 'https://eatathome.in/app/api/save-restorid';
+  print(url);
+  final response = await http.post(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${currentUser.value.apiToken}',
+    },
+    body: jsonEncode({'restoreid': restoreId}),
+  );
+  print(response.body);
+  if (response.statusCode == 200 ||
+      json.decode(response.body)["success"] == true) {
+    // Request was successful
+    setCurrentUser(response.body);
+    currentUser.value =
+        userModel.User.fromJSON(json.decode(response.body)['data']);
+  } else {
+    // Handle error
+    print('Failed to save Restore ID: ${response.statusCode}');
+    print('Error: ${response.body}');
+  }
+}
+
 Future<String> register(userModel.User user) async {
   // print("DS>>> I am here");
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}register';
+  final String url =
+      '${GlobalConfiguration().getValue('api_base_url')}register';
   final client = new http.Client();
   final requestBody = json.encode(user.toMap());
 
   // print("Full Request: POST $url");
   // print("Headers: {${HttpHeaders.contentTypeHeader}: 'application/json'}");
- // print("Body: $requestBody");
+  // print("Body: $requestBody");
 
   final response = await client.post(
     Uri.parse(url),
     headers: {HttpHeaders.contentTypeHeader: 'application/json'},
     body: requestBody,
   );
- // print("DS>>> I am here"+response.body);
-  print("object"+response.statusCode.toString());
-  Map<String,dynamic> message = json.decode( response.body);
+  // print("DS>>> I am here"+response.body);
+  print("object" + response.body.toString());
+  Map<String, dynamic> message = json.decode(response.body);
   if (response.statusCode == 200 || message["success"] == true) {
     // print("DS>> Registration Succesful");
     print(message["message"]);
@@ -98,10 +131,11 @@ Future<String> register(userModel.User user) async {
     print(message["message"]);
     Fluttertoast.showToast(msg: message["message"]);
     return "not register";
-   // throw new Exception(response.body);
+    // throw new Exception(response.body);
   }
   return "not register";
 }
+
 Future<String> verifyOtp(String email, String code, String type) async {
   final url = Uri.parse('https://eatathome.in/app/api/verify-code');
   final headers = {'Content-Type': 'application/json'};
@@ -119,7 +153,9 @@ Future<String> verifyOtp(String email, String code, String type) async {
       print('OTP verified successfully');
       // You can parse the response body if needed
       final responseBody = jsonDecode(response.body);
-      currentUser.value = userModel.User.fromJSON(json.decode(response.body)['data']);
+      setCurrentUser(response.body);
+      currentUser.value =
+          userModel.User.fromJSON(json.decode(response.body)['data']);
 
       print(responseBody);
       return "Verify";
@@ -134,10 +170,43 @@ Future<String> verifyOtp(String email, String code, String type) async {
     // Handle network or other errors
     print('Error verifying OTP: $e');
   }
-
 }
+
+Future<String> resendOtp(String email) async {
+  final url =
+      Uri.parse('https://eatathome.in/app/api/resend-verification-code');
+  final headers = {'Content-Type': 'application/json'};
+  final body = jsonEncode({
+    'email': email,
+  });
+
+  try {
+    final response = await http.post(url, headers: headers, body: body);
+    if (response.statusCode == 200) {
+      // Handle successful response
+
+      // You can parse the response body if needed
+      /*  final responseBody = jsonDecode(response.body);
+      currentUser.value = userModel.User.fromJSON(json.decode(response.body)['data']);
+*/
+      //  print(responseBody);
+      return "resend";
+    } else {
+      // Handle error response
+      print('Failed to verify OTP: ${response.statusCode}');
+      print(response.body);
+      return "not resend";
+    }
+  } catch (e) {
+    return " not Verify";
+    // Handle network or other errors
+    print('Error verifying OTP: $e');
+  }
+}
+
 Future<bool> resetPassword(userModel.User user) async {
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}send_reset_link_email';
+  final String url =
+      '${GlobalConfiguration().getValue('api_base_url')}send_reset_link_email';
   final client = new http.Client();
   final response = await client.post(
     Uri.parse(url),
@@ -158,10 +227,11 @@ Future<void> logout() async {
 }
 
 void setCurrentUser(jsonString) async {
-    if (json.decode(jsonString)['data'] != null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('current_user', json.encode(json.decode(jsonString)['data']));
-    }
+  if (json.decode(jsonString)['data'] != null) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        'current_user', json.encode(json.decode(jsonString)['data']));
+  }
 }
 
 Future<void> setCreditCard(CreditCard creditCard) async {
@@ -175,7 +245,8 @@ Future<userModel.User> getCurrentUser() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //prefs.clear();
   if (currentUser.value.auth == null && prefs.containsKey('current_user')) {
-    currentUser.value = userModel.User.fromJSON(json.decode(await prefs.get('current_user')));
+    currentUser.value =
+        userModel.User.fromJSON(json.decode(await prefs.get('current_user')));
     currentUser.value.auth = true;
   } else {
     currentUser.value.auth = false;
@@ -189,7 +260,8 @@ Future<CreditCard> getCreditCard() async {
   CreditCard _creditCard = new CreditCard();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.containsKey('credit_card')) {
-    _creditCard = CreditCard.fromJSON(json.decode(await prefs.get('credit_card')));
+    _creditCard =
+        CreditCard.fromJSON(json.decode(await prefs.get('credit_card')));
   }
   return _creditCard;
 }
@@ -231,7 +303,8 @@ Future<userModel.User> update(userModel.User user, File identityFile) async {
   if (response.statusCode == 200) {
     print(response.body);
     setCurrentUser(response.body);
-    currentUser.value = userModel.User.fromJSON(json.decode(response.body)['data']);
+    currentUser.value =
+        userModel.User.fromJSON(json.decode(response.body)['data']);
     print(currentUser.value.image.url);
     return currentUser.value;
   } else {
@@ -245,50 +318,58 @@ Future<Stream<Address>> getAddresses() async {
   final String url =
       '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken&search=user_id:${_user.id}&searchFields=user_id:=&orderBy=updated_at&sortedBy=desc';
   // print(url);
-    final client = new http.Client();
-    final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
+  final client = new http.Client();
+  final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
-      return Address.fromJSON(data);
-    });
+  return streamedRest.stream
+      .transform(utf8.decoder)
+      .transform(json.decoder)
+      .map((data) => Helper.getData(data))
+      .expand((data) => (data as List))
+      .map((data) {
+    return Address.fromJSON(data);
+  });
 }
 
 Future<Address> addAddress(Address address) async {
   userModel.User _user = userRepo.currentUser.value;
   final String _apiToken = 'api_token=${_user.apiToken}';
   address.userId = _user.id;
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken';
+  final String url =
+      '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses?$_apiToken';
   final client = new http.Client();
-    final response = await client.post(
-      Uri.parse(url),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      body: json.encode(address.toMap()),
-    );
-    return Address.fromJSON(json.decode(response.body)['data']);
+  final response = await client.post(
+    Uri.parse(url),
+    headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+    body: json.encode(address.toMap()),
+  );
+  return Address.fromJSON(json.decode(response.body)['data']);
 }
 
 Future<Address> updateAddress(Address address) async {
   userModel.User _user = userRepo.currentUser.value;
   final String _apiToken = 'api_token=${_user.apiToken}';
   address.userId = _user.id;
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses/${address.id}?$_apiToken';
+  final String url =
+      '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses/${address.id}?$_apiToken';
   final client = new http.Client();
-    final response = await client.put(
-      Uri.parse(url),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-      body: json.encode(address.toMap()),
-    );
-    return Address.fromJSON(json.decode(response.body)['data']);
+  final response = await client.put(
+    Uri.parse(url),
+    headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+    body: json.encode(address.toMap()),
+  );
+  return Address.fromJSON(json.decode(response.body)['data']);
 }
 
 Future<Address> removeDeliveryAddress(Address address) async {
   userModel.User _user = userRepo.currentUser.value;
   final String _apiToken = 'api_token=${_user.apiToken}';
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses/${address.id}?$_apiToken';
+  final String url =
+      '${GlobalConfiguration().getValue('api_base_url')}delivery_addresses/${address.id}?$_apiToken';
   final client = new http.Client();
-    final response = await client.delete(
-      Uri.parse(url),
-      headers: {HttpHeaders.contentTypeHeader: 'application/json'},
-    );
-    return Address.fromJSON(json.decode(response.body)['data']);
+  final response = await client.delete(
+    Uri.parse(url),
+    headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+  );
+  return Address.fromJSON(json.decode(response.body)['data']);
 }

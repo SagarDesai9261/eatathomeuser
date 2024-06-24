@@ -61,7 +61,16 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
               );
             },
           ),
+          Positioned(
+            top:50,
 
+            child: Image.asset(
+              'assets/img/HOME-FOOD-LOGO2.png',
+              width: 300,
+              height: 130,
+              fit: BoxFit.contain,
+            ),
+          ),
           Positioned(
             //top: config.App(context).appHeight(29.5) - 50,
             left: 0,
@@ -337,6 +346,7 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                            token = await FirebaseApi().getDeviceToken();
                             registeruser.name = _fullNameController.text.toString();
                             registeruser.email = _emailController.text.toString();
+                            registeruser.phone = phone.text.toString();
                             registeruser.password = _passwordController.text.toString();
                             registeruser.deviceToken = token;
                             _con.register(context, registeruser,_emailController.text);

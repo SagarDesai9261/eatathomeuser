@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/my_widget/people_count_dailog.dart';
 import 'package:food_delivery_app/src/repository/translation_widget.dart';
+
+import '../src/models/coupons.dart';
 import '../src/models/food.dart';
 import '../src/models/restaurant.dart';
 import '../src/models/route_argument.dart';
@@ -14,6 +16,7 @@ class Change_people_count extends StatefulWidget {
   List<Food> selectedFoodList;
   String default_tax;
   int total;
+  Coupon selectedCoupon;
   List<ProductItem> products ;
   List<Map<String,dynamic>>  fooditems;
   Change_people_count(
@@ -27,7 +30,8 @@ class Change_people_count extends StatefulWidget {
       this.selectedFoodList,
       this.default_tax,
       this.products,
-      this.fooditems
+      this.fooditems,
+      this.selectedCoupon
       );
 
   @override
@@ -276,7 +280,7 @@ class _Change_people_countState extends State<Change_people_count> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,_products,widget.fooditems)
+                            builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,_products,widget.fooditems,widget.selectedCoupon)
                         ),
                       );
                     }

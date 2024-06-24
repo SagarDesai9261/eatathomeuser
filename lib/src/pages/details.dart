@@ -52,6 +52,8 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
   }
 
   initState() {
+    print(widget.routeArgument.heroTag);
+    print(widget.routeArgument.selectedDate);
     _selectTab(widget.currentTab);
     super.initState();
   }
@@ -77,7 +79,7 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
               //widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
               if(widget.routeArgument.isDelivery)
                 {
-                  widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,
+                  widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,selectedDate: widget.routeArgument.selectedDate
                   ),);
                 }
               else{
@@ -119,6 +121,7 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         key: widget.scaffoldKey,
         drawer: DrawerWidget(),

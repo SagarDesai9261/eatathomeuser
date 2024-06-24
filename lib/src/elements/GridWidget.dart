@@ -12,11 +12,12 @@ class GridWidget extends StatelessWidget {
   final List<RestaurantModel> restaurantsList;
   final String heroTag;
   bool delivery;
-
-  GridWidget({Key key, this.restaurantsList, this.heroTag,  this.delivery});
+  int enjoy;
+  GridWidget({Key key, this.restaurantsList, this.heroTag,  this.delivery,this.enjoy});
 
   @override
   Widget build(BuildContext context) {
+    print(restaurantsList.length);
     return  restaurantsList.isEmpty
         ? CardsCarouselLoaderWidget()
         : Container(
@@ -32,7 +33,7 @@ class GridWidget extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-
+          childAspectRatio: 1.1
         ),
         //n scrollDirection: Axis.horizontal,
         itemCount: restaurantsList.length,
@@ -47,7 +48,7 @@ class GridWidget extends StatelessWidget {
                     param: restaurantsList.elementAt(index).id,
                     heroTag: heroTag,
                     isDelivery: true,
-                    selectedDate: "",
+                    selectedDate:  enjoy.toString(),
                   ));
             },
             child: Padding(

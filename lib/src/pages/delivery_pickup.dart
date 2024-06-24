@@ -17,6 +17,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import '../../generated/l10n.dart';
 import '../controllers/delivery_pickup_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/homr_test.dart';
 import '../elements/CartBottomDetailsWidget.dart';
 import '../elements/DeliveryAddressDialog.dart';
 import '../elements/DeliveryAddressesItemWidget.dart';
@@ -35,7 +36,7 @@ import 'package:http/http.dart' as http;
 class DeliveryPickupWidget extends StatefulWidget {
   final RouteArgument routeArgument;
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
  // final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
@@ -483,7 +484,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeWidget(parentScaffoldKey: widget.routeArgument.parentScaffoldKey,
+                builder: (context) => HomePage(parentScaffoldKey: widget.routeArgument.parentScaffoldKey,
                   currentTab: tabItem, directedFrom: "forHome",)
             ),
           );

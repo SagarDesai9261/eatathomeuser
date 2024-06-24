@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import '../repository/user_repository.dart' as repository;
 import '../controllers/user_controller.dart';
+import '../repository/user_repository.dart';
 
 class VerificationScreen2 extends StatefulWidget {
   String email;
@@ -29,7 +31,7 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
         iconTheme: IconThemeData(
           color: Colors.black
         ),
-        title: Text("EMAIL VERIFICATION", style: TextStyle(
+        title: Text("USER VERIFICATION", style: TextStyle(
             fontSize: 14,
             overflow: TextOverflow.ellipsis,
             fontFamily: 'Poppins',
@@ -52,13 +54,17 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
             SizedBox(
               height: 80,
             ),
-            Center(
-              child: Text(
-                "We Sent You a Code to Verify \n Your Email Id",
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .headline4,
+            Padding(
+
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Center(
+                child: Text(
+                  "We have sent a code to verify your phone number.",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4,
+                ),
               ),
             ),
             SizedBox(
@@ -124,12 +130,22 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
               height: 20,
             ),
             Center(
-              child: Text(
-                "Resend Code",
-                style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 16,
-                    fontFamily: "Poppins"
+              child: InkWell(
+                onTap: (){
+                  resendOtp(widget.email).then((value) {
+                    if(value == "resend"){
+                      Fluttertoast.showToast(msg: "Otp Resend Successfully");
+                    }
+
+                  });
+                },
+                child: Text(
+                  "Resend Code",
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontFamily: "Poppins"
+                  ),
                 ),
               ),
             ),

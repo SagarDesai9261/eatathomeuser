@@ -12,10 +12,12 @@ import 'package:food_delivery_app/src/pages/home.dart';
 import 'package:food_delivery_app/src/pages/settings.dart';
 import 'package:food_delivery_app/src/repository/user_repository.dart';
 
+import '../controllers/homr_test.dart';
+
 class PagesWidgetNew extends StatefulWidget {
   dynamic currentTab;
   RouteArgument routeArgument;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   HomeController _con = HomeController();
 
@@ -64,7 +66,7 @@ class _PagesWidgetNewState extends State<PagesWidgetNew> {
           widget.currentPage = KitchenList( heroTag: "KitchenList",);
           break;
         case 2:
-          widget.currentPage = HomeWidget(parentScaffoldKey: widget.scaffoldKey, currentTab: tabItem,);
+          widget.currentPage = HomePage(parentScaffoldKey: widget.scaffoldKey, currentTab: tabItem,);
           break;
         case 3:
           widget.currentPage = KitchenListDeliveryWidget(restaurantsList: widget._con.AllRestaurantsDelivery,

@@ -43,71 +43,55 @@ class HomeController extends ControllerMVC {
   HomeController() {
     DateTime now = DateTime.now();
     String todayDate = "${now.day}-${now.month}-${now.year}";
-   // fetchKitchens();
-   // fetchKitchensDelivery();
     addressProvider = Add_the_address(); // Instantiate the Add_the_address provider
     addressProvider.initialize();
-    //listenForSlides();
-   // listenForAllRestaurantsDelivery("2", todayDate);
-   // listenForRecentReviews();
-   // listenForCategories();
-  //  listenForCuisine();
-   // listenForLocation();
   }
 
   Future<void> listenForCuisine() async {
+    if (cuisineList.isNotEmpty) return; // Avoid duplicate calls
     cuisineList.clear();
     cuisineList2.clear();
     final Stream<Cuisine> stream = await fetchCuisine();
     stream.listen((Cuisine _cuisine) {
-     // print("DS>>> Cuisine: "+ _cuisine.name.toString());
       setState(() {
         cuisineList.add(_cuisine);
       });
       cuisineList2.add(_cuisine);
-    }, onError: (a) {
-  //    // print(a);
-    }, onDone: () {});
+    }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForLocation() async {
+    if (locationList.isNotEmpty) return; // Avoid duplicate calls
     final Stream<LocationModel> stream = await fetchLocation();
     stream.listen((LocationModel _locationModel) {
       setState(() => locationList.add(_locationModel));
       locationList2.add(_locationModel);
-    }, onError: (a) {
-    //  // print(a);
-    }, onDone: () {});
+    }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForSlides() async {
+    if (slides.isNotEmpty) return; // Avoid duplicate calls
     final Stream<Slide> stream = await getSlides();
     stream.listen((Slide _slide) {
       setState(() => slides.add(_slide));
-    }, onError: (a) {
-    //  // print(a);
-    }, onDone: () {});
+    }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForCategories() async {
+    if (categories.isNotEmpty) return; // Avoid duplicate calls
     categories.clear();
     final Stream<Category> stream = await getCategories();
     stream.listen((Category _category) {
-    //  // print("DS>> categories: "+_category.name);
-      //categories.add(_category);
       setState(() => categories.add(_category));
-    }, onError: (a) {
-//      // print(a);
-    }, onDone: () {});
+    }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForAllRestaurantsDelivery(
       String kitchenType, String todayDate) async {
+    if (AllRestaurantsDelivery.isNotEmpty) return; // Avoid duplicate calls
     final Stream<Restaurant> stream =
-        await getAllRestaurants(kitchenType, todayDate, "0", "0");
+    await getAllRestaurants(kitchenType, todayDate, "0", "0");
     stream.listen((Restaurant _restaurant) {
-   // print("DS>> Restaurantlist delivery: " + _restaurant.name);
-      //setState(() => AllRestaurants.add(_restaurant));
       AllRestaurantsDelivery.add(_restaurant);
     }, onError: (a) {}, onDone: () {});
   }
@@ -125,6 +109,7 @@ class HomeController extends ControllerMVC {
   }
 
   Future<void> listenForRecentReviews() async {
+    if (recentReviews.isNotEmpty) return; // Avoid duplicate calls
     final Stream<Review> stream = await getRecentReviews();
     stream.listen((Review _review) {
       setState(() => recentReviews.add(_review));
@@ -132,158 +117,100 @@ class HomeController extends ControllerMVC {
   }
 
   Future<void> fetchKitchens() async {
-   /* double latitude = addressProvider.selectedlocationLatlong.latitude;
-    double longitude = addressProvider.selectedlocationLatlong.longitude;
+    if (isTrendingFoodLoaded && isTopKitchensLoaded && isPopularKitchenLoaded) return; // Avoid duplicate calls
+    final data = await fetchAllKitchens();
 
-    print(" ===>>>> $latitude");
-    print(" ===>>>> $longitude");
-    print(" ===>>>> ${addressProvider.selectedlocation}");*/
-  //  try {
-      final data = await fetchAllKitchens();
+    setState(() {
+      isTrendingFoodLoaded = data['trending']['success'];
+      isTopKitchensLoaded = data['topkitchens']['success'];
+      isPopularKitchenLoaded = data['popular']['success'];
+    });
 
-   //   // print("before:"+topKitchens.length.toString());
-      // GoogleTranslator translator = new GoogleTranslator();
-      // var translation = await translator.translate(data['trending']['data'].toString(), from: "en", to: "hi");
-     // // print("DS>> hindi "+translation.text.toString());
+    trendingFoodItems.clear();
+    for (var item in data['trending']['data']) {
+      trendingFoodItems.add(FoodItem.fromJson(item));
+    }
 
-      setState(() {
-        if(data['trending']['success']){
-          //// print("DS>> home: trend ");
-          isTrendingFoodLoaded = true;
-        }
-        else isTrendingFoodLoaded = false;
+    topKitchens.clear();
+    for (var item in data['topkitchens']['data']) {
+      topKitchens.add(RestaurantModel.fromJson(item));
+    }
 
-        if(data['topkitchens']['success']){
-          isTopKitchensLoaded = true;
-          //// print("DS>> home: top ");
-        }
-        else isTopKitchensLoaded = false;
-
-        if(data['popular']['success']){
-          isPopularKitchenLoaded = true;
-         // print("DS>> home: pop ");
-        }
-        else isPopularKitchenLoaded = false;
-      });
-      trendingFoodItems.clear();
-      // Parse and populate arrays here
-      for (var item in data['trending']['data']) {
-        //// print("DS>> home: trend list ");
-        trendingFoodItems.add(FoodItem.fromJson(item));
-      }
-      topKitchens.clear();
-      for (var item in data['topkitchens']['data']) {
-        //// print("DS>> home: top list ");
-        topKitchens.add(RestaurantModel.fromJson(item));
-      }
-
-      popularKitchens.clear();
-      for (var item in data['popular']['data']) {
-        //// print("DS>> home: pop list ");
-        popularKitchens.add(RestaurantModel.fromJson(item));
-      }
-    // } catch (e) {
-    //   // print('Error fetching kitchens: $e');
-    // }
+    popularKitchens.clear();
+    for (var item in data['popular']['data']) {
+      popularKitchens.add(RestaurantModel.fromJson(item));
+    }
   }
 
   Future<void> fetchKitchensDelivery() async {
-    // try {
-      final data = await fetchAllKitchensDelivery();
+    if (isTrendingFoodDlvryLoaded && isTopKitchensDlvryLoaded && isPopularKitchenDlvryLoaded) return; // Avoid duplicate calls
+    final data = await fetchAllKitchensDelivery();
 
-      setState(() {
-        if(data['trending']['success']){
-          isTrendingFoodDlvryLoaded = true;
-        }
-        else isTrendingFoodDlvryLoaded = false;
+    setState(() {
+      isTrendingFoodDlvryLoaded = data['trending']['success'];
+      isTopKitchensDlvryLoaded = data['topkitchens']['success'];
+      isPopularKitchenDlvryLoaded = data['popular']['success'];
+    });
 
-        if(data['topkitchens']['success']){
-          isTopKitchensDlvryLoaded = true;
-        }
-        else isTopKitchensDlvryLoaded = false;
+    topKitchensDelivery.clear();
+    trendingFoodItemsDelivery.clear();
+    popularKitchensDelivery.clear();
 
-        if(data['popular']['success']){
-          isPopularKitchenDlvryLoaded = true;
-        }
-        else isPopularKitchenDlvryLoaded = false;
-      });
+    for (var item in data['trending']['data']) {
+      trendingFoodItemsDelivery.add(FoodItem.fromJson(item));
+    }
 
-      topKitchensDelivery.clear();
-      trendingFoodItemsDelivery.clear();
-      popularKitchensDelivery.clear();
+    for (var item in data['topkitchens']['data']) {
+      topKitchensDelivery.add(RestaurantModel.fromJson(item));
+    }
 
-      // Parse and populate arrays here
-      for (var item in data['trending']['data']) {
-        trendingFoodItemsDelivery.add(FoodItem.fromJson(item));
-      }
-
-      for (var item in data['topkitchens']['data']) {
-        topKitchensDelivery.add(RestaurantModel.fromJson(item));
-      }
-
-      for (var item in data['popular']['data']) {
-        popularKitchensDelivery.add(RestaurantModel.fromJson(item));
-      }
-    // } catch (e) {
-    //   // print('Error fetching kitchens: $e');
-    // }
+    for (var item in data['popular']['data']) {
+      popularKitchensDelivery.add(RestaurantModel.fromJson(item));
+    }
   }
 
   Future<void> fetchKitchensWithCuisine(
       String cuisinesQueryParam, String fromDineInorDelivery) async {
-    try {
-      count = count + 1;
-      final data = await fetchAllKitchensWithCuisine(
-          cuisinesQueryParam, fromDineInorDelivery);
+    count = count + 1;
+    final data = await fetchAllKitchensWithCuisine(
+        cuisinesQueryParam, fromDineInorDelivery);
 
-      // Parse and populate arrays here
-      trendingFoodItems.clear();
-      for (var item in data['trending']['data']) {
-        trendingFoodItems.add(FoodItem.fromJson(item));
-      }
-      topKitchens.clear();
-      for (var item in data['topkitchens']['data']) {
-        topKitchens.add(RestaurantModel.fromJson(item));
-      }
-
-    //  // print(data["topkitchens"]);
-      popularKitchens.clear();
-      for (var item in data['popular']['data']) {
-        popularKitchens.add(RestaurantModel.fromJson(item));
-      }
-
-      setState(() {});
-    //  // print("after:" + topKitchens.length.toString());
-    } catch (e) {
-//      // print('Error fetching kitchens: $e');
+    trendingFoodItems.clear();
+    for (var item in data['trending']['data']) {
+      trendingFoodItems.add(FoodItem.fromJson(item));
     }
-  //  // print("count function for calling $count");
-  }
+    topKitchens.clear();
+    for (var item in data['topkitchens']['data']) {
+      topKitchens.add(RestaurantModel.fromJson(item));
+    }
 
+    popularKitchens.clear();
+    for (var item in data['popular']['data']) {
+      popularKitchens.add(RestaurantModel.fromJson(item));
+    }
+
+    setState(() {});
+  }
 
   Future<void> fetchKitchensWithLocation(
       String locationQueryParam, String fromDineInorDelivery) async {
-    try {
-      final data = await fetchAllKitchensWithLocation(
-          locationQueryParam, fromDineInorDelivery);
-      // Parse and populate arrays here
-      trendingFoodItems.clear();
-      for (var item in data['trending']['data']) {
-        trendingFoodItems.add(FoodItem.fromJson(item));
-      }
-      topKitchens.clear();
-      for (var item in data['topkitchens']['data']) {
-        topKitchens.add(RestaurantModel.fromJson(item));
-      }
-      popularKitchens.clear();
-     // print("after:" + topKitchens.length.toString());
-      for (var item in data['popular']['data']) {
-        popularKitchens.add(RestaurantModel.fromJson(item));
-      }
-      setState(() {});
-    } catch (e) {
-    //  // print('Error fetching kitchens: $e');
+    final data = await fetchAllKitchensWithLocation(
+        locationQueryParam, fromDineInorDelivery);
+
+    trendingFoodItems.clear();
+    for (var item in data['trending']['data']) {
+      trendingFoodItems.add(FoodItem.fromJson(item));
     }
+    topKitchens.clear();
+    for (var item in data['topkitchens']['data']) {
+      topKitchens.add(RestaurantModel.fromJson(item));
+    }
+    popularKitchens.clear();
+    for (var item in data['popular']['data']) {
+      popularKitchens.add(RestaurantModel.fromJson(item));
+    }
+
+    setState(() {});
   }
 
   Future<void> refreshHome() async {
@@ -293,50 +220,13 @@ class HomeController extends ControllerMVC {
       AllRestaurantsDelivery.clear();
       AllRestaurantsDelivery = <Restaurant>[];
       recentReviews = <Review>[];
-     cuisineList = <Cuisine>[];
-     locationList = <LocationModel>[];
+      cuisineList = <Cuisine>[];
+      locationList = <LocationModel>[];
 
-     trendingFoodItems = <FoodItem>[];
-      topKitchens = <RestaurantModel>[];
-     popularKitchens = <RestaurantModel>[];
-
-   ///   trendingFoodItemsDelivery = <FoodItem>[];
-     topKitchensDelivery = <RestaurantModel>[];
-      popularKitchensDelivery = <RestaurantModel>[];
-      isTrendingFoodLoaded= false;
-      isTopKitchensLoaded= false;
-      isPopularKitchenLoaded = false;
-    });
-
-    DateTime now = DateTime.now();
-    String todayDate = "${now.day}-${now.month}-${now.year}";
-    await listenForCategories();
-
-    await fetchKitchensDelivery();
-    await fetchKitchens();
-  //  await listenForSlides();
-   // await listenForRecentReviews();
-  // await listenForAllRestaurantsDelivery("2", todayDate);
-  //  await listenForCuisine();
-  //  await listenForLocation();
-
-  }
-
-  Future<void> refreshSubHome() async {
-
-    setState(() {
-      slides = <Slide>[];
-      categories = <Category>[];
-      AllRestaurantsDelivery.clear();
-      AllRestaurantsDelivery = <Restaurant>[];
-      recentReviews = <Review>[];
-     cuisineList = <Cuisine>[];
-     locationList = <LocationModel>[];
       trendingFoodItems = <FoodItem>[];
       topKitchens = <RestaurantModel>[];
       popularKitchens = <RestaurantModel>[];
 
-         trendingFoodItemsDelivery = <FoodItem>[];
       topKitchensDelivery = <RestaurantModel>[];
       popularKitchensDelivery = <RestaurantModel>[];
       isTrendingFoodLoaded= false;
@@ -344,18 +234,35 @@ class HomeController extends ControllerMVC {
       isPopularKitchenLoaded = false;
     });
 
-
-    DateTime now = DateTime.now();
-    String todayDate = "${now.day}-${now.month}-${now.year}";
     await listenForCategories();
     await fetchKitchensDelivery();
     await fetchKitchens();
-   // await listenForSlides();
-    //await listenForRecentReviews();
-   // await listenForAllRestaurantsDelivery("2", todayDate);
-    //await listenForCuisine();
-   //await listenForLocation();
-
   }
 
+  Future<void> refreshSubHome() async {
+    setState(() {
+      slides = <Slide>[];
+      categories = <Category>[];
+      AllRestaurantsDelivery.clear();
+      AllRestaurantsDelivery = <Restaurant>[];
+      recentReviews = <Review>[];
+      cuisineList = <Cuisine>[];
+      locationList = <LocationModel>[];
+
+      trendingFoodItems = <FoodItem>[];
+      topKitchens = <RestaurantModel>[];
+      popularKitchens = <RestaurantModel>[];
+
+      trendingFoodItemsDelivery = <FoodItem>[];
+      topKitchensDelivery = <RestaurantModel>[];
+      popularKitchensDelivery = <RestaurantModel>[];
+      isTrendingFoodLoaded= false;
+      isTopKitchensLoaded= false;
+      isPopularKitchenLoaded = false;
+    });
+
+    await listenForCategories();
+    await fetchKitchensDelivery();
+    await fetchKitchens();
+  }
 }

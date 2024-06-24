@@ -328,19 +328,8 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                           )
                                         ],
                                       ),
+
                                       children: <Widget>[
-                                        Column(
-                                            children: List.generate(
-                                              _con.order.foodOrders.length,
-                                                  (indexFood) {
-                                                return FoodOrderItemWidget(
-                                                    heroTag: 'my_order',
-                                                    order: _con.order,
-                                                    foodOrder: _con
-                                                        .order.foodOrders
-                                                        .elementAt(indexFood));
-                                              },
-                                            )),
                                         Padding(
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 20),
@@ -375,8 +364,8 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                     ),
                                                   ),
                                                   Text(
-                                                      DateFormat('dd-MM-yyyy')
-                                                          .format(_con.order.foodOrders.first.dateTime),
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(_con.order.foodOrders.first.dateTime),
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyText1,
@@ -387,6 +376,19 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                             ],
                                           ),
                                         ),
+                                        Column(
+                                            children: List.generate(
+                                              _con.order.foodOrders.length,
+                                                  (indexFood) {
+                                                return FoodOrderItemWidget(
+                                                    heroTag: 'my_order',
+                                                    order: _con.order,
+                                                    foodOrder: _con
+                                                        .order.foodOrders
+                                                        .elementAt(indexFood));
+                                              },
+                                            )),
+
                                         Padding(
                                           padding: EdgeInsets.symmetric(
                                               vertical: 0, horizontal: 20),
@@ -400,7 +402,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                         "Applied Coupon(${_con.order.coupon_code})",
                                                         style: Theme.of(context)
                                                             .textTheme
-                                                            .bodyText1,
+                                                            .bodyText2,
                                                       ),
                                                     ),
                                                     RichText(
@@ -410,10 +412,10 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                         text: TextSpan(
                                                           text: "-₹",
                                                           style:
-                                                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize,color: kFBBlue),
+                                                          TextStyle(fontWeight: FontWeight.w400, fontSize:12,color: kFBBlue),
 
                                                           children: <TextSpan>[
-                                                            TextSpan(text: _con.order.coupon_amount ?? '', style:  Theme.of(context).textTheme.subtitle1),
+                                                            TextSpan(text: _con.order.coupon_amount ?? '', style:  Theme.of(context).textTheme.bodyText2),
                                                           ],
                                                         )
 
@@ -428,16 +430,24 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                       "Delivery fees",
                                                       style: Theme.of(context)
                                                           .textTheme
-                                                          .bodyText1,
+                                                          .bodyText2,
                                                     ),
                                                   ),
+                                                  if(_con.order.deliveryFee !=0)
                                                   Helper.getPrice(
                                                       _con.order.deliveryFee,
                                                       context,
-                                                      style:  TextStyle(fontSize: 18.0,
-                                                          fontWeight: FontWeight.w600,
+                                                      style:  TextStyle(fontSize: 12.0,
+                                                      //    fontWeight: FontWeight.w600,
                                                           color: config.Colors().secondColor(1),
-                                                          height: 1.35))
+                                                          height: 1.35)),
+                                                  if(_con.order.deliveryFee ==0)
+                                                    Text(
+                                                      "0",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyText2,
+                                                    ),
                                                 ],
                                               ),
                                               Row(
@@ -445,11 +455,11 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                   Expanded(
                                                     child: Text(
                                                       'GST',
-                                                      style: TextStyle(fontSize: 14.0, color: config
+                                                      style: TextStyle(fontSize: 12.0, color: config
                                                           .Colors().secondColor(1), height: 1.35)
                                                     ),
                                                   ),
-                                                  Helper.getPrice(
+                                                  Helper.getPriceforcart(
                                                       Helper.getTaxOrder(
                                                           _con.order),
                                                       context,
@@ -466,15 +476,15 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                       S.of(context).total,
                                                       style: Theme.of(context)
                                                           .textTheme
-                                                          .bodyText1,
+                                                          .bodyText2,
                                                     ),
                                                   ),
-                                                  Helper.getPrice(
+                                                  Helper.getPriceforcart(
                                                       Helper
                                                           .getTotalOrdersPrice(
                                                           _con.order),
                                                       context,
-                                                      style: TextStyle(fontSize: 18.0,
+                                                      style: TextStyle(fontSize: 14.0,
                                                           fontWeight: FontWeight.w600,
                                                           color: config.Colors().secondColor(1),
                                                           height: 1.35))

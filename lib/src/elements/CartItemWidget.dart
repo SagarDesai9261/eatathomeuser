@@ -107,6 +107,13 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
+                      /*  Text(
+                          widget.cart.food.restaurant.name??"",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),*/
+
                         /*Text(
                           widget.cart.food.name,
                           overflow: TextOverflow.ellipsis,

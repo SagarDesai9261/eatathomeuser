@@ -23,10 +23,13 @@ import 'package:food_delivery_app/src/pages/settings.dart';
 import 'package:food_delivery_app/src/repository/user_repository.dart';
 import 'package:food_delivery_app/utils/color.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../my_widget/Change_people_count_dialog.dart';
 import '../../my_widget/change_date_calender.dart';
 import '../../my_widget/people_count_dailog.dart';
+import '../controllers/homr_test.dart';
 import '../helpers/helper.dart';
+import '../models/coupons.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 import '../models/food.dart';
 import '../models/restaurant.dart';
@@ -44,11 +47,12 @@ class DineInSummaryPage extends StatefulWidget {
   String selectedDate, selectedPeople, selectedTime, fromTime, toTime;
   List<Food> selectedFoodList;
   String default_tax;
+  Coupon selectedCoupon;
   List<Map<String,dynamic>>  fooditems;
   final GlobalKey<ScaffoldState> parentScaffoldKey =
       new GlobalKey<ScaffoldState>();
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
   int total;
   List<ProductItem> products;
@@ -64,7 +68,7 @@ class DineInSummaryPage extends StatefulWidget {
       this.toTime,
       this.selectedFoodList,
       this.default_tax,
-      this.products,this.fooditems
+      this.products,this.fooditems,this.selectedCoupon
       );
 
 
@@ -95,6 +99,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
     });
     _selectTab(widget.currentTab);
     calculateSubtotal();
+    appliedCoupon = widget.selectedCoupon;
     super.initState();
   }
 
@@ -102,6 +107,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
     setState(() {
       widget.carts = _cartCon.carts;
     });
+
     print("DS>> cart length: ${widget.selectedFoodList.length}");
   }
 
@@ -173,7 +179,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Container(
-                        width: 300,
+                        width: MediaQuery.of(context).size.width *0.90,
                         height: (MediaQuery.of(context).size.height * 3.5 / 4)-10,
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Column(
@@ -299,14 +305,24 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                   child:
                                                       // Image.asset("assets/img/")
                                                       GestureDetector(
-                                                    onTap: () {
-                                                      MapWidget(
+                                                    onTap: ()async {
+                                                      print("map calling");
+                                                     // if(_con != null){
+                                                        http://maps.google.com/maps?daddr=${_con.restaurant.latitude},${_con.restaurant.longitude}
+                                                        String url = 'http://maps.google.com/maps?daddr=${widget.restaurant.latitude},${widget.restaurant.longitude}';
+                                                        if (await canLaunchUrl(Uri.parse(url))) {
+                                                      await launch(url);
+                                                      } else {
+                                                      throw 'Could not launch $url';
+                                                      }
+                                                    //}
+                                                     /* MapWidget(
                                                           parentScaffoldKey: widget
                                                               .parentScaffoldKey,
                                                           routeArgument:
                                                               RouteArgument(
                                                                   param: widget
-                                                                      .restaurant));
+                                                                      .restaurant));*/
                                                     },
                                                     child: Icon(
                                                       Icons.turn_right_sharp,
@@ -404,7 +420,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                       Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                    builder: (context) => Change_calender(widget.total,widget.restaurant,widget.selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,widget.fooditems)
+                                                    builder: (context) => Change_calender(widget.total,widget.restaurant,widget.selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,widget.fooditems,widget.selectedCoupon)
                                                 ),
                                               );
                                                      /* showCalendarDialog(
@@ -442,7 +458,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                 bottom: 5,
                                                 top: 0),
                                             child: Container(
-                                              width: 250,
+                                              width: (MediaQuery.of(context).size.width * 0.90 )-40,
                                               child: Divider(
                                                 color: Colors.grey,
                                                 thickness: 1,
@@ -492,7 +508,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                 bottom: 5,
                                                 top: 0),
                                             child: Container(
-                                              width: 250,
+                                              width: (MediaQuery.of(context).size.width * 0.90 )-40,
                                               child: Divider(
                                                 color: Colors.grey,
                                                 thickness: 1,
@@ -521,7 +537,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                            builder: (context) => Change_people_count(widget.total,widget.restaurant,widget.selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,widget.products,widget.fooditems)
+                                                            builder: (context) => Change_people_count(widget.total,widget.restaurant,widget.selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,widget.products,widget.fooditems,widget.selectedCoupon)
                                                         ),
                                                       );
                                                     },
@@ -556,7 +572,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                 bottom: 5,
                                                 top: 0),
                                             child: Container(
-                                              width: 250,
+                                              width: (MediaQuery.of(context).size.width * 0.90 )-40,
                                               child: Divider(
                                                 color: Colors.grey,
                                                 thickness: 1,
@@ -567,7 +583,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                           Padding(
                                             // padding: const EdgeInsets.all(8.0),
                                             padding: const EdgeInsets.only(
-                                                right: 30,
+                                                right: 20,
                                                 left: 20,
                                                 bottom: 0,
                                                 top: 0),
@@ -611,10 +627,11 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                             ),
                                           ),
                                           SizedBox(height: 5),
+                                          if(widget.selectedCoupon!= null && appliedCouponamount > 0.0)
                                           appliedCoupon != null
                                               ? Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 30, left: 20, bottom: 0, top: 0),
+                                                right: 20, left: 20, bottom: 0, top: 0),
                                                 child: Row(
                                             children: <Widget>[
                                                 Expanded(
@@ -665,7 +682,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                               )
                                               : Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 30, left: 20, bottom: 0, top: 0),
+                                                right: 20, left: 20, bottom: 0, top: 0),
                                                 child: Row(
                                             children: <Widget>[
                                                 Expanded(
@@ -720,10 +737,10 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                           ),
                                               ),
                                           SizedBox(height: 5),
-                                          if (appliedCoupon != null)
+                                          if (appliedCoupon != null && widget.selectedCoupon != null && appliedCouponamount > 0.0)
                                             Padding(
                                               padding: const EdgeInsets.only(
-                                                  right: 30, left: 20, bottom: 0, top: 0),
+                                                  right: 20, left: 20, bottom: 0, top: 0),
                                               child: Row(
                                                 children: <Widget>[
                                                   Expanded(
@@ -796,7 +813,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                           SizedBox(height: 5),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 30, left: 20, bottom: 0, top: 0),
+                                                right: 20, left: 20, bottom: 0, top: 0),
                                         //    padding: const EdgeInsets.all(8.0),
                                             child: Row(
                                               children: <Widget>[
@@ -806,7 +823,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                           style: Theme.of(context).textTheme.bodyText1,
                         )*/
                                                   TranslationWidget(
-                                                    message: 'GST (${widget.default_tax}%)',
+                                                    message: 'GST',
                                                     fromLanguage: "English",
                                                     toLanguage: defaultLanguage,
                                                     builder: (translatedMessage) => Text(
@@ -914,7 +931,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                           elevation: 0,
                                           focusElevation: 0,
                                           highlightElevation: 0,
-                                          onPressed: () {
+                                          onPressed: () async{
                                             //addtocart
                                          //     placeOrder(context);
                                             if(currentUser.value.is_verified == "1"){
@@ -927,8 +944,8 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                               }
                                             }
                                             else {
-
-                                              Fluttertoast.showToast(msg: "Please verified your profile");
+                                              _showVerificationDialog(context);
+                                             // Fluttertoast.showToast(msg: "Please verified your profile");
                                             }
 
 
@@ -1016,10 +1033,41 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
       ),*/
     );
   }
+  void _showVerificationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Profile Verification Required'),
+          content: Text('Please verify your profile by uploading your Aadhar Card or Driving Licence in the profile identity section. Once uploaded, the document will be verified within a few hours.' ,textAlign: TextAlign.justify,),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                settingRepo.navigatorKey.currentState.pushNamed('/Settings');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
   void calculateSubtotal()  {
+    appliedCoupon = widget.selectedCoupon;
+
     taxAmount = ( widget.total * double.parse( widget.default_tax)) / 100;
    // total = subTotal + taxAmount + deliveryFee;
     grandtotal = (widget.total + taxAmount).toInt();
+
+    if(widget.selectedCoupon != null && widget.total >= widget.selectedCoupon.minOrder)
+      {
+        double calculatedDiscount = (widget.total * appliedCoupon.discount) / 100;
+        calculatedDiscount =  calculatedDiscount > appliedCoupon.maxDiscount
+            ? appliedCoupon.maxDiscount.toDouble()
+            : calculatedDiscount.toDouble();
+        appliedCouponamount = widget.selectedCoupon == appliedCoupon ? appliedCoupon.discounttype == 'fixed' ? appliedCoupon.discount  : calculatedDiscount   : 0.0 ;
+      }
+
     setState(() {});
   }
 

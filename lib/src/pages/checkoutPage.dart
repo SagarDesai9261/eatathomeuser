@@ -16,6 +16,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../controllers/cart_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/homr_test.dart';
 import '../elements/CartBottomDetailsWidget.dart';
 import '../models/route_argument.dart';
 import '../../generated/l10n.dart';
@@ -26,7 +27,7 @@ class CheckoutPage extends StatefulWidget {
   final RouteArgument routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
   CheckoutPage({Key key, this.routeArgument,this.total}) : super(key: key);
@@ -298,7 +299,7 @@ class _CheckoutPageState extends StateMVC<CheckoutPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomeWidget(parentScaffoldKey: widget.parentScaffoldKey,
+                builder: (context) => HomePage(parentScaffoldKey: widget.parentScaffoldKey,
                   currentTab: tabItem, directedFrom: "forHome",)
             ),
           );

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../elements/SearchResultsWidget.dart';
 
 class SearchModal extends ModalRoute<void> {
+  final GlobalKey<ScaffoldState> parentScaffoldKey;
   final bool isDinein;
-  SearchModal({ this.isDinein});
+  SearchModal({ this.isDinein,this.parentScaffoldKey});
   @override
   Duration get transitionDuration => Duration(milliseconds: 400);
 
@@ -40,6 +41,7 @@ class SearchModal extends ModalRoute<void> {
         child: /*Text("")*/ SearchResultWidget(
           heroTag: "search",
           isDinein:isDinein,
+          parentScaffoldKey: parentScaffoldKey,
         ),
       ),
     );

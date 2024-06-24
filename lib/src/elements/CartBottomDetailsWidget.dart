@@ -7,6 +7,7 @@ import 'package:food_delivery_app/src/repository/user_repository.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:provider/provider.dart';
 import '../../my_widget/delivery_adressess.dart';
+import '../models/coupons.dart';
 import '../models/user.dart';
 import '../pages/Coupon.dart';
 import '../provider.dart';
@@ -237,9 +238,10 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                         Text(coupondiscount.toString(), style: TextStyle(fontWeight: FontWeight.w500)),
                       ],
                     ),*/
+                    if(appliedCoupon!= null)
                     SizedBox(height: 5),
-                    appliedCoupon != null
-                        ? Row(
+                     if(appliedCoupon!= null)
+                     Row(
                             children: <Widget>[
                               Expanded(
                                 child: /*Text(
@@ -284,59 +286,8 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
 
                               //Text(grandTotal.toString())
                             ],
-                          )
-                        : Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: /*Text(
-                            '${S.of(context).tax} (${widget._con.carts[0].food.restaurant.defaultTax}%)',
-                            style: Theme.of(context).textTheme.bodyText1,
-                          )*/
-                                    TranslationWidget(
-                                  message: 'You have a coupon',
-                                  fromLanguage: "English",
-                                  toLanguage: defaultLanguage,
-                                  builder: (translatedMessage) => Text(
-                                    translatedMessage,
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => CouponsPage(
-                                                totalprice:
-                                                    widget._con.subTotal,
-                                                res_id: widget._con.carts.first.food.restaurant.id,
-                                                dine_in: false,
-                                                onCouponApplied: (coupon,) {
-                                                  setState(() {
-                                                    appliedCoupon = coupon.coupon;
-                                                    appliedCouponamount = coupon.discountAmount;
-
-                                                  });
-                                                },
-                                              )));
-                                },
-                                child: Center(
-                                  child: Text(
-                                    'Apply',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              //Text(grandTotal.toString())
-                            ],
                           ),
+
                     if (appliedCoupon != null)
                     SizedBox(height: 5),
                     if (appliedCoupon != null)
@@ -344,17 +295,24 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                         children: <Widget>[
                           Expanded(
                             child: /*Text(
-                            S.of(context).delivery_fee,
-                            style: Theme.of(context).textTheme.bodyText1,
-                          )*/
-                                TranslationWidget(
-                              message:
-                                  "Restaurant Coupon-(${appliedCoupon.code})",
+        S.of(context).delivery_fee,
+        style: Theme.of(context).textTheme.bodyText1,
+      )*/
+                            TranslationWidget(
+                              message: "Applied Coupon-",
                               fromLanguage: "English",
                               toLanguage: defaultLanguage,
-                              builder: (translatedMessage) => Text(
-                                translatedMessage,
-                                style: Theme.of(context).textTheme.bodyText1,
+                              builder: (translatedMessage) => RichText(
+                                text: TextSpan(
+                                  text: translatedMessage,
+                                  style: Theme.of(context).textTheme.bodyText1,
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: "(${appliedCoupon.code})", // Bold this part
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -365,19 +323,22 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                             maxLines: 1,
                             text: TextSpan(
                               text: "-₹",
-                              style:
-                                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize,color: kFBBlue),
-
-
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                                color: kFBBlue,
+                              ),
                               children: <TextSpan>[
-                                TextSpan(text: appliedCouponamount.toStringAsFixed(2) ?? '', style:  Theme.of(context).textTheme.subtitle1),
+                                TextSpan(
+                                  text: appliedCouponamount.toStringAsFixed(2) ?? '',
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                ),
                               ],
-                            )
-
-
-                          )
+                            ),
+                          ),
                         ],
                       ),
+
                     SizedBox(height: 5),
                     Row(
                       children: <Widget>[

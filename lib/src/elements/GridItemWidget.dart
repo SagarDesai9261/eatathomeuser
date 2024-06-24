@@ -112,7 +112,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                           Container(
                           //  color: Colors.green,
                             width:140,
-                            height: 17,
+                            height: 30,
                             child: /*Text(
                               restaurant.name,
                               overflow: TextOverflow.fade,
@@ -134,7 +134,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                         /* SizedBox(
                             width:110,
                             height: 17,
                             child: Text(
@@ -148,7 +148,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                                 fontSize: 10
                               )),
                             ),
-                          ),
+                          ),*/
                         ],
                       ),
                     ),
@@ -250,7 +250,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                               ),
                               children: [
                                 TextSpan(
-                                  text: '${widget.restaurant.price.min}-₹${widget.restaurant.price.max}',
+                                  text: '${widget.restaurant.average_price}',
                                   style: TextStyle(
                                     fontSize: 10,
                                   ),

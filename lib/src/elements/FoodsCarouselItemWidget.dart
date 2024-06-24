@@ -169,7 +169,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
                     softWrap: false,
                     style: TextStyle(fontWeight: FontWeight.w400),
                   )*/
-                  TranslationWidget(
+                /*  TranslationWidget(
                     message:  widget.food.restaurant.address.isEmpty ? "" : widget.food.restaurant.address,
                     fromLanguage: "English",
                     toLanguage: defaultLanguage,
@@ -179,7 +179,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
                       softWrap: false,
                       style: TextStyle(fontWeight: FontWeight.w400),
                     ),
-                  ),
+                  ),*/
                 ],
               )),
         ],

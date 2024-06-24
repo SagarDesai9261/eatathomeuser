@@ -9,6 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:food_delivery_app/src/controllers/category_controller.dart';
+import 'package:food_delivery_app/src/controllers/homecontroller_provider.dart';
 import 'package:food_delivery_app/src/pages/restaurant.dart';
 import 'package:food_delivery_app/src/provider.dart';
 import 'package:food_delivery_app/utils/CollectedData.dart';
@@ -115,7 +116,9 @@ Future<void> main() async {
           ChangeNotifierProvider<location_enable_provider>(
             create: (_) => location_enable_provider(),
           ),
-
+          ChangeNotifierProvider<HomeProvider>(
+            create: (_) => HomeProvider(),
+          ),
 
         ],
         child: MyApp()),

@@ -195,6 +195,7 @@ class RestaurantModel {
   final String is_open;
   final String closed;
   final String distance;
+  final String average_price;
   final List<Media> media;
   final Price price;
 
@@ -211,7 +212,8 @@ class RestaurantModel {
     this.is_open,
     this.closed,
     this.media,
-    this.price
+    this.price,
+    this.average_price
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
@@ -225,6 +227,7 @@ class RestaurantModel {
       slots: json['slots'],
       rate: json['rate'].toString() ?? "",
       is_open: json['is_open'].toString() ?? "",
+      average_price: json['average_price'].toString() ?? "",
       closed: json['closed'].toString() ?? "",
       distance: json['distance'].toString(),
       media: List<Media>.from(json['media'].map((item) => Media.fromJson(item))),

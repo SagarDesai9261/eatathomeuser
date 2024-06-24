@@ -15,6 +15,10 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../generated/l10n.dart';
+import '../../my_widget/Pricing_Checkout_Policy.dart';
+import '../../my_widget/RefundCancellationPolicyScreen.dart';
+import '../../my_widget/privacy_policy.dart';
+import '../controllers/homr_test.dart';
 import '../controllers/profile_controller.dart';
 import '../models/coupon.dart';
 import '../pages/CouponWidget.dart';
@@ -144,19 +148,19 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
     //NOTE: Freshchat events
     var userInteractionStream = Freshchat.onUserInteraction;
     userInteractionStream.listen((event) {
-      print("User Interacted $event");
+   //   print("User Interacted $event");
     });
     var notificationStream = Freshchat.onNotificationIntercept;
     notificationStream.listen((event) {
-      print(" Notification: $event");
+    //  print(" Notification: $event");
     });
     var freshchatEventStream = Freshchat.onFreshchatEvents;
     fchatEventStreamSubscription = freshchatEventStream.listen((event) {
-      print("Freshchat Event: $event");
+    //  print("Freshchat Event: $event");
     });
     var unreadCountStream = Freshchat.onMessageCountUpdate;
     unreadCountSubscription = unreadCountStream.listen((event) {
-      print("New message generated: " + event.toString());
+    //  print("New message generated: " + event.toString());
     });
     var linkOpeningStream = Freshchat.onRegisterForOpeningLink;
     linkOpenerSubscription = linkOpeningStream.listen((event) {
@@ -296,7 +300,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        HomeWidget(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
+                        HomePage(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
                         currentTab: 1,)
                 ),
               );
@@ -419,16 +423,53 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
 */
 
                // Freshchat.getFreshchatUserId;
-                String value = await Freshchat.getFreshchatUserId;
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                String restoreId = currentUser.value.restoreid;
+
+              if (restoreId == null) {
+                  // Generate a new restore ID
+                 // FreshchatUser user = await Freshchat.getUser;
+                //   restoreId = user.getRestoreId();
+                  FreshchatUser user = await Freshchat.getUser;
+                  restoreId = user.getRestoreId();
+                }
+                print("restoreId :- ${currentUser.value.restoreid}");
+               // restoreId = await Freshchat.getFreshchatUserId;
+                String value = restoreId;
                 user.setFirstName(currentUser.value.name);
                 user.setEmail(currentUser.value.email);
                 user.setPhone("+91", currentUser.value.phone);
-               // Freshchat.identifyUser(externalId:currentUser.value.email,restoreId: "a0e01ac6-b7b9-4b4b-a3d1-61c3f4208c0b");
-                print("object ==>${value}");
+                if (restoreId == ""){
+                  Freshchat.identifyUser(externalId: currentUser.value.email);
+                }
+                else
+                {
+                  Freshchat.identifyUser(externalId:currentUser.value.email,restoreId: restoreId);
+                }
+
+
+                print("object ==> $value");
                 Freshchat.setUser(user);
 
 
                 Freshchat.showConversations(filteredViewTitle:"Premium Support",tags:["premium"]);
+                print("object restore if ${ restoreId == ""}");
+                if (restoreId == "") {
+                  // Generate a new restore ID
+
+                  FreshchatUser user = await Freshchat.getUser;
+                     restoreId = user.getRestoreId();
+                 // restoreId = await Freshchat.getFreshchatUserId;
+                  await prefs.setString('restoreId', restoreId);
+                  await saveRestoreId(restoreId);
+                }
+
+                /*  //  String value = await Freshchat.getFreshchatUserId;
+                user.setFirstName(currentUser.value.name);
+                user.setEmail(currentUser.value.email);
+                user.setPhone("+91", currentUser.value.phone);*/
+                //  Freshchat.identifyUser(externalId:currentUser.value.email,restoreId: "a0e01ac6-b7b9-4b4b-a3d1-61c3f4208c0b");
+
               }
               else{
                 Navigator.of(context).pushNamed('/Login');
@@ -463,6 +504,64 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PrivacyPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Privacy and Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PricingCheckoutPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security_outlined,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Pricing & Checkout Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RefundCancellationPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security_rounded,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Refund & Cancellation Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+
           // ListTile(
           //   onTap: () {
           //     Navigator.of(context).pushNamed('/Languages');

@@ -97,7 +97,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
-            FoodsCarouselWidget(heroTag: 'menu_trending_food', foodsList: _homeCon.trendingFoodItems),
+            FoodsCarouselWidget(heroTag: 'menu_trending_food', foodsList: _homeCon.trendingFoodItems,enjoy:1),
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

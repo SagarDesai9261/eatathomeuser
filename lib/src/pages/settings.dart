@@ -9,6 +9,7 @@ import 'package:food_delivery_app/src/repository/translation_widget.dart';
 import 'package:food_delivery_app/utils/color.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import '../../generated/l10n.dart';
+import '../controllers/homr_test.dart';
 import '../controllers/settings_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
 import '../elements/DrawerWidget.dart';
@@ -702,51 +703,90 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                 ],
               ),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor:  Colors.grey,
-        selectedFontSize: 0,
-        unselectedFontSize: 0,
-        iconSize: 28,
-        elevation: 0,
-        unselectedItemColor:  Colors.grey,
-        backgroundColor: Colors.grey[100],
-        selectedIconTheme: IconThemeData(size: 28),
-        unselectedLabelStyle: TextStyle(
-            color: Colors.grey
-        ),
-        //   unselectedItemColor: Theme.of(context).focusColor.withOpacity(1),
-       // currentIndex: widget.currentTab,
-        currentIndex: 2,
-        onTap: (int i) {
-     //     print("DS>>> " + i.toString());
-          this._selectTab(i);
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton:   FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(
+                  parentScaffoldKey: widget.parentScaffoldKey,
+                  currentTab: 1,
+                  directedFrom: "forHome",
+                )),
+          );
         },
-        // this will be set when a new tab is tapped
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-                Icons.assignment
-            ),
-            label: 'Orders',
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          width: 56.0,
+          height: 56.0,
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color:Colors.white,
+
           ),
-          /* BottomNavigationBarItem(
-              icon: SvgPicture.asset('assets/img/dinein.svg',color: Colors.grey,height: 17,),
-              label: '',
-            ),*/
-          BottomNavigationBarItem(
-              label: '',
-              icon: new SvgPicture.asset('assets/img/home.svg',height: 80,)),
-          /* BottomNavigationBarItem(
-              icon: new SvgPicture.asset('assets/img/delivery.svg',color: Colors.grey,height: 17,),
-              label: '',
-            ),*/
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Carts',
-          ),
-        ],
+          child: Image.asset("assets/img/logo_bottom.png"),
+        ),
       ),
+
+
+      bottomNavigationBar:
+
+      BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 5.0,
+        height: 65,
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        child: SizedBox(
+          height: kBottomNavigationBarHeight,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(right: 70),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.assignment,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    if (currentUser.value.apiToken != null) {
+                      Navigator.of(context).pushNamed('/orderPage', arguments: 0);
+                    } else {
+                      Navigator.of(context).pushNamed('/Login');
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if(currentUser.value.apiToken != null){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartWidget(
+                          parentScaffoldKey: widget.parentScaffoldKey,
+                        ),
+                      ),
+                    );}
+                  else{
+                    Navigator.of(context).pushNamed('/Login');
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      )
+      ,
     );
   }
 
@@ -787,7 +827,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    HomeWidget(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
+                    HomePage(parentScaffoldKey: new GlobalKey(), directedFrom: "forHome",
                       currentTab: 1,)
             ),
           );

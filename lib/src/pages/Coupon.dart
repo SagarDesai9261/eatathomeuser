@@ -6,68 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import '../../utils/color.dart';
 import '../elements/CartBottomDetailsWidget.dart';
+import '../models/coupons.dart';
 import '../models/user.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/translation_widget.dart';
 import '../repository/user_repository.dart' as userRepo;
-class Coupon {
- // final String id;
-  final String name;
-  final String code; // Coupon code
-  final double discount; // Discount percentage
-  final double maxDiscount; // Maximum discount amount
-  final double minOrder; // Minimum order to apply the discount
-  final DateTime validUntil;
-  final String discounttype;
-  final bool enabled;
-
-  Coupon(
-      {//this.id,
-      this.name,
-      this.code,
-      this.discount,
-      this.maxDiscount,
-      this.minOrder,
-      this.validUntil,
-      this.discounttype,
-      this.enabled});
-
-  factory Coupon.fromJson(Map<String, dynamic> json) {
-    print( json['code'].runtimeType);
-    print( json['discount'].runtimeType);
-    print( json['max_discount'].runtimeType);
-    print( json['min_order'].runtimeType);
-    print( json['expires_at'].runtimeType);
-    print( json['discount_type'].runtimeType);
-
-
-
-    return Coupon(
-     // id: json['id'],
-      code: json['code'],
-
-      discount: json['discount'],
-      maxDiscount: json['max_discount'],
-      minOrder: json['min_order'],
-      validUntil: DateTime.parse(json['expires_at']),
-      discounttype: json['discount_type'],
-      // description: json['description'],
-      enabled: json['enabled'],
-    );
-  }
-
-
-
-  // Method to generate a custom description for the coupon
-  String getCustomDescription(String discounttype) {
-    String currancy = settingRepo.setting.value.defaultCurrency;
-
-    if(discounttype == "percent")
-    return "Use code '$code' and get $discount% off up to $currancy$maxDiscount on orders above $currancy$minOrder.";
-    else
-      return "Use code '$code' and get flat $currancy$discount off on orders above $currancy$minOrder.";
-  }
-}
 
 // final List<Coupon> couponData = [
 //   Coupon(

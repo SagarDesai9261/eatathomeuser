@@ -91,12 +91,12 @@ Future<Cart> addCart(Cart cart, bool reset) async {
   cart.userId = _user.id;
   final String url = '${GlobalConfiguration().getValue('api_base_url')}carts?$_apiToken&$_resetParam';
   final client = new http.Client();
-
+  print(url);
   // // print the request details
  //  print('Request URL: $url');
   // print('Request Body cart: ${json.encode(cart.toMap())}');
 
-
+  print(cart.toMap());
   final response = await client.post(
     Uri.parse(url),
     headers: {HttpHeaders.contentTypeHeader: 'application/json'},

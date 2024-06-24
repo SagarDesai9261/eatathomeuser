@@ -10,6 +10,7 @@ import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
 import '../../utils/color.dart';
+import '../controllers/homr_test.dart';
 import '../models/route_argument.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -19,7 +20,7 @@ class PaymentPage extends StatefulWidget {
   final RouteArgument routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
-  Widget currentPage = HomeWidget();
+  Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
   PaymentPage({Key key, this.routeArgument,this.total}) : super(key: key);

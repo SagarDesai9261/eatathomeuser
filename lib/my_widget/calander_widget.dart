@@ -14,7 +14,8 @@ class CalendarDialog extends StatefulWidget {
   String restaurantId;
   bool isDelivery;
   int selectedIndex;
-  CalendarDialog(this.restaurantId, this.isDelivery,this.selectedIndex);
+  bool issearch;
+  CalendarDialog(this.restaurantId, this.isDelivery,this.selectedIndex,this.issearch);
 
 
   @override
@@ -191,7 +192,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
                //   print("DS>> selected date:  "+_selectedDate.toString());
                   if(_selectedDate.toString().isNotEmpty){
                     //Navigator.pop(context);
-                    showTimePickerDialog(context, widget.restaurantId, widget.isDelivery, _selectedDate.toString(),widget.selectedIndex);
+                    showTimePickerDialog(context, widget.restaurantId, widget.isDelivery, _selectedDate.toString(),widget.selectedIndex,widget.issearch);
 
                   }
 
@@ -231,12 +232,12 @@ class _CalendarDialogState extends State<CalendarDialog> {
 }
 
 // Usage
-void showCalendarDialog(BuildContext context, String restaurantId, bool isDelivery,int selectedIndex) {
+void showCalendarDialog(BuildContext context, String restaurantId, bool isDelivery,int selectedIndex,{bool issearch = false}) {
  print("DS>> ##"+isDelivery.toString());
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return CalendarDialog(restaurantId, isDelivery,selectedIndex);
+      return CalendarDialog(restaurantId, isDelivery,selectedIndex,issearch);
     },
   );
 }

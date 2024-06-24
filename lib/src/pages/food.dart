@@ -147,7 +147,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                             ),
                                     ),
                                     Expanded(child: SizedBox(height: 0)),
-                                    Container(
+                                   /* Container(
                                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
                                         decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(24)),
                                         child: Text(
@@ -161,12 +161,12 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                         child: Text(
                                           _con.food.packageItemsCount + " " + S.of(context).items,
                                           style: Theme.of(context).textTheme.caption.merge(TextStyle(color: Theme.of(context).primaryColor)),
-                                        )),
+                                        )),*/
                                   ],
                                 ),
                                 Divider(height: 20),
                                 Helper.applyHtml(context, _con.food.description, style: TextStyle(fontSize: 12)),
-                                ListTile(
+                               /* ListTile(
                                   dense: true,
                                   contentPadding: EdgeInsets.symmetric(vertical: 10),
                                   leading: Icon(
@@ -288,7 +288,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                 ),
                                 ReviewsListWidget(
                                   reviewsList: _con.food.foodReviews,
-                                ),
+                                ),*/
                               ],
                             ),
                           ),
@@ -296,7 +296,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                       ],
                     ),
                   ),
-                  Positioned(
+                 /* Positioned(
                     top: 32,
                     right: 20,
                     child: _con.loadCart
@@ -310,7 +310,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                             labelColor: Theme.of(context).hintColor,
                             routeArgument: RouteArgument(param: '/Food', id: _con.food.id),
                           ),
-                  ),
+                  ),*/
                   Positioned(
                     bottom: 0,
                     child: Container(
@@ -363,7 +363,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                             SizedBox(height: 10),
                             Row(
                               children: <Widget>[
-                                Expanded(
+                              /*  Expanded(
                                   child: _con.favorite?.id != null
                                       ?
                                   Container(
@@ -409,14 +409,14 @@ class _FoodWidgetState extends StateMVC<FoodWidget> {
                                             Icons.favorite,
                                             color: Theme.of(context).primaryColor,
                                           )),
-                                ),
+                                ),*/
                                 SizedBox(width: 10),
                                 Stack(
                                   fit: StackFit.loose,
                                   alignment: AlignmentDirectional.centerEnd,
                                   children: <Widget>[
                                     SizedBox(
-                                      width: MediaQuery.of(context).size.width - 110,
+                                      width: MediaQuery.of(context).size.width - 50,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(30),

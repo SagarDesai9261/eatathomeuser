@@ -4,6 +4,7 @@ import 'package:food_delivery_app/src/elements/TimePickerDialog.dart';
 import 'package:food_delivery_app/src/repository/translation_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../src/models/coupons.dart';
 import '../src/models/food.dart';
 import '../src/models/restaurant.dart';
 import '../src/pages/dinein_summary_page.dart';
@@ -19,6 +20,7 @@ class Change_calender extends StatefulWidget {
   String default_tax;
   int total;
   List<Map<String,dynamic>>  fooditems;
+  Coupon selectedCoupon;
  /* String restaurantId;
   bool isDelivery;*/
   Change_calender(  this.total,
@@ -30,7 +32,8 @@ class Change_calender extends StatefulWidget {
       this.toTime,
       this.selectedFoodList,
       this.default_tax,
-      this.fooditems
+      this.fooditems,
+      this.selectedCoupon
       );
 
 
@@ -208,7 +211,7 @@ class _Change_calenderState extends State<Change_calender> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,widget.selectedPeople,_selectedDate.toString(),widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,[],widget.fooditems)
+                          builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,widget.selectedPeople,_selectedDate.toString(),widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,[],widget.fooditems,widget.selectedCoupon)
                       ),
                     );
                   }

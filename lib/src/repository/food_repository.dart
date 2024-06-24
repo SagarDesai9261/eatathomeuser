@@ -552,7 +552,9 @@ Future<List<Restaurant>> getKetchainDetails() async
     throw Exception('Failed to load restaurants');
   }
 }
-Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String restaurantId,{int limit = 2, int offset = 0}) async {
+Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String restaurantId,{int limit = 2, int offset = 0,String enjoy}) async {
+  print("enjoy ====> ${enjoy}");
+
   DateTime now = DateTime.now();
   String todayDate = "${now.year}-${now.month}-${now.day}";
 
@@ -565,6 +567,9 @@ Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String r
   _queryParams['category'] = '$categoryId'; // Ensure categoryId is converted to string
   _queryParams['limit']= '$limit';
   _queryParams['offset'] = '$offset';
+  if(enjoy != null){
+    _queryParams['enjoy'] = '$enjoy';
+  }
   uri = uri.replace(queryParameters: _queryParams);
   print('Request URL getFoodsByCategoryAndKitchen: ${uri.toString()}');
 

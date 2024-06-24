@@ -5,10 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:food_delivery_app/src/pages/restaurant.dart';
 import 'package:food_delivery_app/src/repository/cart_repository.dart';
 import 'package:food_delivery_app/src/repository/order_repository.dart';
 import 'package:food_delivery_app/src/repository/restaurant_repository.dart';
 import 'package:food_delivery_app/src/repository/search_repository.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -206,6 +209,8 @@ class Add_the_address with ChangeNotifier {
   String address2;
   geolocator.LocationPermission permission;
   bool isLocationEnabled;
+  Position currentposition;
+  bool isPositionDetermined = false;
   bool isLocationServiceDialogShown = false;
   Future<void> requestLocationPermission() async {
     final status = await Permission.location.request();
@@ -233,6 +238,7 @@ class Add_the_address with ChangeNotifier {
 
 
   void _savecurrentaddress()async{
+    print("save address calling");
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     _prefs.setString('selected_location', selectedlocation);
     _prefs.setDouble('selected_lat', selectedlocationLatlong.latitude);
@@ -293,7 +299,7 @@ class Add_the_address with ChangeNotifier {
       isLocationEnabled = await geolocator.Geolocator.isLocationServiceEnabled();
     }
 
-    await Future.delayed(Duration(seconds:3 ));
+    await Future.delayed(Duration(seconds:5 ));
     final position = await geolocator.Geolocator.getCurrentPosition(
       desiredAccuracy: geolocator.LocationAccuracy.high,
     );
@@ -324,7 +330,65 @@ class Add_the_address with ChangeNotifier {
 
 
   }
+  determinePosition() async {
+    if (isPositionDetermined) {
+      // Position has already been determined, no need to repeat.
+      return;
+    }
+    String currentAddress = 'My Address';
+    bool serviceEnabled;
+    LocationPermission permission;
 
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("permission", "LocationPermission.denied");
+      //Fluttertoast.showToast(msg: 'Please enable Your Location Service');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("permission", permission.toString());
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+       // Fluttertoast.showToast(msg: 'Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Fluttertoast.showToast(
+      //     msg: 'Location permissions are permanently denied, we cannot request permissions.');
+      return;
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      SharedPreferences prefss = await SharedPreferences.getInstance();
+      prefss.setString("longitude", position.longitude.toString());
+      prefss.setString("latitude", position.latitude.toString());
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      Placemark place = placemarks[0];
+
+
+
+      // Set the flag to true indicating that the position has been determined.
+      isPositionDetermined = true;
+    } catch (e) {
+      print(e);
+    }
+  }
   void address_split() {
     List<String> addresssplit = selectedlocation.split(",");
     address1 = addresssplit[0];
@@ -407,6 +471,7 @@ class Add_the_address with ChangeNotifier {
   }
 }
 class CartProvider extends ChangeNotifier {
+
   List<Cart> _cartItems = [];
   int cartCount = 0;
   double taxAmount = 0.0;
@@ -415,9 +480,15 @@ class CartProvider extends ChangeNotifier {
   double subTotal = 0.0;
   double total = 0.0;
   double deliveryCharges = 0.0;
-
+  bool _quantitiesSet = false;
   void clear_cart(){
     _cartItems.clear();
+  }
+  bool get quantitiesSet => _quantitiesSet;
+
+  void setQuantitiesSet(bool value) {
+    _quantitiesSet = value;
+    notifyListeners();
   }
   List<Cart> get cartItems => _cartItems;
   int get totalQuantity => _cartItems.fold<int>(0, (sum, cart) => sum + cart.quantity.toInt());
@@ -544,6 +615,7 @@ class OffersProvider with ChangeNotifier {
   List<Offer> get offers => _offers;
 
   OffersProvider(){
+    if(_offers.isEmpty)
     fetchOffers();
   }
 
@@ -552,9 +624,9 @@ class OffersProvider with ChangeNotifier {
     final response = await http.get(Uri.parse('${GlobalConfiguration().getValue('api_base_url')}offers'));
     if (response.statusCode == 200) {
       final dynamic responseData = json.decode(response.body)['data'];
-      print(responseData);
+   //   print(responseData);
       _offers = List<Offer>.from(responseData.map((offerData) => Offer.fromJson(offerData)));
-      print(_offers.length);
+   //   print(_offers.length);
       notifyListeners();
     } else {
       throw Exception('Failed to load offers');
@@ -613,11 +685,17 @@ class OrderProvider extends ChangeNotifier {
 }
 class RestaurantDataProvider extends ChangeNotifier {
   List<RestaurantModel> _restaurants = [];
-  List<Food> _foods = [];
+  List<Food> _foodsbreakfast = [];
+  List<Food> _foodslunch = [];
+  List<Food> _foodsdinner = [];
+  List<Food> _foodssnacks = [];
   bool _isLoading = false;
 
   List<RestaurantModel> get restaurants => _restaurants;
-  List<Food> get foods => _foods;
+  List<Food> get foodsbreakfast => _foodsbreakfast;
+  List<Food> get foodslunch => _foodslunch;
+  List<Food> get foodsdinner => _foodsdinner;
+  List<Food> get foodssnacks => _foodssnacks;
   bool get isLoading => _isLoading;
 
   RestaurantDataProvider(){
@@ -639,13 +717,29 @@ class RestaurantDataProvider extends ChangeNotifier {
 
           // print("hello");
           restaurants.clear();
-          foods.clear();
+          foodsbreakfast.clear();
+          foodslunch.clear();
+          foodsdinner.clear();
+          foodssnacks.clear();
+
+//          foods.clear();
           List<RestaurantModel> _restaurants = (result['kitchens'] as List).map((data) => RestaurantModel.fromJson(data)).toList();
 
-          List<Food> _foods = (result['foods'] as List).map((data) => Food.fromJSON(data)).toList();
-
+          List<Food>  _foodsbreckfast = (result['foods']["8"] as List).map((data) => Food.fromJSON(data)).toList();
+          List<Food>  _foodslunch = (result['foods']["9"] as List).map((data) => Food.fromJSON(data)).toList();
+          List<Food>  _foodssnacks = (result['foods']["7"] as List).map((data) => Food.fromJSON(data)).toList();
+          List<Food>  _foodsdinner = (result['foods']["10"] as List).map((data) => Food.fromJSON(data)).toList();
+          print(_foodsbreckfast.length);
+          print(_foodslunch.length);
+          print(_foodssnacks.length);
+          print(_foodsdinner.length);
+        //  print(_foods.first.name);
           restaurants.addAll(_restaurants);
-          foods.addAll(_foods);
+         foodsbreakfast.addAll(_foodsbreckfast);
+         foodslunch.addAll(_foodslunch);
+         foodsdinner.addAll(_foodssnacks);
+         foodssnacks.addAll(_foodsdinner);
+  //        foods.addAll(_foods);
 
       }, onError: (a) {
         // print(a);

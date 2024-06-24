@@ -185,6 +185,86 @@ class Helper {
       return Text('');
     }
   }
+  static Widget getPriceforcart(double myPrice, BuildContext context, {TextStyle style, String zeroPlaceholder = '0'}) {
+    //  print("myPrice is calling ==> ${myPrice}" );
+    if (style != null) {
+      style = style.merge(TextStyle(fontSize: style.fontSize + 2));
+    }
+    try {
+      if (myPrice == 0) {
+        return Text(zeroPlaceholder, style:  TextStyle(fontSize: 12.0,
+           // fontWeight: FontWeight.w500,
+            color: config.Colors().secondColor(1),
+            height: 1.35));
+      }
+      else if(myPrice < 0){
+        return RichText(
+          softWrap: false,
+          overflow: TextOverflow.fade,
+          maxLines: 1,
+          text: setting.value?.currencyRight != null && setting.value?.currencyRight == false
+              ? TextSpan(
+            text: "-₹",
+            style: style == null
+                ? Theme.of(context).textTheme.subtitle1.merge(
+              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+            )
+                : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
+            children: <TextSpan>[
+              TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+            ],
+          )
+              : TextSpan(
+            text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+            style: style ?? Theme.of(context).textTheme.subtitle1,
+            children: <TextSpan>[
+              TextSpan(
+                text: "-₹",
+                style: style == null
+                    ? Theme.of(context).textTheme.subtitle1.merge(
+                  TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+                )
+                    : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize , )),
+              ),
+            ],
+          ),
+        );
+      }
+      return RichText(
+        softWrap: false,
+        overflow: TextOverflow.fade,
+        maxLines: 1,
+        text: setting.value?.currencyRight != null && setting.value?.currencyRight == false
+            ? TextSpan(
+          text: "₹",
+          style: style == null
+              ? Theme.of(context).textTheme.subtitle1.merge(
+            TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+          )
+              : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
+          children: <TextSpan>[
+            TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+          ],
+        )
+            : TextSpan(
+          text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+          style: style ?? Theme.of(context).textTheme.subtitle1,
+          children: <TextSpan>[
+            TextSpan(
+              text: "₹",
+              style: style == null
+                  ? Theme.of(context).textTheme.subtitle1.merge(
+                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+              )
+                  : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize )),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      return Text('');
+    }
+  }
 
   static double getTotalOrderPrice(FoodOrder foodOrder) {
     double total = foodOrder.price;

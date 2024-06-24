@@ -220,6 +220,8 @@ class _Delivery_address_seelctionState extends State<Delivery_address_seelction>
                                   onTap: ()async{
                                     SharedPreferences prefs = await SharedPreferences.getInstance();
                                     prefs.setString("delivery_address_id", address["id"].toString());
+                                    print(address["address"]);
+
                                     Navigator.of(context).pop({"Address":address["address"],"id":address["id"]});
                                   },
                                   trailing: IconButton(
