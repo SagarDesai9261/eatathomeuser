@@ -17,13 +17,13 @@ import 'settings.dart';
 // ignore: must_be_immutable
 class PagesWidget extends StatefulWidget {
   dynamic currentTab;
-  RouteArgument routeArgument;
+  RouteArgument? routeArgument;
   Widget currentPage = HomePage();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   HomeController _con = HomeController();
 
    PagesWidget({
-    Key key,
+    Key? key,
     this.currentTab,
   }) {
     if (currentTab != null) {
@@ -63,7 +63,7 @@ class _PagesWidgetState extends State<PagesWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if (currentUser.value.apiToken != null) {
+          if (currentUser.value.apiToken != "") {
             Navigator.of(context).pushNamed('/orderPage', arguments: 0);
           } else {
             Navigator.of(context).pushNamed('/Login');
@@ -98,7 +98,7 @@ class _PagesWidgetState extends State<PagesWidget> {
           );
           break;
         case 2:
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -150,7 +150,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text("Yes",
-                        style: Theme.of(context).textTheme.bodyText1.merge(
+                        style: Theme.of(context).textTheme.bodyText1!.merge(
                             TextStyle(
                                 color: Theme.of(context).primaryColor)))
                   ],
@@ -219,7 +219,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                       size: 30,
                     ),
                     onPressed: () {
-                      if (currentUser.value.apiToken != null) {
+                      if (currentUser.value.apiToken != "") {
                         Navigator.of(context).pushNamed('/orderPage', arguments: 0);
                       } else {
                         Navigator.of(context).pushNamed('/Login');
@@ -233,7 +233,7 @@ class _PagesWidgetState extends State<PagesWidget> {
                     size: 30,
                   ),
                   onPressed: () {
-                    if(currentUser.value.apiToken != null){
+                    if(currentUser.value.apiToken != ""){
                       Navigator.push(
                         context,
                         MaterialPageRoute(

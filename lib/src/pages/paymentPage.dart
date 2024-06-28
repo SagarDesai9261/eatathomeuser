@@ -16,14 +16,14 @@ import '../models/route_argument.dart';
 class PaymentPage extends StatefulWidget {
 
 
-  String total;
-  final RouteArgument routeArgument;
+  String? total;
+  final RouteArgument? routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
-  PaymentPage({Key key, this.routeArgument,this.total}) : super(key: key);
+  PaymentPage({Key? key, this.routeArgument,this.total}) : super(key: key);
 
  /* @override
   State<PaymentPage> createState() => _PaymentPageState();*/
@@ -53,7 +53,7 @@ class _PaymentPageState extends StateMVC<PaymentPage> {
         centerTitle: true,
         title: Text(
           S.of(context).checkout,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
       ),
       body: widget.isCurrentKitchen ? Column(
@@ -107,7 +107,7 @@ class _PaymentPageState extends StateMVC<PaymentPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0),
-                    child: Text('Confirm Payment',style: Theme.of(context).textTheme.labelLarge.merge(
+                    child: Text('Confirm Payment',style: Theme.of(context).textTheme.labelLarge!.merge(
                       TextStyle(color: Colors.white)
                     )),
                   ),
@@ -116,10 +116,10 @@ class _PaymentPageState extends StateMVC<PaymentPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('AED',style: Theme.of(context).textTheme.titleSmall.merge(
+                        Text('AED',style: Theme.of(context).textTheme.titleSmall!.merge(
                           TextStyle(color: Colors.white)
                         ),),
-                        Text(widget.total.toString(),style: Theme.of(context).textTheme.titleLarge.merge(
+                        Text(widget.total.toString(),style: Theme.of(context).textTheme.titleLarge!.merge(
                           TextStyle(color: Colors.white))),
                       ],
                     ),
@@ -134,7 +134,7 @@ class _PaymentPageState extends StateMVC<PaymentPage> {
       ) : widget.currentPage,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: mainColor(1),
         selectedFontSize: 0,
         unselectedFontSize: 0,
         iconSize: 22,

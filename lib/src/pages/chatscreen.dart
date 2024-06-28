@@ -23,8 +23,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
 
   final _chatController = TextEditingController();
-  DateTime previousDate;
-  PlatformFile file;
+  DateTime? previousDate;
+  PlatformFile? file;
   String uploadPath = "";
   bool hasFile = false;
   String filePath = "";
@@ -87,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     final messageDate = DateTime.parse(_messages[index].createdAt);
-                    final shouldShowDateLabel = previousDate == null || messageDate.day != previousDate.day;
+                    final shouldShowDateLabel = previousDate == null || messageDate.day != previousDate!.day;
                     previousDate = messageDate;
 
                     if(_messages[index].messageType == "2"){
@@ -130,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           sendTime:  DateFormat('hh:mm a')
                               .format(DateTime.parse(_messages[index].createdAt)),
                           senderName: _messages[index].fromUserId,
-                          hasFile: hasFile,
+                          hasFile: hasFile, fileMessage: '', fileName: '',
                         ),
                       ],
                     );
@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                 setState(() {
                   prefs.clear();
-                  supportTicketId = null;
+                  supportTicketId = "";
 
                 });
                 if(supportTicketId.toString() == "null")
@@ -180,7 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (response.statusCode == 200) {
                     // Parse the response body as needed
                     final data = jsonDecode(response.body.toString());
-                    return data.toString();
+                    return data;
                   }
                   else {
                     // Handle error status codes as needed
@@ -206,14 +206,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 GestureDetector(
                     onTap: () async {
-                      FilePickerResult result =
+                      FilePickerResult? result =
                       await FilePicker.platform.pickFiles();
                       if (result != null) {
                         file = result.files.first;
                         setState(() {
                           file = result.files.first;
                           toShow = true;
-                          print("DS>>"+file.name.toString());
+                          print("DS>>"+file!.name.toString());
 
                         });
                       } else {
@@ -228,21 +228,21 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: file != null
                         ? Column(
                       children: [
-                        if (file.extension == 'jpg' ||
-                            file.extension == 'png' ||
-                            file.extension == 'jpeg')
+                        if (file!.extension == 'jpg' ||
+                            file!.extension == 'png' ||
+                            file!.extension == 'jpeg')
                           Image.file(
-                            File(file.path),
+                            File(file!.path!),
                             width: 100,
                             height: 100,
                           ),
-                        if (file.extension == 'pdf')
+                        if (file!.extension == 'pdf')
                           Icon(Icons.picture_as_pdf, size: 100),
                         SizedBox(height: 5),
                         Text(
-                          file.name.toString().length > 8
-                              ? '${file.name.toString().substring(0, 8)}...' // Truncate the string after 10 characters
-                              : file.name.toString(),
+                          file!.name.toString().length > 8
+                              ? '${file!.name.toString().substring(0, 8)}...' // Truncate the string after 10 characters
+                              : file!.name.toString(),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: Colors.black,
@@ -323,39 +323,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   // Create a list of ChatMessage objects
-  List<MessageBubble> chatMessages = [
-    MessageBubble(
-      message: "Hello, how are you?",
-      isMe: true,
-      sendTime: "03/11/2023",
-      senderName: "Disha",
-    ),
-    MessageBubble(
-      message: "I'm doing great!",
-      isMe: false,
-      sendTime: "03/11/2023",
-      senderName: "user",
-    ),
-    MessageBubble(
-      message: "Hey the kitchen was closed this weekend?",
-      isMe: true,
-      sendTime: "06/11/2023",
-      senderName: "User",
-    ),
-    MessageBubble(
-      message: "Yes we updated about this on the app",
-      isMe: false,
-      sendTime: "06/11/2023",
-      senderName: "Disha",
-    ),
-    MessageBubble(
-      message: "Okay. I would like to know the menu today",
-      isMe: true,
-      sendTime: "06/11/2023",
-      senderName: "Disha",
-    ),
-    // Add more ChatMessage objects as needed
-  ];
 
   Future<ChatHistoryMessages> GetChatHistory() async {
 
@@ -426,9 +393,9 @@ class _ChatScreenState extends State<ChatScreen> {
       request.files.add(
         http.MultipartFile(
           'message_file',
-          File(file.path.toString()).readAsBytes().asStream(),
-          file.size,
-          filename: file.name,
+          File(file!.path.toString()).readAsBytes().asStream(),
+          file!.size,
+          filename: file!.name,
         ),
       );
     }

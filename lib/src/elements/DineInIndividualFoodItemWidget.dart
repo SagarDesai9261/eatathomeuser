@@ -19,11 +19,11 @@ class DineInIndividualFoodItemWidget extends StatefulWidget {
   Function(Food) updateFoodList;
 
   DineInIndividualFoodItemWidget({
-    Key key,
-    this.heroTag,
-    this.food,
-    this.updateFoodList,
-  }) : super(key: key);
+
+   required this.heroTag,
+   required this.food,
+   required this.updateFoodList,
+  }) ;
 
   @override
   State<DineInIndividualFoodItemWidget> createState() =>
@@ -33,8 +33,8 @@ class DineInIndividualFoodItemWidget extends StatefulWidget {
 class _DineInIndividualFoodItemWidgetState extends State<DineInIndividualFoodItemWidget> {
   FoodController _foodcon = FoodController();
   String updatedQuantity = "1.0";
-  List<Food> foodList = List<Food>();
-  String defaultLanguage;
+  List<Food> foodList = [];
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -55,8 +55,8 @@ class _DineInIndividualFoodItemWidgetState extends State<DineInIndividualFoodIte
   Widget build(BuildContext context) {
     print("DS>>>> "+widget.food.image);
     return InkWell(
-        splashColor: Theme.of(context).accentColor,
-        focusColor: Theme.of(context).accentColor,
+        // splashColor: Theme.of(context).accentColor,
+        // focusColor: Theme.of(context).accentColor,
        // highlightColor: Theme.of(context).primaryColor,
         onTap: () {
           /* Navigator.of(context).pushNamed('/Food',

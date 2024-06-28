@@ -10,7 +10,7 @@ class MyOrderItemWidget extends StatefulWidget {
   final Order order;
   final ValueChanged<void> onCanceled;
 
-  MyOrderItemWidget({Key key, this.expanded, this.order, this.onCanceled})
+  MyOrderItemWidget({Key? key, required this.expanded,required this.order,required this.onCanceled})
       : super(key: key);
 
 
@@ -36,10 +36,10 @@ class _MyOrderItemWidgetState extends State<MyOrderItemWidget> {
                 width: 60,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: widget.order.foodOrders.length>0 ? CachedNetworkImage(
+                  child: widget.order.foodOrders!.length>0 ? CachedNetworkImage(
                     fit: BoxFit.cover,
                     imageUrl:
-                    widget.order.foodOrders[0].food.image.toString() ,
+                    widget.order.foodOrders![0].food!.image.toString() ,
                     placeholder: (context, url) => Image.asset(
                       'assets/img/loading.gif',
                       fit: BoxFit.cover,
@@ -68,19 +68,19 @@ class _MyOrderItemWidgetState extends State<MyOrderItemWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              widget.order.foodOrders.length>0 ? widget.order.foodOrders[0].food.name : "",
+                              widget.order.foodOrders!.length>0 ? widget.order.foodOrders![0].food!.name : "",
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: Theme.of(context).textTheme.subtitle1,
                             ),
                             Text(
-                              widget.order.orderStatus.status.toString(),
+                              widget.order.orderStatus!.status.toString(),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: TextStyle(fontSize: 12, color: Colors.red),
                             ),
                             Text(
-                              "Order ID: "+widget.order.id,
+                              "Order ID: "+widget.order.id!,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                               style: TextStyle(fontSize: 12, color: Colors.grey),

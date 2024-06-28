@@ -10,6 +10,7 @@ import '../../my_widget/delivery_adressess.dart';
 import '../models/coupons.dart';
 import '../models/user.dart';
 import '../pages/Coupon.dart';
+import '../pages/restaurant.dart';
 import '../provider.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 import '../../generated/l10n.dart';
@@ -26,11 +27,11 @@ import 'package:intl/intl.dart';
 import '../../src/helpers/app_config.dart' as config;
 
 class CartBottomDetailsWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
   const CartBottomDetailsWidget(
-      {Key key, @required CartController con, this.parentScaffoldKey})
-      : _con = con,
-        super(key: key);
+      { required CartController con, this.parentScaffoldKey})
+      : _con = con
+       ;
 
   final CartController _con;
 
@@ -41,16 +42,16 @@ class CartBottomDetailsWidget extends StatefulWidget {
 
 class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
   Map<String, dynamic> paymentIntent = {};
-  String defaultLanguage;
+  String defaultLanguage = "";
   String apiToken = "";
   TextEditingController _couponCodeController = TextEditingController();
   double coupondiscount = 0.0;
   int grandTotal = 0;
   String CouponText = "Apply";
-  Coupon appliedCoupon;
+  Coupon? appliedCoupon;
   double appliedCouponamount = 0.0;
   bool IsMakePayment = false;
-  Map selectedAddresses ;
+  Map? selectedAddresses ;
   @override
   void initState() {
     getCurrentDefaultLanguage();
@@ -249,7 +250,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                             style: Theme.of(context).textTheme.bodyText1,
                           )*/
                                     TranslationWidget(
-                                  message: 'You have ${appliedCoupon.code} coupon Applied',
+                                  message: 'You have ${appliedCoupon!.code} coupon Applied',
                                   fromLanguage: "English",
                                   toLanguage: defaultLanguage,
                                   builder: (translatedMessage) => Text(
@@ -308,7 +309,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                                   style: Theme.of(context).textTheme.bodyText1,
                                   children: <TextSpan>[
                                     TextSpan(
-                                      text: "(${appliedCoupon.code})", // Bold this part
+                                      text: "(${appliedCoupon!.code})", // Bold this part
                                       style: TextStyle(fontWeight: FontWeight.bold),
                                     ),
                                   ],
@@ -325,7 +326,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                               text: "-₹",
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
-                                fontSize: Theme.of(context).textTheme.subtitle1.fontSize,
+                                fontSize: Theme.of(context).textTheme.subtitle1!.fontSize,
                                 color: kFBBlue,
                               ),
                               children: <TextSpan>[
@@ -393,7 +394,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                         Helper.getPrice(
                             (widget._con.subTotal *
                                 widget
-                                    ._con.carts[0].food.restaurant.defaultTax /
+                                    ._con.carts[0].food!.restaurant!.defaultTax! /
                                 100),
                             context,
                             style: TextStyle(
@@ -460,7 +461,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                     if(selectedAddresses != null)
                      ListTile(
                        contentPadding: EdgeInsets.zero,
-                       title: Text("Delivers To ${selectedAddresses["Address"]}",),
+                       title: Text("Delivers To ${selectedAddresses!["Address"]}",),
                        trailing: InkWell(
                            onTap: ()async{
                              final selectedAddress = await
@@ -507,7 +508,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                                         ( (grandTotal.toDouble() +
                                             (widget._con.subTotal *
                                                 widget._con.carts[0].food
-                                                    .restaurant.defaultTax /
+                                                    !.restaurant!.defaultTax! /
                                                 100)- appliedCouponamount) )
                                             .toInt()
                                             .toString(),
@@ -553,7 +554,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
-                                        .merge(TextStyle(
+                                        !.merge(TextStyle(
                                             color: Theme.of(context)
                                                 .primaryColor)),
                                   ),
@@ -570,8 +571,8 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
                                       ? 0
                                       : widget._con.deliveryCharges) +
                                   (widget._con.subTotal *
-                                      widget._con.carts[0].food.restaurant
-                                          .defaultTax /
+                                      widget._con.carts[0].food!.restaurant
+                                          !.defaultTax! /
                                       100))- appliedCouponamount,
                               context,
                               style: TextStyle(
@@ -603,30 +604,30 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
     });
   }
 
-  Future<CouponModel> getCouponDetails(String id, String apiToken) async {
-    final url = Uri.parse(
-        'https://eatathome.in/app/api/coupons/$id'); // Replace with your API endpoint
-    final response = await http.get(url, headers: {
-      'Authorization': 'Bearer $apiToken',
-    });
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      if (data.containsKey('data')) {
-        final Map<String, dynamic> couponData = data['data'];
-
-        if (couponData != null) {
-          final CouponModel coupon = CouponModel.fromJson(couponData);
-          return coupon;
-        }
-      }
-    } else if (response.statusCode == 404) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Coupon not found"),
-      ));
-    }
-  }
+  // Future<CouponModel> getCouponDetails(String id, String apiToken) async {
+  //   final url = Uri.parse(
+  //       'https://eatathome.in/app/api/coupons/$id'); // Replace with your API endpoint
+  //   final response = await http.get(url, headers: {
+  //     'Authorization': 'Bearer $apiToken',
+  //   });
+  //
+  //   if (response.statusCode == 200) {
+  //     final Map<String, dynamic> data = json.decode(response.body);
+  //
+  //     if (data.containsKey('data')) {
+  //       final Map<String, dynamic> couponData = data['data'];
+  //
+  //       if (couponData != null) {
+  //         final CouponModel coupon = CouponModel.fromJson(couponData);
+  //         return coupon;
+  //       }
+  //     }
+  //   } else if (response.statusCode == 404) {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text("Coupon not found"),
+  //     ));
+  //   }
+  // }
 
   Future<void> makePayment(String totalamount, BuildContext context) async {
     try {
@@ -635,8 +636,8 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
       await stripe.Stripe.instance.initPaymentSheet(
         paymentSheetParameters: stripe.SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntent['client_secret'],
-          googlePay: const stripe.PaymentSheetGooglePay(
-              testEnv: true, currencyCode: "AED", merchantCountryCode: "+971"),
+          // googlePay: const stripe.PaymentSheetGooglePay(
+          //     testEnv: true, currencyCode: "AED", merchantCountryCode: "+971"),
           style: ThemeMode.dark,
           merchantDisplayName: 'Abc',
         ),
@@ -676,7 +677,7 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
       /* ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Paid successfully")),
       );*/
-      paymentIntent = null;
+      paymentIntent = {};
     } on stripe.StripeException catch (e) {
       print('Error: $e');
       showDialog(
@@ -735,13 +736,13 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
     print("DS>> food display " +
         widget._con.carts.length.toString() +
         " " +
-        widget._con.carts[0].food.price.toString());
+        widget._con.carts[0].food!.price.toString());
     final foods = <Map<String, dynamic>>[];
     for (int i = 0; i < widget._con.carts.length; i++) {
       final food = {
-        'price': '${widget._con.carts[i].food.price.toString()}',
+        'price': '${widget._con.carts[i].food!.price.toString()}',
         'quantity': '${widget._con.carts[i].quantity.toString()}',
-        'food_id': '${widget._con.carts[i].food.id.toString()}',
+        'food_id': '${widget._con.carts[i].food!.id.toString()}',
         'order_date': sltdDate,
       };
       // Add more items as needed
@@ -756,16 +757,16 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
       },
       'user_id': '${currentUser.value.id}',
       'order_status_id': 1,
-      'tax': widget._con.carts[0].food.restaurant.defaultTax,
+      'tax': widget._con.carts[0].food!.restaurant!.defaultTax,
       'delivery_address_id': null,
-      'coupon_id':'${appliedCoupon!= null ? appliedCoupon.code : ""}',
+      'coupon_id':'${appliedCoupon!= null ? appliedCoupon!.code : ""}',
       'delivery_fee':
           widget._con.deliveryCharges > 0 ? widget._con.deliveryCharges : 0.0,
       'hint': null,
       'foods': foods,
-      'restaurant_id': widget._con.carts.first.food.restaurant.id,
+      'restaurant_id': widget._con.carts.first.food!.restaurant!.id,
       'delivery_dinein': 1,
-      "delivery_address_id":selectedAddresses["id"],
+      "delivery_address_id":selectedAddresses!["id"],
       'payment_id': transaction_id
     };
     /*  final payload = {
@@ -798,10 +799,10 @@ class _CartBottomDetailsWidgetState extends State<CartBottomDetailsWidget> {
     if (response.statusCode == 200) {
       // Request successful, handle the response
       print('API response: ${response.body}');
-      await Provider.of<CartProvider>(
-              settingRepo.navigatorKey.currentState.context,
-              listen: false)
-          .clear_cart();
+       Provider.of<CartProvider>(
+              settingRepo.navigatorKey.currentState!.context,
+              listen: false).clear_cart();
+      Provider.of<QuantityProvider>(context, listen: false).clearQuantity();
       Navigator.of(context).pushReplacementNamed('/OrderSuccess');
       //  widget._con.goCheckout(context);
     } else {

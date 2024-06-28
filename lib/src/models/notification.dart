@@ -5,34 +5,30 @@ class Notification {
   String type;
   Map<String, dynamic> data;
   bool read;
-  DateTime createdAt;
-  String body_message;
+  DateTime? createdAt;
+  String bodyMessage;
 
-  Notification();
+  Notification({
+    this.id = '',
+    this.type = '',
+    this.data = const {},
+    this.read = false,
+    this.createdAt,
+    this.bodyMessage = '',
+  });
 
-  Notification.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      body_message = jsonMap['body'].toString() ?? "";
-      type = jsonMap['type'] != null ? jsonMap['type'].toString() : '';
-      data = jsonMap['data'] != null ? {} : {};
-      read = jsonMap['read_at'] != null ? true : false;
-      createdAt = DateTime.parse(jsonMap['created_at']);
-    } catch (e) {
-      id = '';
-      type = '';
-      data = {};
-      body_message = "";
-      read = false;
-      createdAt = new DateTime(0);
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Notification.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        bodyMessage = jsonMap['body'].toString() ?? "",
+        type = jsonMap['type'] != null ? jsonMap['type'].toString() : '',
+        data = jsonMap['data'] ?? {},
+        read = jsonMap['read_at'] != null,
+        createdAt = DateTime.tryParse(jsonMap['created_at']) ?? DateTime(0);
 
-  Map markReadMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["read_at"] = !read;
-    return map;
+  Map<String, dynamic> markReadMap() {
+    return {
+      "id": id,
+      "read_at": !read,
+    };
   }
 }

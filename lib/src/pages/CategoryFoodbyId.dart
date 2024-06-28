@@ -6,19 +6,19 @@ import 'package:food_delivery_app/src/models/route_argument.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 class CategoryFoodById extends StatefulWidget {
-  final RouteArgument routeArgument;
+   RouteArgument? routeArgument;
 
-  CategoryFoodById({Key key, this.routeArgument}) : super(key: key);
+  CategoryFoodById({Key? key, this.routeArgument}) : super(key: key);
   @override
   _CategoryFoodByIdState createState() => _CategoryFoodByIdState();
 }
 
 class _CategoryFoodByIdState extends StateMVC<CategoryFoodById> {
 
-  CategoryController _con;
+  CategoryController? _con;
 
   _CategoryFoodByIdState() : super(CategoryController()) {
-    _con = controller;
+    _con = controller as CategoryController?;
   }
 
   @override

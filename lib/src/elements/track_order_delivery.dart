@@ -23,8 +23,8 @@ class TrackingOrderDelivery extends StatefulWidget {
 }
 
 class _TrackingOrderDeliveryState extends State<TrackingOrderDelivery> {
-  TrackingController _con;
-  TabController _tabController;
+  TrackingController? _con;
+  TabController? _tabController;
   int _tabIndex = 0;
   Map<String, dynamic> driverDetails = {} ;
   String driverName = "";
@@ -56,7 +56,7 @@ class _TrackingOrderDeliveryState extends State<TrackingOrderDelivery> {
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .merge(TextStyle(letterSpacing: 1.3)),
+                !.merge(TextStyle(letterSpacing: 1.3)),
           ),
           /*actions: <Widget>[
                     new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),

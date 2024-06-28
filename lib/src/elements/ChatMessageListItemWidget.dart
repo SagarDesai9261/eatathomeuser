@@ -5,13 +5,13 @@ import '../models/chat.dart';
 import '../repository/user_repository.dart';
 
 class ChatMessageListItem extends StatelessWidget {
-  final Chat chat;
+  final Chat? chat;
 
   ChatMessageListItem({this.chat});
 
   @override
   Widget build(BuildContext context) {
-    return currentUser.value.id == this.chat.userId
+    return currentUser.value.id == this.chat!.userId
         ? getSentMessageLayout(context)
         : getReceivedMessageLayout(context);
   }
@@ -37,14 +37,14 @@ class ChatMessageListItem extends StatelessWidget {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  new Text(this.chat.user.name,
+                  new Text(this.chat!.user.name,
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1
-                          .merge(TextStyle(fontWeight: FontWeight.w600))),
+                          !.merge(TextStyle(fontWeight: FontWeight.w600))),
                   new Container(
                     margin: const EdgeInsets.only(top: 5.0),
-                    child: new Text(chat.text),
+                    child: new Text(chat!.text!),
                   ),
                 ],
               ),
@@ -58,7 +58,7 @@ class ChatMessageListItem extends StatelessWidget {
                 child: CachedNetworkImage(
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  imageUrl: this.chat.user.image.thumb,
+                  imageUrl: this.chat!.user.image!.thumb,
                   placeholder: (context, url) => Image.asset(
                     'assets/img/loading.gif',
                     fit: BoxFit.cover,
@@ -79,7 +79,7 @@ class ChatMessageListItem extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
+           // color: Theme.of(context).accentColor,
             borderRadius: BorderRadius.only(
                 topRight: Radius.circular(15),
                 bottomLeft: Radius.circular(15),
@@ -100,7 +100,7 @@ class ChatMessageListItem extends StatelessWidget {
                 child: CachedNetworkImage(
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  imageUrl: this.chat.user.image.thumb,
+                  imageUrl: this.chat!.user.image!.thumb,
                   placeholder: (context, url) => Image.asset(
                     'assets/img/loading.gif',
                     fit: BoxFit.cover,
@@ -114,15 +114,15 @@ class ChatMessageListItem extends StatelessWidget {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Text(this.chat.user.name,
-                      style: Theme.of(context).textTheme.bodyText1.merge(
+                  new Text(this.chat!.user.name,
+                      style: Theme.of(context).textTheme.bodyText1!.merge(
                           TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Theme.of(context).primaryColor))),
                   new Container(
                     margin: const EdgeInsets.only(top: 5.0),
                     child: new Text(
-                      chat.text,
+                      chat!.text!,
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),

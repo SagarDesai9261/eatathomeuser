@@ -10,11 +10,11 @@ import '../repository/notification_repository.dart';
 import '../repository/user_repository.dart';
 
 class ChatController extends ControllerMVC {
-  Conversation conversation;
-  ChatRepository _chatRepository;
-  Stream<QuerySnapshot> conversations;
-  Stream<QuerySnapshot> chats;
-  GlobalKey<ScaffoldState> scaffoldKey;
+  Conversation? conversation;
+  ChatRepository? _chatRepository;
+  Stream<QuerySnapshot>? conversations;
+  Stream<QuerySnapshot>? chats;
+  GlobalKey<ScaffoldState>? scaffoldKey;
 
   ChatController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -34,13 +34,13 @@ class ChatController extends ControllerMVC {
     setState(() {
       conversation = _conversation;
     });
-    _chatRepository.createConversation(conversation).then((value) {
-      listenForChats(conversation);
+    _chatRepository!.createConversation(conversation!).then((value) {
+      listenForChats(conversation!);
     });
   }
 
   listenForConversations() async {
-    _chatRepository.getUserConversations(currentUser.value.id).then((snapshots) {
+    _chatRepository!.getUserConversations(currentUser.value.id).then((snapshots) {
       setState(() {
         conversations = snapshots;
       });
@@ -49,7 +49,7 @@ class ChatController extends ControllerMVC {
 
   listenForChats(Conversation _conversation) async {
     _conversation.readByUsers.add(currentUser.value.id);
-    _chatRepository.getChats(_conversation).then((snapshots) {
+    _chatRepository!.getChats(_conversation).then((snapshots) {
       setState(() {
         chats = snapshots;
         //chats.
@@ -58,18 +58,18 @@ class ChatController extends ControllerMVC {
   }
 
   addMessage(Conversation _conversation, String text) {
-    Chat _chat = new Chat(text, DateTime.now().toUtc().millisecondsSinceEpoch, currentUser.value.id);
+    Chat _chat = new Chat();
     if (_conversation.id == null) {
       _conversation.id = UniqueKey().toString();
       createConversation(_conversation);
     }
     _conversation.lastMessage = text;
-    _conversation.lastMessageTime = _chat.time;
+    _conversation.lastMessageTime = _chat.time!;
     _conversation.readByUsers = [currentUser.value.id];
-    _chatRepository.addMessage(_conversation, _chat).then((value) {
+    _chatRepository!.addMessage(_conversation, _chat).then((value) {
       _conversation.users.forEach((_user) {
         if (_user.id != currentUser.value.id) {
-          sendNotification(text, S.of(state.context).newMessageFrom + " " + currentUser.value.name, _user);
+          sendNotification(text, S.of(state!.context).newMessageFrom + " " + currentUser.value.name, _user);
         }
       });
     });

@@ -9,7 +9,7 @@ import '../repository/food_repository.dart';
 class FavoriteController extends ControllerMVC {
   List<FavouriteModel> favorites = <FavouriteModel>[];
   List<FavouriteModel> originalFavorites = <FavouriteModel>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
   bool isLoading = false;
 
   FavoriteController() {
@@ -17,7 +17,7 @@ class FavoriteController extends ControllerMVC {
     listenForFavorites();
   }
 
-  Future<String> listenForFavorites({String message}) async {
+  Future<String?> listenForFavorites({String? message}) async {
    // setState(() {
       isLoading = true;
       print("calling function");
@@ -45,7 +45,7 @@ class FavoriteController extends ControllerMVC {
     }
 
     if (message != null && message != "") {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!!).showSnackBar(SnackBar(
         content: Text(message),
       ));
     }
@@ -74,6 +74,6 @@ class FavoriteController extends ControllerMVC {
 
   Future<void> refreshFavorites() async {
     favorites.clear();
-    listenForFavorites(message: S.of(state.context).favorites_refreshed_successfuly);
+    listenForFavorites(message: S.of(state!.context).favorites_refreshed_successfuly);
   }
 }

@@ -15,27 +15,27 @@ import '../models/route_argument.dart';
 import '../repository/settings_repository.dart';
 
 class DeliveryAddressesWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  DeliveryAddressesWidget({Key key, this.routeArgument}) : super(key: key);
+  DeliveryAddressesWidget({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _DeliveryAddressesWidgetState createState() => _DeliveryAddressesWidgetState();
 }
 
 class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
-  DeliveryAddressesController _con;
-  PaymentMethodList list;
+  DeliveryAddressesController? _con;
+  PaymentMethodList? list;
 
   _DeliveryAddressesWidgetState() : super(DeliveryAddressesController()) {
-    _con = controller;
+    _con = controller as DeliveryAddressesController?;
   }
 
   @override
   Widget build(BuildContext context) {
     list = new PaymentMethodList(context);
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -43,13 +43,13 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
         centerTitle: true,
         title: Text(
           S.of(context).delivery_addresses,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+        // new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         ],
       ),
-      floatingActionButton: _con.cart != null && _con.cart.food.restaurant.availableForDelivery
+      floatingActionButton: _con!.cart != null && _con!.cart!.food!.restaurant!.availableForDelivery!
           ? FloatingActionButton(
               onPressed: () async {
                 // LocationResult result = await showLocationPicker(
@@ -69,14 +69,14 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
                 //print("result = $result");
                 // //setState(() => _pickedLocation = result);
               },
-              backgroundColor: Theme.of(context).accentColor,
+         //     backgroundColor: Theme.of(context).accentColor,
               child: Icon(
                 Icons.add,
                 color: Theme.of(context).primaryColor,
               ))
           : SizedBox(height: 0),
       body: RefreshIndicator(
-        onRefresh: _con.refreshAddresses,
+        onRefresh: _con!.refreshAddresses,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,42 +105,43 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
                   ),
                 ),
               ),
-              _con.addresses.isEmpty
+              _con!.addresses.isEmpty
                   ? CircularLoadingWidget(height: 250)
                   : ListView.separated(
                       padding: EdgeInsets.symmetric(vertical: 15),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       primary: false,
-                      itemCount: _con.addresses.length,
+                      itemCount: _con!.addresses.length,
                       separatorBuilder: (context, index) {
                         return SizedBox(height: 15);
                       },
                       itemBuilder: (context, index) {
-                        return DeliveryAddressesItemWidget(
-                          address: _con.addresses.elementAt(index),
-                          onPressed: (Address _address) {
-                            DeliveryAddressDialog(
-                              context: context,
-                              address: _address,
-                              onChanged: (Address _address) {
-                                _con.updateAddress(_address);
-                              },
-                            );
-                          },
-                          onLongPress: (Address _address) {
-                            DeliveryAddressDialog(
-                              context: context,
-                              address: _address,
-                              onChanged: (Address _address) {
-                                _con.updateAddress(_address);
-                              },
-                            );
-                          },
-                          onDismissed: (Address _address) {
-                            _con.removeDeliveryAddress(_address);
-                          },
-                        );
+                        // return DeliveryAddressesItemWidget(
+                        //   address: _con!.addresses.elementAt(index),
+                        //   onPressed: (Address _address) {
+                        //     DeliveryAddressDialog(
+                        //       context: context,
+                        //       address: _address,
+                        //       onChanged: (Address _address) {
+                        //         _con.updateAddress(_address);
+                        //       },
+                        //     );
+                        //   },
+                        //   onLongPress: (Address _address) {
+                        //     DeliveryAddressDialog(
+                        //       context: context,
+                        //       address: _address,
+                        //       onChanged: (Address _address) {
+                        //         _con!.updateAddress(_address);
+                        //       },
+                        //     );
+                        //   },
+                        //   onDismissed: (Address _address) {
+                        //     _con!.removeDeliveryAddress(_address);
+                        //   },
+                        // );
+                        return Container();
                       },
                     ),
             ],

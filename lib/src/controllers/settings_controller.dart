@@ -12,9 +12,8 @@ import '../repository/user_repository.dart' as repository;
 
 class SettingsController extends ControllerMVC {
   CreditCard creditCard = new CreditCard();
-  GlobalKey<FormState> loginFormKey;
-  GlobalKey<ScaffoldState> scaffoldKey;
-
+  GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   SettingsController() {
     loginFormKey = new GlobalKey<FormState>();
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -25,24 +24,24 @@ class SettingsController extends ControllerMVC {
       repository.currentUser.value.verificationId = verId;
     };
 
-    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResent]) {
+    final PhoneCodeSent smsCodeSent = (String verId, [int? forceCodeResent]) {
       repository.currentUser.value.verificationId = verId;
       Navigator.push(
-        scaffoldKey.currentContext,
+        scaffoldKey.currentContext!,
         MaterialPageRoute(
             builder: (context) => MobileVerification2(
               onVerified: (v) {
-                Navigator.of(scaffoldKey.currentContext).pushNamed('/Settings');
+                Navigator.of(scaffoldKey.currentContext!).pushNamed('/Settings');
               },
             )),
       );
-    };
+    } as PhoneCodeSent;
     final PhoneVerificationCompleted _verifiedSuccess = (AuthCredential auth) {
-      Navigator.of(scaffoldKey.currentContext).pushNamed('/Settings');
+      Navigator.of(scaffoldKey.currentContext!).pushNamed('/Settings');
     };
     final PhoneVerificationFailed _verifyFailed = (FirebaseAuthException e) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(e.message),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(e.message!),
       ));
       // print(e.toString());
     };
@@ -57,11 +56,11 @@ class SettingsController extends ControllerMVC {
   }
 
   void update(userModel.User user) async {
-    user.deviceToken = null;
-    repository.update(user,user.identity).then((value) {
+    user.deviceToken = "";
+    repository.update(user,user.identity!).then((value) {
       setState(() {});
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).profile_settings_updated_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).profile_settings_updated_successfully),
       ));
     });
   }
@@ -69,8 +68,8 @@ class SettingsController extends ControllerMVC {
   void updateCreditCard(CreditCard creditCard) {
     repository.setCreditCard(creditCard).then((value) {
       setState(() {});
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).payment_settings_updated_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).payment_settings_updated_successfully),
       ));
     });
   }

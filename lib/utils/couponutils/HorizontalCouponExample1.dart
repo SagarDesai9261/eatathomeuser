@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class HorizontalCouponExample1 extends StatelessWidget {
   List<CouponModel> couponModelList;
-   HorizontalCouponExample1(this.couponModelList, {Key key}) : super(key: key);
+   HorizontalCouponExample1(this.couponModelList, );
 
   @override
   Widget build(BuildContext context) {

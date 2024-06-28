@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "709555697915",
-    "project_id": "comeeathome-bd91c",
-    "storage_bucket": "comeeathome-bd91c.appspot.com"
+    "project_number": "347247620181",
+    "project_id": "eat-at-home-f2396",
+    "storage_bucket": "eat-at-home-f2396.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:709555697915:android:a870198ac293f34806985e",
+        "mobilesdk_app_id": "1:347247620181:android:f4d8aa269f5243e2a1e4dc",
         "android_client_info": {
-          "package_name": "com.comeeathome"
+          "package_name": "com.eatathomeuser"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCpIB_9tewil3GD3SMMs9gaCZfwgMz8Ajg"
+          "current_key": "AIzaSyC0KAwLgiB5EH5Iyu4t5lREDhk9Olp0Jbs"
         }
       ],
       "services": {

@@ -7,7 +7,7 @@ import '../models/gallery.dart';
 class GalleryItemWidget extends StatelessWidget {
   final Gallery gallery;
 
-  GalleryItemWidget({Key key, this.gallery}) : super(key: key);
+  GalleryItemWidget({Key? key, required this.gallery}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class GalleryItemWidget extends StatelessWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                    color: Theme.of(context).accentColor.withOpacity(0.1),
+                   // color: Theme.of(context).accentColor.withOpacity(0.1),
                     blurRadius: 15,
                     offset: Offset(0, 5)),
               ],

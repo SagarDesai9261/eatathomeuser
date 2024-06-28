@@ -16,7 +16,7 @@ class ProfileSettingsDialog extends StatefulWidget {
   final User user;
   final VoidCallback onChanged;
 
-  ProfileSettingsDialog({Key key, this.user, this.onChanged}) : super(key: key);
+  ProfileSettingsDialog({Key? key, required this.user,required this.onChanged}) : super(key: key);
 
   @override
   _ProfileSettingsDialogState createState() => _ProfileSettingsDialogState();
@@ -25,11 +25,11 @@ class ProfileSettingsDialog extends StatefulWidget {
 class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
   GlobalKey<FormState> _profileSettingsFormKey = new GlobalKey<FormState>();
   TextEditingController _addressController = TextEditingController();
-  LatLng _selectedLocation;
-  File _identityFile;
+  LatLng? _selectedLocation;
+  File? _identityFile;
 
   Future<void> _getCurrentLocation() async {
-    geolocator.Position position;
+    geolocator.Position? position;
 
     try {
       position = await geolocator.Geolocator.getCurrentPosition(
@@ -41,7 +41,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
 
     if (position != null) {
       setState(() {
-        _selectedLocation = LatLng(position.latitude, position.longitude);
+        _selectedLocation = LatLng(position!.latitude, position!.longitude);
       });
     }
   }
@@ -60,7 +60,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
   @override
   Widget build(BuildContext context) {
 
-    print(widget.user.latitude);
+    print(widget.user.image!.url);
     return MaterialButton(
       elevation: 0,
       focusElevation: 0,
@@ -96,10 +96,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                               labelText: "Full Name"),
                           initialValue: widget.user.name,
                           enabled: true,
-                          validator: (input) => input.trim().length < 3
+                          validator: (input) => input!.trim().length < 3
                               ? S.of(context).not_a_valid_full_name
                               : null,
-                          onSaved: (input) => widget.user.name = input,
+                          onSaved: (input) => widget.user.name = input!,
                         ),
                         new TextFormField(
                           style: TextStyle(color: Theme.of(context).hintColor),
@@ -109,10 +109,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                               labelText: S.of(context).email_address),
                           initialValue: widget.user.email,
                           enabled: false,
-                          validator: (input) => !input.contains('@')
+                          validator: (input) => !input!.contains('@')
                               ? S.of(context).not_a_valid_email
                               : null,
-                          onSaved: (input) => widget.user.email = input,
+                          onSaved: (input) => widget.user.email = input!,
                         ),
                         new TextFormField(
                           style: TextStyle(color: Theme.of(context).hintColor),
@@ -129,7 +129,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                             return null;
                           },
                           onSaved: (phone) {
-                            widget.user.phone = phone;
+                            widget.user.phone = phone!;
                           },
                         ),
                         /*IntlPhoneField(
@@ -161,7 +161,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                         ),*/
                         GestureDetector(
                           onTap: () async {
-                            LatLng resultLocation =
+                            LatLng? resultLocation =
                                 await _openAddressSelectionMap();
                             if (resultLocation != null) {
                               String selectedAddress =
@@ -192,10 +192,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                 hintText: S.of(context).your_address,
                                 labelText: S.of(context).address,
                               ),
-                              validator: (input) => input.trim().length < 3
+                              validator: (input) => input!.trim().length < 3
                                   ? S.of(context).not_a_valid_address
                                   : null,
-                              onSaved: (input) => widget.user.address = input,
+                              onSaved: (input) => widget.user.address = input!,
                             ),
                           ),
                         ),
@@ -208,10 +208,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                           initialValue: widget.user.bio,
                           enabled: true,
                           maxLines: null,
-                          validator: (input) => input.trim().length < 3
+                          validator: (input) => input!.trim().length < 3
                               ? S.of(context).not_a_valid_biography
                               : null,
-                          onSaved: (input) => widget.user.bio = input,
+                          onSaved: (input) => widget.user.bio = input!,
                         ),
                         SizedBox(height: 20),
                         Container(
@@ -225,10 +225,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                         ),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: widget.user.image.url != null
+                          child: widget.user.image!.url != ""
                               ? // Display the uploaded image if available
                               Image.network(
-                                  widget.user.image.url,
+                                  widget.user.image!.url,
                                   height: 100,
                                   width: 150,
                                   fit: BoxFit.cover,
@@ -297,7 +297,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                       onPressed: submit,
                       child: Text(
                         S.of(context).save,
-                        style: TextStyle(color: Theme.of(context).accentColor),
+                        //style: TextStyle(color: Theme.of(context).accentColor),
                       ),
                     ),
                   ],
@@ -365,8 +365,8 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
     }
   }
 
-  Future<LatLng> _openAddressSelectionMap() async {
-    LatLng resultLocation;
+  Future<LatLng?> _openAddressSelectionMap() async {
+    LatLng? resultLocation;
     String resultAddress;
     await showDialog(
       context: context,
@@ -384,11 +384,11 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
     return resultLocation;
   }
 
-  InputDecoration getInputDecoration({String hintText, String labelText}) {
+  InputDecoration getInputDecoration({String? hintText, String? labelText}) {
     return new InputDecoration(
       hintText: hintText,
       labelText: labelText,
-      hintStyle: Theme.of(context).textTheme.bodyText2.merge(
+      hintStyle: Theme.of(context).textTheme.bodyText2!.merge(
             TextStyle(color: Theme.of(context).focusColor),
           ),
       enabledBorder: UnderlineInputBorder(
@@ -397,15 +397,15 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
       focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Theme.of(context).hintColor)),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
-      labelStyle: Theme.of(context).textTheme.bodyText2.merge(
+      labelStyle: Theme.of(context).textTheme.bodyText2!.merge(
             TextStyle(color: Theme.of(context).hintColor),
           ),
     );
   }
 
   void submit() {
-    if (_profileSettingsFormKey.currentState.validate()) {
-      _profileSettingsFormKey.currentState.save();
+    if (_profileSettingsFormKey.currentState!.validate()) {
+      _profileSettingsFormKey.currentState!.save();
       widget.onChanged();
       Navigator.pop(context);
     }

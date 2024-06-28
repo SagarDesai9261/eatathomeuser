@@ -29,7 +29,7 @@ import 'repository/settings_repository.dart' as settingRepo;
 import 'package:provider/provider.dart';
 class dataProvider extends ChangeNotifier
 {
-  String category_id = null;
+  String category_id = "";
 
   set_category(cat_id){
     category_id = cat_id;
@@ -119,20 +119,21 @@ class tabIndexProvider extends ChangeNotifier{
   }
 }
 class location_enable_provider with ChangeNotifier{
-  bool isLocationEnabled;
+  bool? isLocationEnabled;
   bool isLocationServiceDialogShown = false;
   location_enable_provider(){
     initialize();
   }
-  void initialize() async {
+   initialize() async {
     print("object is calling");
+
     const Duration checkInterval = Duration(seconds: 5);
     Timer.periodic(checkInterval, (Timer timer) async {
       final bool locationEnabled = await geolocator.Geolocator.isLocationServiceEnabled();
       if (!locationEnabled && !isLocationServiceDialogShown ) {
         // print("object calling ");
         isLocationServiceDialogShown = true;
-        _showLocationServiceDialog(settingRepo.navigatorKey.currentState.context);
+        _showLocationServiceDialog(settingRepo.navigatorKey.currentState!.context);
       }
     });
     notifyListeners();
@@ -199,16 +200,16 @@ class location_enable_provider with ChangeNotifier{
   }
 }
 class Add_the_address with ChangeNotifier {
-  String selectedlocation;
-  String currentlocation;
-  LatLng currentlocationLatlong;
-  LatLng selectedlocationLatlong;
-  List<Map<String, dynamic>> address;
-  String address1;
-  String address2;
-  geolocator.LocationPermission permission;
-  bool isLocationEnabled;
-  Position currentposition;
+  String? selectedlocation;
+  String? currentlocation;
+  LatLng? currentlocationLatlong;
+  LatLng? selectedlocationLatlong;
+  List<Map<String, dynamic>>? address;
+  String? address1;
+  String? address2;
+  geolocator.LocationPermission? permission;
+  bool? isLocationEnabled;
+  Position? currentposition;
   bool isPositionDetermined = false;
   bool isLocationServiceDialogShown = false;
   Future<void> requestLocationPermission() async {
@@ -230,7 +231,7 @@ class Add_the_address with ChangeNotifier {
 
   void add_to_address(Map<String, dynamic> addres) {
     print(addres);
-    address.add(addres);
+    address!.add(addres);
     _saveAddresses();
     notifyListeners();
   }
@@ -239,9 +240,9 @@ class Add_the_address with ChangeNotifier {
   void _savecurrentaddress()async{
     print("save address calling");
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    _prefs.setString('selected_location', selectedlocation);
-    _prefs.setDouble('selected_lat', selectedlocationLatlong.latitude);
-    _prefs.setDouble('selected_lng', selectedlocationLatlong.longitude);
+    _prefs.setString('selected_location', selectedlocation!);
+    _prefs.setDouble('selected_lat', selectedlocationLatlong!.latitude);
+    _prefs.setDouble('selected_lng', selectedlocationLatlong!.longitude);
   }
   void _saveAddresses() async {
     // Convert the List<Map<String, dynamic>> into a JSON string
@@ -250,9 +251,9 @@ class Add_the_address with ChangeNotifier {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
 
     _prefs.setString('addresses', encodedAddresses);
-    _prefs.setString('selected_location', selectedlocation);
-    _prefs.setDouble('selected_lat', selectedlocationLatlong.latitude);
-    _prefs.setDouble('selected_lng', selectedlocationLatlong.longitude);
+    _prefs.setString('selected_location', selectedlocation!);
+    _prefs.setDouble('selected_lat', selectedlocationLatlong!.latitude);
+    _prefs.setDouble('selected_lng', selectedlocationLatlong!.longitude);
   }
 
   void set_selected_location(String locationaddress, LatLng locationLatlng) {
@@ -263,7 +264,7 @@ class Add_the_address with ChangeNotifier {
   }
 
   void remove_address(Map<String, dynamic> addressToRemove) {
-    address.remove(addressToRemove);
+    address!.remove(addressToRemove);
     _saveAddresses();
     notifyListeners();
   }
@@ -293,7 +294,7 @@ class Add_the_address with ChangeNotifier {
     isLocationEnabled = await geolocator.Geolocator.isLocationServiceEnabled();
 
     // Continuously check for location until obtained
-    while (!isLocationEnabled) {
+    while (!isLocationEnabled!) {
       await Future.delayed(Duration(seconds: 3)); // Wait for 10 seconds before retrying
       isLocationEnabled = await geolocator.Geolocator.isLocationServiceEnabled();
     }
@@ -389,7 +390,7 @@ class Add_the_address with ChangeNotifier {
     }
   }
   void address_split() {
-    List<String> addresssplit = selectedlocation.split(",");
+    List<String> addresssplit = selectedlocation!.split(",");
     address1 = addresssplit[0];
     address2 = addresssplit[1];
     print(addresssplit);
@@ -478,12 +479,17 @@ class CartProvider extends ChangeNotifier {
   double subTotal = 0.0;
   double total = 0.0;
   double deliveryCharges = 0.0;
-
+  bool _quantitiesSet = false;
+  void setQuantitiesSet(bool value) {
+    _quantitiesSet = value;
+    notifyListeners();
+  }
+  bool get quantitiesSet => _quantitiesSet;
   void clear_cart(){
     _cartItems.clear();
   }
   List<Cart> get cartItems => _cartItems;
-  int get totalQuantity => _cartItems.fold<int>(0, (sum, cart) => sum + cart.quantity.toInt());
+  int get totalQuantity => _cartItems.fold<int>(0, (sum, cart) => sum + cart.quantity!.toInt());
   // Constructor to load cart items when the provider is initialized
 
   // Add item to cart
@@ -496,7 +502,7 @@ class CartProvider extends ChangeNotifier {
       listenForCartsCount();
     }
   }
-  void listenForCartsCount({String message}) async {
+  void listenForCartsCount() async {
     final Stream<int> stream = await getCartCount();
     stream.listen((int _count) {
         this.cartCount = _count;
@@ -534,9 +540,11 @@ class CartProvider extends ChangeNotifier {
 
 
     _cartItems = carts;
+    cartCount = _cartItems.fold(0, (sum, item) => sum + item.quantity!.toInt());
 
+    // cartCount = _cartItems.length;
     calculateSubtotal();
-    listenForCartsCount();
+    //listenForCartsCount();
     notifyListeners();
   }
   void cartassignfromcarrt(List<Cart> carts){
@@ -544,9 +552,11 @@ class CartProvider extends ChangeNotifier {
    // print("hello "+carts.first.food.restaurant.image.url);
 
     _cartItems.add( carts[0]);
+    cartCount = _cartItems.fold(0, (sum, item) => sum + item.quantity!.toInt());
 
+   // cartCount = _cartItems.length;
     calculateSubtotal();
-    listenForCartsCount();
+   // listenForCartsCount();
     notifyListeners();
   }
 
@@ -573,33 +583,35 @@ class CartProvider extends ChangeNotifier {
     calculateSubtotal();
     notifyListeners();
   }
-  void calculateSubtotal()  {
+  void calculateSubtotal() {
     double cartPrice = 0;
     subTotal = 0;
     _cartItems.forEach((cart) {
-      cartPrice = cart.food.price;
-      cart.extras.forEach((element) {
+      // Use discount price if available, otherwise use the regular price
+      cartPrice = cart.food!.discountPrice > 0 ? cart.food!.discountPrice : cart.food!.price;
+      cart.extras!.forEach((element) {
         cartPrice += element.price;
       });
-      cartPrice *= cart.quantity;
+      cartPrice *= cart.quantity!;
       subTotal += cartPrice;
     });
-    /* if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
-      deliveryFee = carts[0].food.restaurant.deliveryFee;
-    }*/
-    //taxAmount = (subTotal) * carts[0].food.restaurant.defaultTax / 100;
+
+    // Calculate taxAmount if necessary, based on your existing commented code
+    // Uncomment and adjust as needed
+    // taxAmount = (subTotal) * carts[0].food.restaurant.defaultTax / 100;
+
+    // Print subtotal for debugging
     print(subTotal);
-    if(deliveryCharges > 0){
-      total = subTotal + taxAmount  +deliveryCharges;
-      // print(total);
-      //setState(() {});
-    }
-    else{
+
+    if (deliveryCharges > 0) {
+      total = subTotal + taxAmount + deliveryCharges;
+    } else {
       total = subTotal + taxAmount;
     }
-    notifyListeners();
 
+    notifyListeners();
   }
+
 }
 class OffersProvider with ChangeNotifier {
   List<Offer> _offers = [];
@@ -670,8 +682,8 @@ class OrderProvider extends ChangeNotifier {
       notifyListeners();
     }, onError: (a) {}, onDone: () {});
   }
-  String getStatusNameById(String statusId) {
-    final status = _orderStatusList.firstWhere((status) => status.id == statusId, orElse: () => null);
+  String? getStatusNameById(String statusId) {
+    final status = _orderStatusList.firstWhere((status) => status.id == statusId, orElse: () =>OrderStatus());
     return status != null ? status.status : null;
   }
 }
@@ -694,7 +706,7 @@ class RestaurantDataProvider extends ChangeNotifier {
     fetchRestaurantsAndFoods();
   }
 
-  Future<void> fetchRestaurantsAndFoods({String search}) async {
+  Future<void> fetchRestaurantsAndFoods({String? search}) async {
     if (search == null) {
       search = await getRecentSearch();
     }

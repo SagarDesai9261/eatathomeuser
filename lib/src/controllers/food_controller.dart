@@ -20,19 +20,19 @@ import 'cart_controller.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 
 class FoodController extends ControllerMVC {
-  Food food;
+  Food? food;
   double quantity = 0;
   double total = 0;
   List<Cart> carts = [];
-  Favorite favorite;
+  Favorite? favorite;
   bool loadCart = false;
-  GlobalKey<ScaffoldState> scaffoldKey;
-  CartController cartController;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  CartController? cartController;
   FoodController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
-  Future<Restaurant> getKetchainDetails(
+  Future<Restaurant?> getKetchainDetails(
       String kitchenid, String kitchenType) async {
     final Uri uri =
         Uri.parse('https://comeeathome.com/app/api/kitchen-details');
@@ -56,27 +56,27 @@ class FoodController extends ControllerMVC {
     }
   }
 
-  void listenForFood({String foodId, String message}) async {
-    final Stream<Food> stream = await getFood(foodId);
+  void listenForFood({String? foodId, String? message}) async {
+    final Stream<Food> stream = await getFood(foodId!);
     stream.listen((Food _food) {
       setState(() => food = _food);
     }, onError: (a) {
       //  // print(a);
-      ScaffoldMessenger.of(scaffoldKey.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       calculateTotal();
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
     });
   }
 
-  void listenForFavorite({String foodId}) async {
-    final Stream<Favorite> stream = await isFavoriteFood(foodId);
+  void listenForFavorite({String? foodId}) async {
+    final Stream<Favorite> stream = await isFavoriteFood(foodId!);
     stream.listen((Favorite _favorite) {
       setState(() => favorite = _favorite);
     }, onError: (a) {
@@ -126,14 +126,14 @@ class FoodController extends ControllerMVC {
     return true;
   }
 
-  void addToCart(Food food, {double quantity = 1.0, bool reset = false,String restaurant_id,String coupon_id}) async {
+  void addToCart(Food food, {double quantity = 1.0, bool reset = false,String? restaurant_id,String? coupon_id}) async {
     print(coupon_id);
     setState(() {
       this.loadCart = true;
     });
     carts.clear();
     final Map<String, dynamic> data = await getCart();
-    print("Cart data callls ${food.restaurant.image.url}");
+    print("Cart data callls ${food.restaurant!.image!.url}");
     // Check if the API call was successful
     if (data['success'] == true) {
       List<dynamic> items = data['data']['items'];
@@ -147,11 +147,11 @@ class FoodController extends ControllerMVC {
         });
       }
       if(items.isNotEmpty){
-        int existingIndex = carts.indexWhere((cart) => cart.food.id == food.id);
+        int existingIndex = carts.indexWhere((cart) => cart.food!.id == food.id);
         print("existing index  ==>" + existingIndex.toString());
-        print("${carts[0].food.restaurant.id}  ==> ${carts[0].food.restaurant.id.runtimeType}");
-         print("${food.restaurant.id}  ==> ${food.restaurant.id.runtimeType}");
-        bool same_restaurant =  carts[0].food.restaurant.id == food.restaurant.id;
+        print("${carts[0].food!.restaurant!.id}  ==> ${carts[0].food!.restaurant!.id.runtimeType}");
+         print("${food.restaurant!.id}  ==> ${food.restaurant!.id.runtimeType}");
+        bool same_restaurant =  carts[0].food!.restaurant!.id == food.restaurant!.id;
         print("same_restaurant " +same_restaurant.toString());
         //  bool same_restaurant = false;
         if(same_restaurant == true){
@@ -159,13 +159,13 @@ class FoodController extends ControllerMVC {
             print("Food already in cart. Updating quantity.");
 
             // Update the quantity if the food item already exists in the cart
-            carts[existingIndex].quantity += quantity;
-            carts[existingIndex].Couponid = coupon_id;
+            carts[existingIndex].quantity =  carts[existingIndex].quantity! + quantity ;
+            carts[existingIndex].couponId = coupon_id;
             updateCart(carts[existingIndex]).then((value) {
               setState(() {
                 this.loadCart = false;
               });
-              Provider.of<CartProvider>(settingRepo.navigatorKey.currentState.context,listen: false).cartassignfromcarrt(carts);
+              Provider.of<CartProvider>(settingRepo.navigatorKey.currentState!.context,listen: false).cartassignfromcarrt(carts);
             }).whenComplete(() {
               /*   ScaffoldMessenger.of(scaffoldKey?.currentContext)
               .showSnackBar(SnackBar(
@@ -179,13 +179,13 @@ class FoodController extends ControllerMVC {
             newCart.food = food;
             newCart.extras = [];
             newCart.quantity = quantity;
-            newCart.Couponid = coupon_id;
+            newCart.couponId = coupon_id;
 
             addCart(newCart, false).then((value) {
               setState(() {
                 this.loadCart = false;
               });
-              Provider.of<CartProvider>(settingRepo.navigatorKey.currentState.context,listen: false).cartassignfromcarrt([newCart]);
+              Provider.of<CartProvider>(settingRepo.navigatorKey.currentState!.context,listen: false).cartassignfromcarrt([newCart]);
             }).whenComplete(() {
               /*ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(
@@ -208,15 +208,15 @@ class FoodController extends ControllerMVC {
           newCart.food = food;
           newCart.extras = [];
           newCart.quantity = quantity;
-          newCart.Couponid = coupon_id;
+          newCart.couponId = coupon_id;
           addCart(newCart, false).then((value) {
             setState(() {
               this.loadCart = false;
             });
-            Provider.of<CartProvider>(settingRepo.navigatorKey.currentState.context,listen: false).cartassignfromcarrt([newCart]);
+            Provider.of<CartProvider>(settingRepo.navigatorKey.currentState!.context,listen: false).cartassignfromcarrt([newCart]);
           }).whenComplete(() {
-            ScaffoldMessenger.of(settingRepo.navigatorKey.currentState.context).showSnackBar(SnackBar(
-              content: Text(S.of(state.context).this_food_was_added_to_cart),
+            ScaffoldMessenger.of(settingRepo.navigatorKey.currentState!.context).showSnackBar(SnackBar(
+              content: Text(S.of(state!.context).this_food_was_added_to_cart),
             ));
           });
         }
@@ -226,12 +226,12 @@ class FoodController extends ControllerMVC {
         newCart.food = food;
         newCart.extras = [];
         newCart.quantity = quantity;
-        newCart.Couponid = coupon_id;
+        newCart.couponId = coupon_id;
         addCart(newCart, false).then((value) {
           setState(() {
             this.loadCart = false;
           });
-          Provider.of<CartProvider>(settingRepo.navigatorKey.currentState.context,listen: false).cartassignfromcarrt([newCart]);
+          Provider.of<CartProvider>(settingRepo.navigatorKey.currentState!.context,listen: false).cartassignfromcarrt([newCart]);
         }).whenComplete(() {
 
         });
@@ -246,14 +246,14 @@ class FoodController extends ControllerMVC {
       newCart.food = food;
       newCart.extras = [];
       newCart.quantity = quantity;
-      newCart.Couponid = coupon_id;
+      newCart.couponId = coupon_id;
       addCart(newCart, false).then((value) {
         setState(() {
           this.loadCart = false;
         });
       }).whenComplete(() {
-        ScaffoldMessenger.of(settingRepo.navigatorKey.currentState.context).showSnackBar(SnackBar(
-          content: Text(S.of(state.context).this_food_was_added_to_cart),
+        ScaffoldMessenger.of(settingRepo.navigatorKey.currentState!.context).showSnackBar(SnackBar(
+          content: Text(S.of(state!.context).this_food_was_added_to_cart),
         ));
       });
     }
@@ -297,7 +297,7 @@ class FoodController extends ControllerMVC {
 
   Cart isExistInCart(Cart _cart) {
     return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart),
-        orElse: () => null);
+        orElse: () => Cart());
   }
 
   void addToFavorite(Food food) async {
@@ -310,8 +310,8 @@ class FoodController extends ControllerMVC {
       setState(() {
         this.favorite = value;
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).thisFoodWasAddedToFavorite),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).thisFoodWasAddedToFavorite),
       ));
     });
   }
@@ -321,18 +321,18 @@ class FoodController extends ControllerMVC {
       setState(() {
         this.favorite = new Favorite();
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).thisFoodWasRemovedFromFavorites),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).thisFoodWasRemovedFromFavorites),
       ));
     });
   }
 
   Future<void> refreshFood() async {
-    var _id = food.id;
+    var _id = food!.id;
     food = new Food();
     listenForFavorite(foodId: _id);
     listenForFood(
-        foodId: _id, message: S.of(state.context).foodRefreshedSuccessfuly);
+        foodId: _id, message: S.of(state!.context).foodRefreshedSuccessfuly);
   }
 
   void calculateTotal() {

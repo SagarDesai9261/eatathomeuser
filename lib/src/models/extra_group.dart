@@ -4,36 +4,34 @@ class ExtraGroup {
   String id;
   String name;
 
-  ExtraGroup();
+  ExtraGroup({
+    this.id = '',
+    this.name = '',
+  });
 
-  ExtraGroup.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      name = jsonMap['name'];
-    } catch (e) {
-      id = '';
-      name = '';
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  ExtraGroup.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id']?.toString() ?? '',
+        name = jsonMap['name'] ?? '';
 
-  Map toMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["name"] = name;
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      'id': id,
+      'name': name,
+    };
     return map;
   }
 
   @override
   String toString() {
-    return this.toMap().toString();
+    return toMap().toString();
   }
 
   @override
   bool operator ==(dynamic other) {
-    return other.id == this.id;
+    if (identical(this, other)) return true;
+    return other is ExtraGroup && other.id == id;
   }
 
   @override
-  int get hashCode => this.id.hashCode;
+  int get hashCode => id.hashCode;
 }

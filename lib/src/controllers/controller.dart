@@ -6,7 +6,7 @@ import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/user_repository.dart' as userRepo;
 
 class Controller extends ControllerMVC {
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
   Controller() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }

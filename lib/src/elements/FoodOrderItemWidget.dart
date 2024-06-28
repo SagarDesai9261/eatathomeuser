@@ -13,7 +13,7 @@ class FoodOrderItemWidget extends StatefulWidget {
   final FoodOrder foodOrder;
   final Order order;
 
-  const FoodOrderItemWidget({Key key, this.foodOrder, this.order, this.heroTag})
+  const FoodOrderItemWidget({Key? key, required this.foodOrder,required this.order,required this.heroTag})
       : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class FoodOrderItemWidget extends StatefulWidget {
 
 class _FoodOrderItemWidgetState extends State<FoodOrderItemWidget> {
 
-  String defaultLanguage;
+  String defaultLanguage = "";
   @override
   void initState() {
     getCurrentDefaultLanguage();
@@ -41,8 +41,8 @@ class _FoodOrderItemWidgetState extends State<FoodOrderItemWidget> {
   Widget build(BuildContext context) {
     //print("DS>>> order image"+foodOrder.food.foodMedia[0].url.toString());
     return InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
+     // splashColor: Theme.of(context).accentColor,
+     // focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
        /* Navigator.of(context).pushNamed('/Food',
@@ -57,14 +57,14 @@ class _FoodOrderItemWidgetState extends State<FoodOrderItemWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Hero(
-              tag: widget.heroTag + widget.foodOrder?.id,
+              tag: widget.heroTag + widget.foodOrder.id,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 child: CachedNetworkImage(
                   height: 60,
                   width: 60,
                   fit: BoxFit.cover,
-                  imageUrl: widget.foodOrder.food.image.url.toString(),
+                  imageUrl: widget.foodOrder.food!.image!.url.toString(),
                   /*placeholder: (context, url) => Image.asset(
                     'assets/img/loading.gif',
                     fit: BoxFit.cover,
@@ -103,9 +103,9 @@ class _FoodOrderItemWidgetState extends State<FoodOrderItemWidget> {
                         ),*/
                         Wrap(
                           children:
-                              List.generate(widget.foodOrder.extras.length, (index) {
+                              List.generate(widget.foodOrder.extras!.length, (index) {
                             return Text(
-                              widget.foodOrder.extras.elementAt(index).name + ', ',
+                              widget.foodOrder.extras!.elementAt(index).name + ', ',
                               style: Theme.of(context).textTheme.caption,
                             );
                           }),
@@ -117,7 +117,7 @@ class _FoodOrderItemWidgetState extends State<FoodOrderItemWidget> {
                           style: Theme.of(context).textTheme.caption,
                         )*/
                         TranslationWidget(
-                          message:widget.foodOrder.food.name,
+                          message:widget.foodOrder.food!.name,
                           fromLanguage: "English",
                           toLanguage: defaultLanguage,
                           builder: (translatedMessage) => Text(

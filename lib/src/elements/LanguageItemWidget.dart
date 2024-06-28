@@ -8,9 +8,9 @@ class LanguageItemWidget extends StatefulWidget {
   final ValueChanged onTap;
 
   const LanguageItemWidget({
-    Key key,
-    this.language,
-    this.onTap,
+    Key? key,
+    required this.language,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -19,12 +19,12 @@ class LanguageItemWidget extends StatefulWidget {
 
 class _LanguageItemWidgetState extends State<LanguageItemWidget>
     with SingleTickerProviderStateMixin {
-  Animation animation;
-  AnimationController animationController;
-  Animation<double> sizeCheckAnimation;
-  Animation<double> rotateCheckAnimation;
-  Animation<double> opacityAnimation;
-  Animation opacityCheckAnimation;
+  Animation? animation;
+  AnimationController? animationController;
+  Animation<double>? sizeCheckAnimation;
+  Animation<double>? rotateCheckAnimation;
+  Animation<double>? opacityAnimation;
+  Animation? opacityCheckAnimation;
   bool checked = false;
 
   @override
@@ -33,7 +33,7 @@ class _LanguageItemWidgetState extends State<LanguageItemWidget>
     animationController =
         AnimationController(duration: Duration(milliseconds: 350), vsync: this);
     CurvedAnimation curve =
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut);
+        CurvedAnimation(parent: animationController!.view, curve: Curves.easeOut);
     animation = Tween(begin: 0.0, end: 40.0).animate(curve)
       ..addListener(() {
         setState(() {});
@@ -59,21 +59,21 @@ class _LanguageItemWidgetState extends State<LanguageItemWidget>
   @override
   void dispose() {
     super.dispose();
-    animationController.dispose();
+    animationController!.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.language.selected) {
-      animationController.forward();
+      animationController!.forward();
     }
     return InkWell(
       onTap: () async {
         widget.onTap(widget.language);
         if (widget.language.selected) {
-          animationController.reverse();
+          animationController!.reverse();
         } else {
-          animationController.forward();
+          animationController!.forward();
         }
         settingRepo.setting.value.mobileLanguage.value =
             new Locale(widget.language.code, '');
@@ -109,22 +109,22 @@ class _LanguageItemWidgetState extends State<LanguageItemWidget>
                   ),
                 ),
                 Container(
-                  height: animation.value,
-                  width: animation.value,
+                  height: animation!.value,
+                  width: animation!.value,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(40)),
-                    color: Theme.of(context)
-                        .accentColor
-                        .withOpacity(opacityAnimation.value),
+                    // color: Theme.of(context)
+                    //     .accentColor
+                    //     .withOpacity(opacityAnimation.value),
                   ),
                   child: Transform.rotate(
-                    angle: rotateCheckAnimation.value,
+                    angle: rotateCheckAnimation!.value,
                     child: Icon(
                       Icons.check,
-                      size: sizeCheckAnimation.value,
+                      size: sizeCheckAnimation!.value,
                       color: Theme.of(context)
                           .primaryColor
-                          .withOpacity(opacityCheckAnimation.value),
+                          .withOpacity(opacityCheckAnimation!.value),
                     ),
                   ),
                 ),

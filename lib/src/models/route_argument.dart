@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import '../../my_widget/people_count_dailog.dart';
 
 class RouteArgument {
-  String id;
-  String heroTag;
+  String? id;
+  String? heroTag;
   dynamic param;
-  bool isDelivery;
-  String selectedDate;
-  String selectedPeople;
-  String selectedTime;
-  String latitude;
-  String longitude;
-  List<ProductItem> products;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  bool? isDelivery;
+  String? selectedDate;
+  String? selectedPeople;
+  String? selectedTime;
+  String? latitude;
+  String? longitude;
+  List<ProductItem>? products;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
 
 
   RouteArgument({this.id, this.heroTag, this.param, this.isDelivery,

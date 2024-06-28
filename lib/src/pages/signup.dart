@@ -21,20 +21,20 @@ class SignUpWidget extends StatefulWidget {
 }
 
 class _SignUpWidgetState extends StateMVC<SignUpWidget> {
-  UserController _con;
+  UserController? _con;
   TextEditingController _fullNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController phone = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  FirebaseMessaging _firebaseMessaging;
+  FirebaseMessaging? _firebaseMessaging;
   _SignUpWidgetState() : super(UserController()) {
-    _con = controller;
+    _con = controller as UserController?;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       resizeToAvoidBottomInset: true,
       body: Stack(
         alignment: AlignmentDirectional.topCenter,
@@ -94,7 +94,7 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                 width: config.App(context).appWidth(88),
 //              height: config.App(context).appHeight(55),
                 child: Form(
-                  key: _con.registerFormKey,
+                  key: _con!.registerFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -102,8 +102,8 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                       TextFormField(
                         controller: _fullNameController,
                         keyboardType: TextInputType.text,
-                        onSaved: (input) => _con.user.name = input,
-                        validator: (input) => input.length < 3
+                        onSaved: (input) => _con!.user.name = input!,
+                        validator: (input) => input!.length < 3
                             ? S.of(context).should_be_more_than_3_letters
                             : null,
                         decoration: InputDecoration(
@@ -146,8 +146,8 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        onSaved: (input) => _con.user.email = input,
-                        validator: (input) => !input.contains('@')
+                        onSaved: (input) => _con!.user.email = input!,
+                        validator: (input) => !input!.contains('@')
                             ? S.of(context).should_be_a_valid_email
                             : null,
                         decoration: InputDecoration(
@@ -186,10 +186,10 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                       TextFormField(
                         controller: phone,
                         keyboardType: TextInputType.phone,
-                        onSaved: (input) => _con.user.phone = input,
-                        validator: (input) => input.isEmpty
+                        onSaved: (input) => _con!.user.phone = input!,
+                        validator: (input) => input!.isEmpty
                             ? "Mobile is required"
-                            : input.length != 10 ? "Mobile should be 10 digits" : null,
+                            : input!.length != 10 ? "Mobile should be 10 digits" : null,
                         decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,
@@ -225,9 +225,9 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                       SizedBox(height: 12),
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: _con.hidePassword,
-                        onSaved: (input) => _con.user.password = input,
-                        validator: (input) => input.length < 6
+                        obscureText: _con!.hidePassword,
+                        onSaved: (input) => _con!.user.password = input,
+                        validator: (input) => input!.length < 6
                             ? S.of(context).should_be_more_than_6_letters
                             : null,
                         decoration: InputDecoration(
@@ -248,11 +248,11 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                _con.hidePassword = !_con.hidePassword;
+                                _con!.hidePassword = !_con!.hidePassword;
                               });
                             },
                             color: Theme.of(context).focusColor,
-                            icon: Icon(_con.hidePassword
+                            icon: Icon(_con!.hidePassword
                                 ? Icons.visibility
                                 : Icons.visibility_off),
                           ),
@@ -275,9 +275,9 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                       ),
                       SizedBox(height: 12),
                       TextFormField(
-                        obscureText: _con.hidePassword1,
-                        onSaved: (input) => _con.user.password = input,
-                        validator: (input) => input.length < 6
+                        obscureText: _con!.hidePassword1,
+                        onSaved: (input) => _con!.user.password = input,
+                        validator: (input) => input!.length < 6
                             ? S.of(context).should_be_more_than_6_letters
                             : null,
                         decoration: InputDecoration(
@@ -298,11 +298,11 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                _con.hidePassword1 = !_con.hidePassword1;
+                                _con!.hidePassword1 = !_con!.hidePassword1;
                               });
                             },
                             color: Theme.of(context).focusColor,
-                            icon: Icon(_con.hidePassword1
+                            icon: Icon(_con!.hidePassword1
                                 ? Icons.visibility
                                 : Icons.visibility_off),
                           ),
@@ -349,7 +349,7 @@ class _SignUpWidgetState extends StateMVC<SignUpWidget> {
                             registeruser.phone = phone.text.toString();
                             registeruser.password = _passwordController.text.toString();
                             registeruser.deviceToken = token;
-                            _con.register(context, registeruser,_emailController.text);
+                            _con!.register(context, registeruser,_emailController.text);
 
                             /*if (_con.loginFormKey.currentState.validate()) {
                               _con.loginFormKey.currentState.save();

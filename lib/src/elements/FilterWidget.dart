@@ -12,18 +12,18 @@ import '../models/filter.dart';
 class FilterWidget extends StatefulWidget {
   final ValueChanged<Filter> onFilter;
 
-  FilterWidget({Key key, this.onFilter}) : super(key: key);
+  FilterWidget({required this.onFilter}) ;
 
   @override
   _FilterWidgetState createState() => _FilterWidgetState();
 }
 
 class _FilterWidgetState extends StateMVC<FilterWidget> {
-  FilterController _con;
+  FilterController? _con;
   double _currentValue = 3.0;
 
   _FilterWidgetState() : super(FilterController()) {
-    _con = controller;
+    _con = controller as FilterController?;
   }
 
   @override
@@ -40,7 +40,7 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                   Text(S.of(context).filter),
                   MaterialButton(
                     onPressed: () {
-                      _con.clearFilter();
+                      _con!.clearFilter();
                     },
                     child: Text(
                       S.of(context).clear,
@@ -62,10 +62,10 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                     children: [
                       CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
-                        value: _con.filter?.delivery ?? false,
+                        value: _con!.filter?.delivery ?? false,
                         onChanged: (value) {
                           setState(() {
-                            _con.filter?.delivery = true;
+                            _con!.filter?.delivery = true;
                           });
                         },
                         title: Text(
@@ -77,10 +77,10 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                       ),
                       CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
-                        value: _con.filter?.delivery ?? false ? false : true,
+                        value: _con!.filter?.delivery ?? false ? false : true,
                         onChanged: (value) {
                           setState(() {
-                            _con.filter?.delivery = false;
+                            _con!.filter?.delivery = false;
                           });
                         },
                         title: Text(
@@ -98,10 +98,10 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                     children: [
                       CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
-                        value: _con.filter?.open ?? false,
+                        value: _con!.filter?.open ?? false,
                         onChanged: (value) {
                           setState(() {
-                            _con.filter?.open = value;
+                            _con!.filter?.open = value!;
                           });
                         },
                         title: Text(
@@ -114,20 +114,20 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                     ],
                     initiallyExpanded: true,
                   ),
-                  _con.cuisines.isEmpty
+                  _con!.cuisines.isEmpty
                       ? CircularLoadingWidget(height: 100)
                       : ExpansionTile(
                           title: Text(S.of(context).cuisines),
                           children:
-                              List.generate(_con.cuisines.length, (index) {
+                              List.generate(_con!.cuisines.length, (index) {
                             return CheckboxListTile(
                               controlAffinity: ListTileControlAffinity.trailing,
-                              value: _con.cuisines.elementAt(index).selected,
+                              value: _con!.cuisines.elementAt(index).selected,
                               onChanged: (value) {
-                                _con.onChangeCuisinesFilter(index);
+                                _con!.onChangeCuisinesFilter(index);
                               },
                               title: Text(
-                                _con.cuisines.elementAt(index).name,
+                                _con!.cuisines.elementAt(index).name,
                                 overflow: TextOverflow.fade,
                                 softWrap: false,
                                 maxLines: 1,
@@ -169,12 +169,12 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
               focusElevation: 0,
               highlightElevation: 0,
               onPressed: () {
-                _con.saveFilter().whenComplete(() {
-                  widget.onFilter(_con.filter);
+                _con!.saveFilter().whenComplete(() {
+                  widget.onFilter(_con!.filter!);
                 });
               },
               padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              color: Theme.of(context).accentColor,
+              //color: Theme.of(context).accentColor,
               shape: StadiumBorder(),
               child: Text(
                 S.of(context).apply_filters,
@@ -193,7 +193,7 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
 class CirclePainter extends CustomPainter {
   final double rating;
 
-  CirclePainter({@required this.rating});
+  CirclePainter({required this.rating});
 
   @override
   void paint(Canvas canvas, Size size) {

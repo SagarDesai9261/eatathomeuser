@@ -13,12 +13,12 @@ import '../repository/restaurant_repository.dart';
 import '../repository/settings_repository.dart' as sett;
 
 class MapController extends ControllerMVC {
-  Restaurant currentRestaurant;
+  Restaurant? currentRestaurant;
   List<Restaurant> topRestaurants = <Restaurant>[];
   List<Marker> allMarkers = <Marker>[];
-  Address currentAddress;
+  Address? currentAddress;
   Set<Polyline> polylines = new Set();
-  CameraPosition cameraPosition;
+  CameraPosition? cameraPosition;
   MapsUtil mapsUtil = new MapsUtil();
   Completer<GoogleMapController> mapController = Completer();
 
@@ -40,20 +40,20 @@ class MapController extends ControllerMVC {
     try {
       currentAddress = sett.deliveryAddress.value;
       setState(() {
-        if (currentAddress.isUnknown()) {
+        if (currentAddress!.isUnknown()) {
           cameraPosition = CameraPosition(
             target: LatLng(40, 3),
             zoom: 4,
           );
         } else {
           cameraPosition = CameraPosition(
-            target: LatLng(currentAddress.latitude, currentAddress.longitude),
+            target: LatLng(currentAddress!.latitude!, currentAddress!.longitude!),
             zoom: 14.4746,
           );
         }
       });
-      if (!currentAddress.isUnknown()) {
-        Helper.getMyPositionMarker(currentAddress.latitude, currentAddress.longitude).then((marker) {
+      if (!currentAddress!.isUnknown()) {
+        Helper.getMyPositionMarker(currentAddress!.latitude!, currentAddress!.longitude!).then((marker) {
           setState(() {
             allMarkers.add(marker);
           });
@@ -71,12 +71,12 @@ class MapController extends ControllerMVC {
       currentAddress = await sett.getCurrentLocation();
       setState(() {
         cameraPosition = CameraPosition(
-          target: LatLng(double.parse(currentRestaurant.latitude), double.parse(currentRestaurant.longitude)),
+          target: LatLng(double.parse(currentRestaurant!.latitude!), double.parse(currentRestaurant!.longitude!)),
           zoom: 14.4746,
         );
       });
-      if (!currentAddress.isUnknown()) {
-        Helper.getMyPositionMarker(currentAddress.latitude, currentAddress.longitude).then((marker) {
+      if (!currentAddress!.isUnknown()) {
+        Helper.getMyPositionMarker(currentAddress!.latitude!, currentAddress!.longitude!).then((marker) {
           setState(() {
             allMarkers.add(marker);
           });
@@ -107,32 +107,32 @@ class MapController extends ControllerMVC {
   void getRestaurantsOfArea() async {
     setState(() {
       topRestaurants = <Restaurant>[];
-      Address areaAddress = Address.fromJSON({"latitude": cameraPosition.target.latitude, "longitude": cameraPosition.target.longitude});
+      Address areaAddress = Address.fromJSON({"latitude": cameraPosition!.target.latitude, "longitude": cameraPosition!.target.longitude});
       if (cameraPosition != null) {
-        listenForNearRestaurants(currentAddress, areaAddress);
+        listenForNearRestaurants(currentAddress!, areaAddress);
       } else {
-        listenForNearRestaurants(currentAddress, currentAddress);
+        listenForNearRestaurants(currentAddress!, currentAddress!);
       }
     });
   }
 
   void getDirectionSteps() async {
     currentAddress = await sett.getCurrentLocation();
-    if (!currentAddress.isUnknown()) {
+    if (!currentAddress!.isUnknown()) {
       mapsUtil
           .get("origin=" +
-              currentAddress.latitude.toString() +
+              currentAddress!.latitude.toString() +
               "," +
-              currentAddress.longitude.toString() +
+              currentAddress!.longitude.toString() +
               "&destination=" +
-              currentRestaurant.latitude +
+              currentRestaurant!.latitude! +
               "," +
-              currentRestaurant.longitude +
+              currentRestaurant!.longitude! +
               "&key=${sett.setting.value?.googleMapsKey}")
           .then((dynamic res) {
         if (res != null) {
           List<LatLng> _latLng = res as List<LatLng>;
-          _latLng?.insert(0, new LatLng(currentAddress.latitude, currentAddress.longitude));
+          _latLng?.insert(0, new LatLng(currentAddress!.latitude!, currentAddress!.longitude!));
           setState(() {
             polylines.add(new Polyline(
                 visible: true,
@@ -150,6 +150,6 @@ class MapController extends ControllerMVC {
     setState(() {
       topRestaurants = <Restaurant>[];
     });
-    listenForNearRestaurants(currentAddress, currentAddress);
+    listenForNearRestaurants(currentAddress!, currentAddress!);
   }
 }

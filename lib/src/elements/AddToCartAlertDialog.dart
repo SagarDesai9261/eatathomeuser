@@ -10,12 +10,11 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
   final Food newFood;
   final FoodBoolFunc onPressed;
 
-  const AddToCartAlertDialogWidget({
-    Key key,
-    @required this.oldFood,
-    @required this.newFood,
-    @required this.onPressed,
-  }) : super(key: key);
+  AddToCartAlertDialogWidget({
+    required this.oldFood,
+    required this.newFood,
+    required this.onPressed,
+  }) ;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +33,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
             ),
           ),
           InkWell(
-            splashColor: Theme.of(context).accentColor,
-            focusColor: Theme.of(context).accentColor,
+
             highlightColor: Theme.of(context).primaryColor,
             onTap: () {
               onPressed(newFood, reset: true);
@@ -56,7 +54,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Hero(
-                    tag: 'new_restaurant' + this.newFood?.restaurant?.id,
+                    tag: 'new_restaurant' + this.newFood.restaurant!.id!,
                     child: Container(
                       height: 60,
                       width: 60,
@@ -64,7 +62,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                         image: DecorationImage(
                             image: NetworkImage(
-                                this.newFood?.restaurant?.image?.thumb),
+                                this.newFood.restaurant!.image!.thumb),
                             fit: BoxFit.cover),
                       ),
                     ),
@@ -79,7 +77,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                this.newFood.restaurant.name,
+                                this.newFood.restaurant!.name!,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: Theme.of(context).textTheme.subtitle1,
@@ -103,8 +101,8 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
           ),
           SizedBox(height: 20),
           InkWell(
-            splashColor: Theme.of(context).accentColor,
-            focusColor: Theme.of(context).accentColor,
+            // splashColor: Theme.of(context).accentColor,
+            // focusColor: Theme.of(context).accentColor,
             highlightColor: Theme.of(context).primaryColor,
             onTap: () {
               Navigator.of(context).pop();
@@ -124,7 +122,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Hero(
-                    tag: 'old_restaurant' + this.oldFood.restaurant.id,
+                    tag: 'old_restaurant' + this.oldFood.restaurant!.id!,
                     child: Container(
                       height: 60,
                       width: 60,
@@ -132,7 +130,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                         image: DecorationImage(
                             image: NetworkImage(
-                                this.oldFood.restaurant.image.thumb),
+                                this.oldFood.restaurant!.image!.thumb),
                             fit: BoxFit.cover),
                       ),
                     ),
@@ -147,7 +145,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                this.oldFood.restaurant.name,
+                                this.oldFood.restaurant!.name!,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: Theme.of(context).textTheme.subtitle1,

@@ -8,7 +8,7 @@ import '../models/review.dart';
 class ReviewsListWidget extends StatelessWidget {
   List<Review> reviewsList;
 
-  ReviewsListWidget({Key key, this.reviewsList}) : super(key: key);
+  ReviewsListWidget({Key? key,required this.reviewsList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

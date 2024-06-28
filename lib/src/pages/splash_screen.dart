@@ -17,25 +17,27 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends StateMVC<SplashScreen> {
-  SplashScreenController _con;
-  Position currentposition;
+  SplashScreenController? _con;
+  Position? currentposition;
   bool isPositionDetermined = false;
 
   SplashScreenState() : super(SplashScreenController()) {
-    _con = controller;
+    _con = controller as SplashScreenController?;
   }
 
   @override
   void initState() {
     super.initState();
+    _determinePosition();
     _initializeApp();
+
   }
 
   void _initializeApp() async {
-  //  await _determinePosition();
-    await Provider.of<location_enable_provider>(context, listen: false).initialize();
+    //  await _determinePosition();
+    // await Provider.of<location_enable_provider>(context, listen: false).initialize();
 
-   //await Provider.of<Add_the_address>(context, listen: false).determinePosition();
+    //await Provider.of<Add_the_address>(context, listen: false).determinePosition();
     loadData();
     _determinePosition();
     FirebaseApi().requestNotificationPermission();
@@ -112,9 +114,9 @@ class SplashScreenState extends StateMVC<SplashScreen> {
   }
 
   void loadData() {
-    _con.progress.addListener(() {
+    _con!.progress.addListener(() {
       double progress = 0;
-      _con.progress.value.values.forEach((_progress) {
+      _con!.progress.value.values.forEach((_progress) {
         progress += _progress;
       });
       if (progress == 100) {
@@ -128,7 +130,7 @@ class SplashScreenState extends StateMVC<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -155,3 +157,4 @@ class SplashScreenState extends StateMVC<SplashScreen> {
     );
   }
 }
+

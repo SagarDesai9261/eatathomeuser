@@ -5,6 +5,7 @@ import 'package:food_delivery_app/src/controllers/home_controller.dart';
 import 'package:food_delivery_app/src/pages/KitchenListDelivery.dart';
 import 'package:food_delivery_app/src/pages/home.dart';
 import 'package:food_delivery_app/src/pages/pages.dart';
+import 'package:food_delivery_app/src/pages/restaurant.dart';
 import 'package:food_delivery_app/src/pages/settings.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shimmer/shimmer.dart';
@@ -24,14 +25,14 @@ import '../repository/user_repository.dart';
 import 'package:provider/provider.dart';
 
 class CartWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+   RouteArgument? routeArgument;
   dynamic currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
-  String directedFrom;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  String? directedFrom;
+   GlobalKey<ScaffoldState>? parentScaffoldKey;
   CartWidget(
-      {Key key, this.routeArgument, this.parentScaffoldKey, this.directedFrom})
+      {Key? key, this.routeArgument, this.parentScaffoldKey, this.directedFrom})
       : super(key: key);
 
   @override
@@ -40,19 +41,19 @@ class CartWidget extends StatefulWidget {
 
 class _CartWidgetState extends StateMVC<CartWidget> {
   bool isLoading = false; // Add a boolean to control loader visibility
-  CartController _con;
+  CartController? _con;
   HomeController _homeCon = HomeController();
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   _CartWidgetState() : super(CartController()) {
-    _con = controller;
+    _con = controller as CartController?;
   }
 
   @override
   void initState() {
     getCurrentDefaultLanguage();
     // _con.listenForCarts();
-    _selectTab(widget.currentTab);
+    //_selectTab(widget.currentTab);
     print("DS>> arguments " + widget.parentScaffoldKey.toString());
     _showLoader();
 
@@ -71,7 +72,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
   Future<void> _showLoader() async {
     setState(() {
       isLoading = true;
-      _con.refreshCarts();
+      _con!.refreshCarts();
     });
     // Delay for 3 seconds
     await Future.delayed(Duration(seconds: 3));
@@ -100,7 +101,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
         return Future.value(false);
       },
       child: Scaffold(
-        key: _con.scaffoldKey,
+        key: _con!.scaffoldKey,
         drawer: DrawerWidget(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton:   FloatingActionButton(
@@ -109,7 +110,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
               context,
               MaterialPageRoute(
                   builder: (context) => HomePage(
-                    parentScaffoldKey: widget.parentScaffoldKey,
+                   // parentScaffoldKey: widget.parentScaffoldKey!,
                     currentTab: 1,
                     directedFrom: "forHome",
                   )),
@@ -153,7 +154,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                       size: 30,
                     ),
                     onPressed: () {
-                      if (currentUser.value.apiToken != null) {
+                      if (currentUser.value.apiToken != "") {
                         Navigator.of(context).pushNamed('/orderPage', arguments: 0);
                       } else {
                         Navigator.of(context).pushNamed('/Login');
@@ -167,7 +168,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                     size: 30,
                   ),
                   onPressed: () {
-                    if(currentUser.value.apiToken != null){
+                    if(currentUser.value.apiToken != ""){
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -209,16 +210,16 @@ class _CartWidgetState extends StateMVC<CartWidget> {
               style: Theme.of(context)
                   .textTheme
                   .headline6
-                  .merge(TextStyle(letterSpacing: 1.3)),
+                  !.merge(TextStyle(letterSpacing: 1.3)),
             ),
           ),
         ),
-        body: _con.isloading
+        body: _con!.isloading
             ? ShimmerList()
             : widget.isCurrentKitchen
                 ? RefreshIndicator(
-                    onRefresh: _con.refreshCarts,
-                    child: _con.carts.isEmpty
+                    onRefresh: _con!.refreshCarts,
+                    child: _con!.carts.isEmpty
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -307,7 +308,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20.0),
                                     child: Text(
-                                      _con.carts.first.food.restaurant.name ??
+                                      _con!.carts.first.food!.restaurant!.name ??
                                           "",
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
@@ -327,12 +328,12 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10.0),
-                                        child: _con.is_hrs == "1" ? Row(
+                                        child: _con!.is_hrs == "1" ? Row(
                                           children: [
                                             Row(
                                               children: [
                                                 double.parse(_con
-                                                            .average_preparation_time) >
+                                                            !.average_preparation_time!) >
                                                         30
                                                     ? Icon(Icons.timer,
                                                         size: 20,
@@ -347,7 +348,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                                 ),
                                                 Text(
                                                   "${_con
-                                                      .average_preparation_time} hrs ",
+                                                      !.average_preparation_time} hrs ",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -361,7 +362,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                             Row(
                                               children: [
                                                 double.parse(_con
-                                                    .average_preparation_time) >
+                                                    !.average_preparation_time!) >
                                                     30
                                                     ? Icon(Icons.timer,
                                                     size: 20,
@@ -376,7 +377,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                                 ),
                                                 Text(
                                                   "${_con
-                                                      .average_preparation_time} mins ",
+                                                      !.average_preparation_time} mins ",
                                                   style: TextStyle(
                                                       fontSize: 12,
                                                       fontWeight:
@@ -402,7 +403,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                         scrollDirection: Axis.vertical,
                                         shrinkWrap: true,
                                         primary: false,
-                                        itemCount: _con.carts.length,
+                                        itemCount: _con!.carts.length,
                                         separatorBuilder: (context, index) {
                                           return SizedBox(height: 8);
                                         },
@@ -411,33 +412,39 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 0),
                                             child: CartItemWidget(
-                                              cart: _con.carts.elementAt(index),
+                                              cart: _con!.carts.elementAt(index),
                                               heroTag: 'cart',
                                               increment: () {
                                                 //   Provider.of<CartProvider>(context,listen: false).listenForCartsCount();
-
-                                                _con.incrementQuantity(_con
-                                                    .carts
+                                                final provider = Provider.of<QuantityProvider>(context, listen: false);
+//                                                provider.decrementQuantity(_con.carts.elementAt(index).food.restaurant.id,int.parse(_con.carts.elementAt(index).food.id));
+                                                provider.incrementQuantity(_con!.carts.elementAt(index).food!.restaurant!.id!,int.parse(_con!.carts.elementAt(index).food!.id));
+                                                _con!.incrementQuantity(_con
+                                                    !.carts
                                                     .elementAt(index));
                                                 setState(() {});
                                                 Provider.of<CartProvider>(
                                                         context,
                                                         listen: false)
-                                                    .cartassign(_con.carts);
+                                                    .cartassign(_con!.carts);
+
                                               },
                                               decrement: () {
-                                                if (_con.carts
+                                                final provider = Provider.of<QuantityProvider>(context, listen: false);
+                                                provider.decrementQuantity(_con!.carts.elementAt(index).food!.restaurant!.id!,int.parse(_con!.carts.elementAt(index).food!.id));
+
+                                                if (_con!.carts
                                                         .elementAt(index)
                                                         .quantity ==
                                                     1) {
-                                                  _con.removeFromCart(_con.carts
+                                                  _con!.removeFromCart(_con!.carts
                                                       .elementAt(index));
                                                   print(
-                                                      "carts lengthSL:- ${_con.carts}");
+                                                      "carts lengthSL:- ${_con!.carts}");
                                                   setState(() {});
                                                 } else {
-                                                  _con.decrementQuantity(_con
-                                                      .carts
+                                                  _con!.decrementQuantity(_con
+                                                      !.carts
                                                       .elementAt(index));
                                                 }
 
@@ -446,10 +453,13 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                                 Provider.of<CartProvider>(
                                                         context,
                                                         listen: false)
-                                                    .cartassign(_con.carts);
+                                                    .cartassign(_con!.carts);
                                               },
                                               onDismissed: () {
-                                                _con.removeFromCart(_con.carts
+                                                final provider = Provider.of<QuantityProvider>(context, listen: false);
+                                                provider.decrementQuantity(_con!.carts.elementAt(index).food!.restaurant!.id!,int.parse(_con!.carts.elementAt(index).food!.id));
+
+                                                _con!.removeFromCart(_con!.carts
                                                     .elementAt(index));
 
                                                 // Provider.of<CartProvider>(context,listen: false).listenForCartsCount();
@@ -457,7 +467,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                                 Provider.of<CartProvider>(
                                                         context,
                                                         listen: false)
-                                                    .cartassign(_con.carts);
+                                                    .cartassign(_con!.carts);
                                               },
                                             ),
                                           );
@@ -468,7 +478,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
                                 ],
                               ),
                               CartBottomDetailsWidget(
-                                con: _con,
+                                con: _con!,
                                 parentScaffoldKey: new GlobalKey(),
                               ),
                             ],
@@ -485,7 +495,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if (currentUser.value.apiToken != null) {
+          if (currentUser.value.apiToken != "") {
             Navigator.of(context).pushNamed('/orderPage', arguments: 0);
           } else {
             Navigator.of(context).pushNamed('/Login');
@@ -504,7 +514,7 @@ class _CartWidgetState extends StateMVC<CartWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => HomePage(
-                      parentScaffoldKey: widget.parentScaffoldKey,
+                      parentScaffoldKey: widget.parentScaffoldKey!,
                       currentTab: 1,
                       directedFrom: "forHome",
                     )),
@@ -554,7 +564,7 @@ class ShimmerList extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: Shimmer.fromColors(
                 highlightColor: Colors.white,
-                baseColor: Colors.grey[350],
+                baseColor: Colors.grey[350]!,
                 child: ShimmerLayout(),
                 period: Duration(milliseconds: time),
               ));
@@ -611,9 +621,9 @@ class ShimmerLayout extends StatelessWidget {
 }
 
 class HalfColoredIcon extends StatelessWidget {
-  final IconData icon;
-  final double size;
-  final Color color;
+   IconData? icon;
+   double? size;
+   Color? color;
 
   HalfColoredIcon({
     this.icon,
@@ -626,7 +636,7 @@ class HalfColoredIcon extends StatelessWidget {
     return ShaderMask(
       shaderCallback: (Rect bounds) {
         return LinearGradient(
-          colors: [color.withOpacity(0.0), color],
+          colors: [color!.withOpacity(0.0), color!],
           stops: [0.5, 0.5],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,

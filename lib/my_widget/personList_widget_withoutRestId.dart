@@ -32,10 +32,10 @@ class _People_count_DailogState extends State<PeopleCountDailogWidgetWithoutRest
 
   ];
 
-  String selectedPeople;
-  String defaultLanguage;
-  List<Restaurant> restaurantsList;
-  String heroTag;
+  String selectedPeople = "";
+  String defaultLanguage = "";
+  List<Restaurant>? restaurantsList;
+  String heroTag = "";
   void _incrementQuantity(int index) {
     setState(() {
       _products[index].quantity++;
@@ -94,7 +94,7 @@ class _People_count_DailogState extends State<PeopleCountDailogWidgetWithoutRest
             translatedMessage,
             overflow: TextOverflow.fade,
             softWrap: false,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -341,7 +341,7 @@ class ProductItem {
   final String subtitle;
   int quantity;
 
-  ProductItem({this.name,this.subtitle, this.quantity});
+  ProductItem({required this.name,required this.subtitle,required this.quantity});
 }
 
 void showProductListDialogWithoutRestaurant(BuildContext context, String selectedDate, String selectedTime) {

@@ -5,7 +5,7 @@ import '../helpers/app_config.dart' as config;
 
 class PermissionDeniedWidget extends StatefulWidget {
   PermissionDeniedWidget({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -87,7 +87,7 @@ class _PermissionDeniedWidgetState extends State<PermissionDeniedWidget> {
               style: Theme.of(context)
                   .textTheme
                   .headline3
-                  .merge(TextStyle(fontWeight: FontWeight.w300)),
+                  !.merge(TextStyle(fontWeight: FontWeight.w300)),
             ),
           ),
           SizedBox(height: 50),
@@ -112,7 +112,7 @@ class _PermissionDeniedWidgetState extends State<PermissionDeniedWidget> {
               shape: StadiumBorder(),
               child: Text(
                 S.of(context).login,
-                style: Theme.of(context).textTheme.headline6.merge(
+                style: Theme.of(context).textTheme.headline6!.merge(
                     TextStyle(color: Theme.of(context).scaffoldBackgroundColor)),
               ),
             ),

@@ -5,22 +5,16 @@ class Payment {
   String status;
   String method;
 
-  Payment.init();
+  Payment({
+    this.id = '',
+    this.status = '',
+    this.method = '',
+  });
 
-  Payment(this.method);
-
-  Payment.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      status = jsonMap['status'] ?? '';
-      method = jsonMap['method'] ?? '';
-    } catch (e) {
-      id = '';
-      status = '';
-      method = '';
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Payment.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        status = jsonMap['status'] ?? '',
+        method = jsonMap['method'] ?? '';
 
   Map<String, dynamic> toMap() {
     return {
@@ -28,5 +22,10 @@ class Payment {
       'status': status,
       'method': method,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Payment{id: $id, status: $status, method: $method}';
   }
 }

@@ -12,18 +12,18 @@ import '../pages/orderStatus.dart';
 import '../repository/order_repository.dart';
 
 class TrackingController extends ControllerMVC {
-  Order order;
+  Order? order;
   List<OrderStatus> orderStatus = <OrderStatus>[];
   bool isRefresh = false;
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   List<OrderStatus> orderDeclinedstatus = [];
-  List<Step> _cachedSteps;
+  List<Step>? _cachedSteps;
   //
   TrackingController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
-  void listenForOrder({String orderId, String message}) async {
+  void listenForOrder({String? orderId, String? message}) async {
     if(message == "refresh"){
       setState(() {
         isRefresh = false;
@@ -37,8 +37,8 @@ class TrackingController extends ControllerMVC {
       });
     }, onError: (a) {
       // print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       if(message != "refresh"){
@@ -74,7 +74,7 @@ class TrackingController extends ControllerMVC {
   int getCurrentStepIndex(List<OrderStatus> orderStatusList) {
     // Iterate through the orderStatusList to find the index of the current order status
     for (int i = 0; i < orderStatusList.length; i++) {
-      if (orderStatusList[i].priority == order.orderStatus.id) {
+      if (orderStatusList[i].priority == order!.orderStatus!.id) {
         return i;
       }
     }
@@ -92,7 +92,7 @@ class TrackingController extends ControllerMVC {
   List<Step> getTrackingDeclinedSteps(BuildContext context) {
 
     List orderTrackList = [];
-    orderTrackList = jsonDecode(order.orderTrack);
+    orderTrackList = jsonDecode(order!.orderTrack!);
     List<Step> _orderStatusSteps = [];
     int count = 0;
     List<OrderStatus> orderstatus = [];
@@ -102,7 +102,7 @@ class TrackingController extends ControllerMVC {
 
     this.orderStatus.forEach((element) {
 
-      if(order.delivery_dinein == 2){
+      if(order!.delivery_dinein == 2){
         if(element.status != "Pickup" && element.status != "Order Declined" && element.status != "On the Way" ){
           orderstatus.add(element);
         }
@@ -117,7 +117,7 @@ class TrackingController extends ControllerMVC {
       }
     });
     print(orderDeclinedstatus.length);
-    print(order.delivery_dinein.toString() + order.delivery_dinein.runtimeType.toString());
+    print(order!.delivery_dinein.toString() + order!.delivery_dinein.runtimeType.toString());
     print(orderstatus.length);
 
       orderDeclinedstatus.forEach((OrderStatus _orderStatus) {
@@ -140,7 +140,7 @@ class TrackingController extends ControllerMVC {
             child: Padding(
               padding: EdgeInsets.zero, // Remove padding here
               child: Text(
-                '${Helper.skipHtml(order.hint)}',
+                '${Helper.skipHtml(order!.hint!)}',
               ),
             ),
           ),
@@ -162,7 +162,7 @@ class TrackingController extends ControllerMVC {
     print("Get Tracking Steps calls");
     List<Step> _orderStatusSteps = [];
     List orderTrackList = [];
-    orderTrackList = jsonDecode(order.orderTrack);
+    orderTrackList = jsonDecode(order!.orderTrack!);
 
     int count = 0;
     List<OrderStatus> orderstatus = [];
@@ -172,7 +172,7 @@ class TrackingController extends ControllerMVC {
 
     this.orderStatus.forEach((element) {
 
-      if(order.delivery_dinein == 2){
+      if(order!.delivery_dinein == 2){
         if(element.status != "Pickup" && element.status != "Order Declined" && element.status != "On the Way" ){
             orderstatus.add(element);
         }
@@ -187,9 +187,9 @@ class TrackingController extends ControllerMVC {
       }
     });
     print(orderDeclinedstatus.length);
-    print(order.delivery_dinein.toString() + order.delivery_dinein.runtimeType.toString());
+    print(order!.delivery_dinein.toString() + order!.delivery_dinein.runtimeType.toString());
     print(orderstatus.length);
-    if(order.orderStatus.status != "Order Declined") {
+    if(order!.orderStatus!.status != "Order Declined") {
       orderstatus.forEach((OrderStatus _orderStatus) {
         print(orderTrackList[0]);
         // print(orderTrackList[count -1]["status"] == _orderStatus.id);
@@ -227,18 +227,18 @@ class TrackingController extends ControllerMVC {
             child: Padding(
               padding: EdgeInsets.zero, // Remove padding here
               child: Text(
-                '${Helper.skipHtml(order.hint)}',
+                '${Helper.skipHtml(order!.hint!)}',
               ),
             ),
           ),
-          isActive: (int.tryParse(order.orderStatus.priority)) - 1 >=
+          isActive: (int.tryParse(order!.orderStatus!.priority))! - 1 >=
               getStepIndex(orderstatus, _orderStatus.status),
         ));
 
         count = count + 1;
       });
     }
-    if(order.orderStatus.status  == "Order Declined")
+    if(order!.orderStatus!.status  == "Order Declined")
       {
         orderDeclinedstatus.forEach((OrderStatus _orderStatus) {
          // print(orderTrackList[0]);
@@ -270,7 +270,7 @@ class TrackingController extends ControllerMVC {
               child: Padding(
                 padding: EdgeInsets.zero, // Remove padding here
                 child: Text(
-                  '${Helper.skipHtml(order.hint)}',
+                  '${Helper.skipHtml(order!.hint!)}',
                 ),
               ),
             ),
@@ -283,34 +283,34 @@ class TrackingController extends ControllerMVC {
       }
     print("Helllo =====> " + _orderStatusSteps.length.toString());
     _cachedSteps = _orderStatusSteps;
-    return _cachedSteps;
+    return _cachedSteps!;
    // return _orderStatusSteps;
   }
 
   Future<void> refreshOrder() async {
     order = new Order();
-    listenForOrder(message: S.of(state.context).tracking_refreshed_successfuly);
+    listenForOrder(message: S.of(state!.context).tracking_refreshed_successfuly);
   }
 
   void doCancelOrder() {
-    cancelOrder(this.order).then((value) {
+    cancelOrder(this.order!).then((value) {
       setState(() {
-        this.order.active = false;
+        this.order!.active = false;
       });
     }).catchError((e) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
         content: Text(e),
       ));
     }).whenComplete(() {
       orderStatus = [];
       listenForOrderStatus();
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).orderThisorderidHasBeenCanceled(this.order.id)),
+      ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).orderThisorderidHasBeenCanceled(this.order!.id!)),
       ));
     });
   }
 
   bool canCancelOrder(Order order) {
-    return order.active == true && order.orderStatus.id == 1;
+    return order.active == true && order.orderStatus!.id == 1;
   }
 }

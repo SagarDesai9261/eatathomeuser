@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../elements/BlockButtonWidget.dart';
 import '../helpers/app_config.dart' as config;
 
@@ -85,9 +86,9 @@ class MobileVerification extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pushNamed('/MobileVerification2');
               },
-              color: Theme.of(context).accentColor,
+              color: mainColor(1),
               text: Text(S.of(context).submit.toUpperCase(),
-                  style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).primaryColor))),
+                  style: Theme.of(context).textTheme.headline6!.merge(TextStyle(color: Theme.of(context).primaryColor))),
             ),
           ],
         ),

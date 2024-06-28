@@ -18,9 +18,9 @@ class TimePickerDialogWithoutRestaurant extends StatefulWidget {
 }
 
 class _TimePickerDialogState extends State<TimePickerDialogWithoutRestaurant> {
-  TimeOfDay selectedTime;
-  String formattedTime, selectedSession;
-  String defaultLanguage;
+  TimeOfDay? selectedTime;
+  String formattedTime = "", selectedSession = "";
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -39,31 +39,31 @@ class _TimePickerDialogState extends State<TimePickerDialogWithoutRestaurant> {
     });
   }
 
-  void _showTimePickerDialog(BuildContext context) async {
-    final TimeOfDay pickedTime = await showTimePicker(
-      context: context,
-      initialTime: selectedTime,
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: const Color(0xffc73c1b),
-            accentColor: const Color(0xffc73c1b),
-            colorScheme: ColorScheme.light(primary: const Color(0xffc73c1b)),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
-      },
-    );
-
-    if (pickedTime != null && pickedTime != selectedTime) {
-      setState(() {
-        selectedTime = pickedTime;
-      });
-      formattedTime = pickedTime.format(context);
-  //    print(formattedTime); // Output: 12:40
-    }
-  }
+  // void _showTimePickerDialog(BuildContext context) async {
+  //   final TimeOfDay? pickedTime = await showTimePicker(
+  //     context: context,
+  //     initialTime: selectedTime,
+  //     builder: (BuildContext context, Widget child) {
+  //       return Theme(
+  //         data: ThemeData.light().copyWith(
+  //           primaryColor: const Color(0xffc73c1b),
+  //           accentColor: const Color(0xffc73c1b),
+  //           colorScheme: ColorScheme.light(primary: const Color(0xffc73c1b)),
+  //           buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+  //         ),
+  //         child: child,
+  //       );
+  //     },
+  //   );
+  //
+  //   if (pickedTime != null && pickedTime != selectedTime) {
+  //     setState(() {
+  //       selectedTime = pickedTime;
+  //     });
+  //     formattedTime = pickedTime.format(context);
+  // //    print(formattedTime); // Output: 12:40
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class _TimePickerDialogState extends State<TimePickerDialogWithoutRestaurant> {
             translatedMessage,
             overflow: TextOverflow.fade,
             softWrap: false,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -113,7 +113,7 @@ class _TimePickerDialogState extends State<TimePickerDialogWithoutRestaurant> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: new Icon(Icons.alarm, color: Theme.of(context).hintColor),
+                      icon: new Icon(Icons.alarm, color: Theme.of(context).hintColor), onPressed: () {  },
                     ),
                     /*Text(
                       "Pick a Session",

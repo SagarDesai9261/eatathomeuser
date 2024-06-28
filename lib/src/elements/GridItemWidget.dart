@@ -14,14 +14,14 @@ class GridItemWidget extends StatefulWidget {
   final RestaurantModel restaurant;
   final String heroTag;
 
-  GridItemWidget({Key key, this.restaurant, this.heroTag}) : super(key: key);
+  GridItemWidget({Key? key, required this.restaurant, required this.heroTag}) : super(key: key);
 
   @override
   State<GridItemWidget> createState() => _GridItemWidgetState();
 }
 
 class _GridItemWidgetState extends State<GridItemWidget> {
-  String defaultLanguage;
+  String defaultLanguage = "en";
 
   @override
   void initState() {
@@ -87,7 +87,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                       height: 80,
                       width: 180,
                       fit: BoxFit.cover,
-                      imageUrl: widget.restaurant.media.length == 0 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ14AJXokxXlQNidFd1P1rK_JuRjzRpaFC4DQ&usqp=CAU" : widget.restaurant.media[0].url,
+                      imageUrl: widget.restaurant.media!.length == 0 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ14AJXokxXlQNidFd1P1rK_JuRjzRpaFC4DQ&usqp=CAU" : widget.restaurant.media![0].url!,
                       placeholder: (context, url) =>
                           Image.asset(
                             'assets/img/loading.gif',
@@ -130,7 +130,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                                 translatedMessage,
                                 overflow: TextOverflow.fade,
                                 softWrap: true,
-                                style: Theme.of(context).textTheme.subtitle1.merge(TextStyle(fontSize: 12)),
+                                style: Theme.of(context).textTheme.subtitle1!.merge(TextStyle(fontSize: 12)),
                               ),
                             ),
                           ),
@@ -138,13 +138,13 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                             width:110,
                             height: 17,
                             child: Text(
-                              Helper.skipHtml(widget.restaurant.address),
+                              Helper.skipHtml(widget.restaurant.address!),
                               overflow: TextOverflow.fade,
                               softWrap: false,
                               style: Theme
                                   .of(context)
                                   .textTheme
-                                  .caption.merge(TextStyle(
+                                  .caption!.merge(TextStyle(
                                 fontSize: 10
                               )),
                             ),
@@ -158,7 +158,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                       children: [
                         Text(
                           Helper.getDistance(
-                              double.parse( widget.restaurant.distance),
+                              double.parse( widget.restaurant.distance!),
                               Helper.of(context)
                                   .trans(setting.value.distanceUnit)),
                           overflow: TextOverflow.fade,
@@ -207,7 +207,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                   children: [
                     widget.restaurant.closed == "0" ?   RatingBar.builder(
                       itemSize: 15,
-                      initialRating: (widget.restaurant.rate == "null"|| widget.restaurant.rate == null)? 0.0 : double.parse(widget.restaurant.rate),
+                      initialRating: (widget.restaurant.rate == "null"|| widget.restaurant.rate == null)? 0.0 : double.parse(widget.restaurant.rate!),
                       minRating: 1,
                       direction: Axis.horizontal,
                       allowHalfRating: true,

@@ -4,39 +4,39 @@ import '../models/restaurant.dart';
 import 'food.dart';
 
 class Slide {
-  String id;
-  int order;
-  String text;
-  String button;
-  String textPosition;
-  String textColor;
-  String buttonColor;
-  String backgroundColor;
-  String indicatorColor;
-  Media image;
-  String imageFit;
-  Food food;
-  Restaurant restaurant;
-  bool enabled;
+  late String id;
+  late int order;
+  late String text;
+  late String button;
+  late String textPosition;
+  late String textColor;
+  late String buttonColor;
+  late String backgroundColor;
+  late String indicatorColor;
+  late Media image;
+  late String imageFit;
+  late Food food;
+  late Restaurant restaurant;
+  late bool enabled;
 
   Slide();
 
   Slide.fromJSON(Map<String, dynamic> jsonMap) {
     try {
-      id = jsonMap['id'].toString();
-      order = jsonMap['order'] != null ? jsonMap['order'] : 0;
-      text = jsonMap['text'] != null ? jsonMap['text'].toString() : '';
-      button = jsonMap['button'] != null ? jsonMap['button'].toString() : '';
-      textPosition = jsonMap['text_position'] != null ? jsonMap['text_position'].toString() : '';
-      textColor = jsonMap['text_color'] != null ? jsonMap['text_color'].toString() : '';
-      buttonColor = jsonMap['button_color'] != null ? jsonMap['button_color'].toString() : '';
-      backgroundColor = jsonMap['background_color'] != null ? jsonMap['background_color'].toString() : '';
-      indicatorColor = jsonMap['indicator_color'] != null ? jsonMap['indicator_color'].toString() : '';
-      imageFit = jsonMap['image_fit'] != null ? jsonMap['image_fit'].toString() : 'cover';
+      id = jsonMap['id']?.toString() ?? '';
+      order = jsonMap['order'] ?? 0;
+      text = jsonMap['text']?.toString() ?? '';
+      button = jsonMap['button']?.toString() ?? '';
+      textPosition = jsonMap['text_position']?.toString() ?? '';
+      textColor = jsonMap['text_color']?.toString() ?? '';
+      buttonColor = jsonMap['button_color']?.toString() ?? '';
+      backgroundColor = jsonMap['background_color']?.toString() ?? '';
+      indicatorColor = jsonMap['indicator_color']?.toString() ?? '';
+      imageFit = jsonMap['image_fit']?.toString() ?? 'cover';
       enabled = jsonMap['enabled'] ?? false;
-      restaurant = jsonMap['restaurant'] != null ? Restaurant.fromJSON(jsonMap['restaurant']) : Restaurant.fromJSON({});
-      food = jsonMap['food'] != null ? Food.fromJSON(jsonMap['food']) : Food.fromJSON({});
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
+      restaurant = jsonMap['restaurant'] != null ? Restaurant.fromJSON(jsonMap['restaurant']) : Restaurant();
+      food = jsonMap['food'] != null ? Food.fromJSON(jsonMap['food']) : Food();
+      image = (jsonMap['media'] != null && (jsonMap['media'] as List).isNotEmpty) ? Media.fromJSON(jsonMap['media'][0]) : Media();
     } catch (e) {
       id = '';
       order = 0;
@@ -47,32 +47,41 @@ class Slide {
       buttonColor = '';
       backgroundColor = '';
       indicatorColor = '';
-      imageFit = '';
+      imageFit = 'cover';
       enabled = false;
-      restaurant = Restaurant.fromJSON({});
-      food = Food.fromJSON({});
+      restaurant = Restaurant();
+      food = Food();
       image = Media();
       // print(CustomTrace(StackTrace.current, message: e));
     }
   }
 
-  Map toMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["text"] = text;
-    map["order"] = order;
-    map["button"] = button;
-    map["text_position"] = textPosition;
-    map["text_color"] = textColor;
-    map["button_color"] = buttonColor;
-    return map;
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "text": text,
+      "order": order,
+      "button": button,
+      "text_position": textPosition,
+      "text_color": textColor,
+      "button_color": buttonColor,
+      "background_color": backgroundColor,
+      "indicator_color": indicatorColor,
+      "image_fit": imageFit,
+      "enabled": enabled,
+      "restaurant": restaurant.toMap(),
+      "food": food.toMap(),
+      "media": [image.toMap()],
+    };
   }
 
   @override
-  bool operator ==(dynamic other) {
-    return other.id == this.id;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Slide) return false;
+    return other.id == id;
   }
 
   @override
-  int get hashCode => this.id.hashCode;
+  int get hashCode => id.hashCode;
 }

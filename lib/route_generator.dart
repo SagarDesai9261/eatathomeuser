@@ -69,7 +69,7 @@ class RouteGenerator {
       case '/Pages':
         return MaterialPageRoute(builder: (_) => PagesWidget(currentTab: args));
       case '/Home':
-        return MaterialPageRoute(builder: (_) => HomePage(currentTab: args));
+        return MaterialPageRoute(builder: (_) => HomePage(currentTab: 1));
       case '/Favorites':
         return MaterialPageRoute(builder: (_) => FavoritesWidget());
       case '/Chat':
@@ -111,7 +111,7 @@ class RouteGenerator {
       case '/RazorPay':
         return MaterialPageRoute(builder: (_) => RazorPayPaymentWidget(routeArgument: args as RouteArgument));
       case '/OrderSuccess':
-        return MaterialPageRoute(builder: (_) => orderStatus(routeArgument: args as RouteArgument));
+        return MaterialPageRoute(builder: (_) => orderStatus());
       case '/Languages':
         return MaterialPageRoute(builder: (_) => LanguagesWidget());
       case '/Help':

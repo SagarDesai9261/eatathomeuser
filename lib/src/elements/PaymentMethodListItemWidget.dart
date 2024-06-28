@@ -5,16 +5,16 @@ import '../models/payment_method.dart';
 
 // ignore: must_be_immutable
 class PaymentMethodListItemWidget extends StatelessWidget {
-  String heroTag;
+  String? heroTag;
   PaymentMethod paymentMethod;
 
-  PaymentMethodListItemWidget({Key key, this.paymentMethod}) : super(key: key);
+  PaymentMethodListItemWidget({Key? key,required this.paymentMethod}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
+      // splashColor: Theme.of(context).accentColor,
+      // focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
         Navigator.of(context).pushNamed(this.paymentMethod.route);

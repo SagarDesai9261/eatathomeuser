@@ -8,9 +8,9 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class DeliveryPickupController extends CartController {
-  GlobalKey<ScaffoldState> scaffoldKey;
-  model.Address deliveryAddress;
-  PaymentMethodList list;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  model.Address? deliveryAddress;
+  PaymentMethodList? list;
 
   DeliveryPickupController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -21,7 +21,7 @@ class DeliveryPickupController extends CartController {
 
   void listenForDeliveryAddress() async {
     this.deliveryAddress = settingRepo.deliveryAddress.value;
-    print(this.deliveryAddress.id);
+    print(this.deliveryAddress!.id);
   }
 
   void addAddress(model.Address address) {
@@ -31,8 +31,8 @@ class DeliveryPickupController extends CartController {
         this.deliveryAddress = value;
       });
     }).whenComplete(() {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).new_address_added_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).new_address_added_successfully),
       ));
     });
   }
@@ -44,22 +44,22 @@ class DeliveryPickupController extends CartController {
         this.deliveryAddress = value;
       });
     }).whenComplete(() {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).the_address_updated_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).the_address_updated_successfully),
       ));
     });
   }
 
   PaymentMethod getPickUpMethod() {
-    return list.pickupList.elementAt(0);
+    return list!.pickupList.elementAt(0);
   }
 
   PaymentMethod getDeliveryMethod() {
-    return list.pickupList.elementAt(1);
+    return list!.pickupList.elementAt(1);
   }
 
   void toggleDelivery() {
-    list.pickupList.forEach((element) {
+    list!.pickupList.forEach((element) {
       if (element != getDeliveryMethod()) {
         element.selected = false;
       }
@@ -70,7 +70,7 @@ class DeliveryPickupController extends CartController {
   }
 
   void togglePickUp() {
-    list.pickupList.forEach((element) {
+    list!.pickupList.forEach((element) {
       if (element != getPickUpMethod()) {
         element.selected = false;
       }
@@ -81,7 +81,7 @@ class DeliveryPickupController extends CartController {
   }
 
   PaymentMethod getSelectedMethod() {
-    return list.pickupList.firstWhere((element) => element.selected);
+    return list!.pickupList.firstWhere((element) => element.selected);
   }
 
   @override

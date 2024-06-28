@@ -5,18 +5,37 @@ class Faq {
   String question;
   String answer;
 
-  Faq();
+  Faq({
+    this.id = '',
+    this.question = '',
+    this.answer = '',
+  });
 
-  Faq.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      question = jsonMap['question'] != null ? jsonMap['question'] : '';
-      answer = jsonMap['answer'] != null ? jsonMap['answer'] : '';
-    } catch (e) {
-      id = '';
-      question = '';
-      answer = '';
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
+  Faq.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id']?.toString() ?? '',
+        question = jsonMap['question'] ?? '',
+        answer = jsonMap['answer'] ?? '';
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      'id': id,
+      'question': question,
+      'answer': answer,
+    };
+    return map;
   }
+
+  @override
+  String toString() {
+    return toMap().toString();
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    if (identical(this, other)) return true;
+    return other is Faq && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -4,7 +4,7 @@ import '../../generated/l10n.dart';
 
 // ignore: must_be_immutable
 class NotDeliverableAddressesItemWidget extends StatelessWidget {
-  NotDeliverableAddressesItemWidget({Key key}) : super(key: key);
+  NotDeliverableAddressesItemWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

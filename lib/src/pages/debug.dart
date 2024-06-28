@@ -7,9 +7,9 @@ import '../elements/CircularLoadingWidget.dart';
 import '../models/route_argument.dart';
 
 class DebugWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  DebugWidget({Key key, this.routeArgument}) : super(key: key);
+  DebugWidget({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _DebugWidgetState createState() {
@@ -18,10 +18,10 @@ class DebugWidget extends StatefulWidget {
 }
 
 class _DebugWidgetState extends StateMVC<DebugWidget> {
-  FavoriteController _con;
+  FavoriteController? _con;
 
   _DebugWidgetState() : super(FavoriteController()) {
-    _con = controller;
+    _con = controller as FavoriteController?;
   }
 
   @override
@@ -33,14 +33,14 @@ class _DebugWidgetState extends StateMVC<DebugWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _con.scaffoldKey,
+        key: _con!.scaffoldKey,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
           title: Text(
             'Debug',
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
           actions: <Widget>[
             IconButton(
@@ -51,20 +51,20 @@ class _DebugWidgetState extends StateMVC<DebugWidget> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: RefreshIndicator(
-          onRefresh: _con.refreshFavorites,
-          child: _con.favorites.isEmpty
+          onRefresh: _con!.refreshFavorites,
+          child: _con!.favorites.isEmpty
               ? CircularLoadingWidget(height: 500)
               : ListView.separated(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: _con.favorites.length,
+                  itemCount: _con!.favorites.length,
                   separatorBuilder: (context, index) {
                     return SizedBox(height: 10);
                   },
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(_con.favorites.elementAt(index).name),
+                      title: Text(_con!.favorites.elementAt(index).name),
                     );
                   },
                 ),

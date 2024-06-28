@@ -12,11 +12,12 @@ import 'package:food_delivery_app/src/pages/home.dart';
 import 'package:food_delivery_app/src/pages/settings.dart';
 import 'package:food_delivery_app/src/repository/user_repository.dart';
 
+import '../../utils/color.dart';
 import '../controllers/homr_test.dart';
 
 class PagesWidgetNew extends StatefulWidget {
   dynamic currentTab;
-  RouteArgument routeArgument;
+  RouteArgument? routeArgument;
   Widget currentPage = HomePage();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   HomeController _con = HomeController();
@@ -54,7 +55,7 @@ class _PagesWidgetNewState extends State<PagesWidgetNew> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
             widget.currentPage = SettingsWidget(parentScaffoldKey: widget.scaffoldKey, updateCurrentTab: _updateCurrentTab,);
           }
           else{
@@ -91,7 +92,7 @@ class _PagesWidgetNewState extends State<PagesWidgetNew> {
         body: widget.currentPage,
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: Theme.of(context).accentColor,
+          selectedItemColor: mainColor(1),
           selectedFontSize: 0,
           unselectedFontSize: 0,
           iconSize: 22,

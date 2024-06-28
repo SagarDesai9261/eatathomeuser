@@ -6,25 +6,25 @@ class Filter {
   bool open;
   List<Cuisine> cuisines;
 
-  Filter();
+  Filter({
+    this.delivery = false,
+    this.open = false,
+    this.cuisines = const [],
+  });
 
-  Filter.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      open = jsonMap['open'] ?? false;
-      delivery = jsonMap['delivery'] ?? false;
-      cuisines = jsonMap['cuisines'] != null && (jsonMap['cuisines'] as List).length > 0
-          ? List.from(jsonMap['cuisines']).map((element) => Cuisine.fromJSON(element)).toList()
-          : [];
-    } catch (e) {
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Filter.fromJSON(Map<String, dynamic> jsonMap)
+      : delivery = jsonMap['delivery'] ?? false,
+        open = jsonMap['open'] ?? false,
+        cuisines = jsonMap['cuisines'] != null && (jsonMap['cuisines'] as List).isNotEmpty
+            ? List.from(jsonMap['cuisines']).map((element) => Cuisine.fromJSON(element)).toList()
+            : [];
 
   Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
-    map['open'] = open;
-    map['delivery'] = delivery;
-    map['cuisines'] = cuisines.map((element) => element.toMap()).toList();
+    var map = <String, dynamic>{
+      'delivery': delivery,
+      'open': open,
+      'cuisines': cuisines.map((element) => element.toMap()).toList(),
+    };
     return map;
   }
 
@@ -43,46 +43,32 @@ class Filter {
     return filter;
   }
 
-  Map<String, dynamic> toQuery({Map<String, dynamic> oldQuery}) {
+  Map<String, dynamic> toQuery({Map<String, dynamic>? oldQuery}) {
     Map<String, dynamic> query = {};
     String relation = '';
     if (oldQuery != null) {
-      relation = oldQuery['with'] != null ? oldQuery['with'] + '.' : '';
-      query['with'] = oldQuery['with'] != null ? oldQuery['with'] : null;
+      relation = oldQuery['with'] != null ? oldQuery['with']! + '.' : '';
+      query['with'] = oldQuery['with'];
     }
     if (delivery) {
       if (open) {
-        query['search'] = relation + 'available_for_delivery:1;closed:0';
-        query['searchFields'] = relation + 'available_for_delivery:=;closed:=';
+        query['search'] = '$relation' + 'available_for_delivery:1;closed:0';
+        query['searchFields'] = '$relation' + 'available_for_delivery:=;closed:=';
       } else {
-        query['search'] = relation + 'available_for_delivery:1';
-        query['searchFields'] = relation + 'available_for_delivery:=';
+        query['search'] = '$relation' + 'available_for_delivery:1';
+        query['searchFields'] = '$relation' + 'available_for_delivery:=';
       }
     } else if (open) {
-      query['search'] = relation + 'closed:${open ? 0 : 1}';
-      query['searchFields'] = relation + 'closed:=';
+      query['search'] = '$relation' + 'closed:${open ? 0 : 1}';
+      query['searchFields'] = '$relation' + 'closed:=';
     }
-    if (cuisines != null && cuisines.isNotEmpty) {
+    if (cuisines.isNotEmpty) {
       query['cuisines[]'] = cuisines.map((element) => element.id).toList();
     }
     if (oldQuery != null) {
-      if (query['search'] != null) {
-        query['search'] += ';' + oldQuery['search'];
-      } else {
-        query['search'] = oldQuery['search'];
-      }
-
-      if (query['searchFields'] != null) {
-        query['searchFields'] = query['searchFields'] + ';' + oldQuery['searchFields'];
-      } else {
-        query['searchFields'] = oldQuery['searchFields'];
-      }
-
-//      query['search'] =
-//          oldQuery['search'] != null ? (query['search']) ?? '' + ';' + oldQuery['search'] : query['search'];
-//      query['searchFields'] = oldQuery['searchFields'] != null
-//          ? query['searchFields'] ?? '' + ';' + oldQuery['searchFields']
-//          : query['searchFields'];
+      query['search'] = oldQuery['search'] != null ? (query['search'] ?? '') + ';' + oldQuery['search']! : query['search'];
+      query['searchFields'] =
+      oldQuery['searchFields'] != null ? (query['searchFields'] ?? '') + ';' + oldQuery['searchFields']! : query['searchFields'];
     }
     query['searchJoin'] = 'and';
     return query;

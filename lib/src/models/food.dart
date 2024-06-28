@@ -13,7 +13,8 @@ class Food {
   String name;
   double price;
   double discountPrice;
-  Media image;
+  String? foodImg; // Nullable
+  Media? image; // Nullable
   String description;
   String ingredients;
   String weight;
@@ -21,76 +22,112 @@ class Food {
   String packageItemsCount;
   bool featured;
   bool deliverable;
-  Restaurant restaurant;
-  Category category;
+  Restaurant? restaurant;
+  Category? category;
   List<Extra> extras;
   List<ExtraGroup> extraGroups;
   List<Review> foodReviews;
   List<Nutrition> nutritions;
-  String foodImg;
   String foodName;
-  TimeSlots timeSlots;
-
-
-  Food();
-
+  TimeSlots? timeSlots;
+// Named constructor withId
   Food.withId({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
+    required this.price,
+    this.discountPrice = 0.0,
     this.foodImg,
-    this.price,
-    this.restaurant
-});
+    this.image,
+    this.description = '',
+    this.ingredients = '',
+    this.weight = '',
+    this.unit = '',
+    this.packageItemsCount = '',
+    this.featured = false,
+    this.deliverable = false,
+    this.restaurant,
+    this.category,
+    this.extras = const [],
+    this.extraGroups = const [],
+    this.foodReviews = const [],
+    this.nutritions = const [],
+    this.foodName = '',
+    this.timeSlots,
+  });
+
+  Food({
+    this.id = '',
+    this.name = '',
+    this.price = 0.0,
+    this.discountPrice = 0.0,
+    this.foodImg,
+    this.image,
+    this.description = '',
+    this.ingredients = '',
+    this.weight = '',
+    this.unit = '',
+    this.packageItemsCount = '',
+    this.featured = false,
+    this.deliverable = false,
+     this.restaurant,
+     this.category,
+    this.extras = const [],
+    this.extraGroups = const [],
+    this.foodReviews = const [],
+    this.nutritions = const [],
+    this.foodName = '',
+     this.timeSlots,
+  });
+
+  Food.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        name = jsonMap['name'] ?? '',
+        foodName = jsonMap['food_name'] ?? '',
+        foodImg = jsonMap['image'],
+        image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media(),
+
+        price = jsonMap['price'] != null ? jsonMap['price'].toDouble() : 0.0,
+        discountPrice = jsonMap['discount_price'] != null ? double.parse(jsonMap['discount_price']) : 0.0,
+        description = jsonMap['description'] ?? '',
+        ingredients = jsonMap['ingredients'] ?? '',
+        weight = jsonMap['weight']?.toString() ?? '',
+        unit = jsonMap['unit']?.toString() ?? '',
+        packageItemsCount = jsonMap['package_items_count'].toString(),
+        featured = jsonMap['featured'] ?? false,
+        deliverable = jsonMap['deliverable'] ?? false,
+     //   timeSlots = TimeSlots.fromJson(jsonMap['time_slots'] ?? {}),
+        restaurant = jsonMap['restaurant'] != null ? Restaurant.fromJSON(jsonMap['restaurant']) : Restaurant.fromJSON({}),
+        category = jsonMap['category'] != null ? Category.fromJSON(jsonMap['category']) : Category.fromJSON({}),
+       // image = jsonMap['media'] != null && (jsonMap['media'] as List).isNotEmpty ? Media.fromJSON(jsonMap['media'][0]) : Media(),
+        extras = jsonMap['extras'] != null && (jsonMap['extras'] as List).isNotEmpty
+            ? List.from(jsonMap['extras']).map((element) => Extra.fromJSON(element)).toSet().toList()
+            : [],
+        extraGroups = jsonMap['extra_groups'] != null && (jsonMap['extra_groups'] as List).isNotEmpty
+            ? List.from(jsonMap['extra_groups']).map((element) => ExtraGroup.fromJSON(element)).toSet().toList()
+            : [],
+        foodReviews = jsonMap['food_reviews'] != null && (jsonMap['food_reviews'] as List).isNotEmpty
+            ? List.from(jsonMap['food_reviews']).map((element) => Review.fromJSON(element)).toSet().toList()
+            : [],
+        nutritions = jsonMap['nutrition'] != null && (jsonMap['nutrition'] as List).isNotEmpty
+            ? List.from(jsonMap['nutrition']).map((element) => Nutrition.fromJSON(element)).toSet().toList()
+            : [];
 
 
-  Food.fromJSON(Map<String, dynamic> jsonMap) {
 
-      id = jsonMap['id'].toString();
-      name = jsonMap['name'];
-      foodName = jsonMap['food_name'];
-      foodImg = jsonMap['image'];
-      price = jsonMap['price'] != null ? jsonMap['price'].toDouble() : 0.0;
-      discountPrice = jsonMap['discount_price'] != null ? double.parse(jsonMap['discount_price']) : 0.0;
-      price = discountPrice != 0 ? discountPrice : price;
-      discountPrice = discountPrice == 0 ? discountPrice : jsonMap['price'] != null ? jsonMap['price'].toDouble() : 0.0;
-      description = jsonMap['description'];
-      ingredients = jsonMap['ingredients'];
-      weight = jsonMap['weight'] != null ? jsonMap['weight'].toString() : '';
-      unit = jsonMap['unit'] != null ? jsonMap['unit'].toString() : '';
-      packageItemsCount = jsonMap['package_items_count'].toString();
-      featured = jsonMap['featured'] ?? false;
-      deliverable = jsonMap['deliverable'] ?? false;
-      timeSlots = TimeSlots();
-      restaurant = jsonMap['restaurant'] != null ? Restaurant.fromJSON(jsonMap['restaurant']) : Restaurant.fromJSON({});
-      category = jsonMap['category'] != null ? Category.fromJSON(jsonMap['category']) : Category.fromJSON({});
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
-      extras = jsonMap['extras'] != null && (jsonMap['extras'] as List).length > 0
-          ? List.from(jsonMap['extras']).map((element) => Extra.fromJSON(element)).toSet().toList()
-          : [];
-      extraGroups = jsonMap['extra_groups'] != null && (jsonMap['extra_groups'] as List).length > 0
-          ? List.from(jsonMap['extra_groups']).map((element) => ExtraGroup.fromJSON(element)).toSet().toList()
-          : [];
-      foodReviews = jsonMap['food_reviews'] != null && (jsonMap['food_reviews'] as List).length > 0
-          ? List.from(jsonMap['food_reviews']).map((element) => Review.fromJSON(element)).toSet().toList()
-          : [];
-      nutritions = jsonMap['nutrition'] != null && (jsonMap['nutrition'] as List).length > 0
-          ? List.from(jsonMap['nutrition']).map((element) => Nutrition.fromJSON(element)).toSet().toList()
-          : [];
-
-
-  }
-
-  Map toMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["name"] = name;
-    map["price"] = price;
-    map["food_name"] = foodName;
-    map["discountPrice"] = discountPrice;
-    map["description"] = description;
-    map["ingredients"] = ingredients;
-    map["weight"] = weight;
-    map["image"]= foodImg;
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      'id': id,
+      'name': name,
+      'price': price,
+      'food_name': foodName,
+      'discountPrice': discountPrice,
+      'description': description,
+      'ingredients': ingredients,
+      'weight': weight,
+      'unit': unit,
+      'image': foodImg,
+      'package_items_count': packageItemsCount,
+    };
     return map;
   }
 
@@ -121,11 +158,11 @@ class Food {
               coupon = _couponDiscountPrice(coupon);
             }
           } else if (element.discountableType == "App\\Models\\Restaurant") {
-            if (element.discountableId == restaurant.id) {
+            if (element.discountableId == restaurant!.id) {
               coupon = _couponDiscountPrice(coupon);
             }
           } else if (element.discountableType == "App\\Models\\Category") {
-            if (element.discountableId == category.id) {
+            if (element.discountableId == category!.id) {
               coupon = _couponDiscountPrice(coupon);
             }
           }
@@ -147,15 +184,16 @@ class Food {
     return coupon;
   }
 }
-
 class TimeSlots {
-  String from;
-  String to;
+  String? from;
+  String? to;
 
   TimeSlots({this.from, this.to});
 
-  TimeSlots.fromJson(Map<String, dynamic> json) {
-    from = json['from'];
-    to = json['to'];
+  factory TimeSlots.fromJson(Map<String, dynamic> json) {
+    return TimeSlots(
+      from: json['from'],
+      to: json['to'],
+    );
   }
 }

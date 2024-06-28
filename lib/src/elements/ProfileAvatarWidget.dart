@@ -7,8 +7,8 @@ class ProfileAvatarWidget extends StatelessWidget {
   final User user;
 
   ProfileAvatarWidget({
-    Key key,
-    this.user,
+    Key? key,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class ProfileAvatarWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 30),
       decoration: BoxDecoration(
-        color: Theme.of(context).accentColor,
+       // color: Theme.of(context).accentColor,
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
       ),
@@ -48,7 +48,7 @@ class ProfileAvatarWidget extends StatelessWidget {
                     height: 135,
                     width: 135,
                     fit: BoxFit.cover,
-                    imageUrl: user.image?.url,
+                    imageUrl: user.image?.url??"",
                     placeholder: (context, url) => Image.asset(
                       'assets/img/loading.gif',
                       fit: BoxFit.cover,
@@ -80,14 +80,14 @@ class ProfileAvatarWidget extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .headline5
-                .merge(TextStyle(color: Theme.of(context).primaryColor)),
+                !.merge(TextStyle(color: Theme.of(context).primaryColor)),
           ),
           Text(
             user.address,
             style: Theme.of(context)
                 .textTheme
                 .caption
-                .merge(TextStyle(color: Theme.of(context).primaryColor)),
+                !.merge(TextStyle(color: Theme.of(context).primaryColor)),
           ),
         ],
       ),

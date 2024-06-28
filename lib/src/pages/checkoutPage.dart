@@ -23,14 +23,14 @@ import '../../generated/l10n.dart';
 
 class CheckoutPage extends StatefulWidget {
 
-  String total;
-  final RouteArgument routeArgument;
+  String? total;
+  final RouteArgument? routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
-  CheckoutPage({Key key, this.routeArgument,this.total}) : super(key: key);
+  CheckoutPage({Key? key,  this.routeArgument, this.total}) : super(key: key);
 
  /* @override
   State<CheckoutPage> createState() => _CheckoutPageState();*/
@@ -43,7 +43,7 @@ class CheckoutPage extends StatefulWidget {
 
 class _CheckoutPageState extends StateMVC<CheckoutPage> {
 
-  CartController _con;
+  CartController? _con;
   HomeController _homeCon = HomeController();
 
   @override
@@ -82,7 +82,7 @@ class _CheckoutPageState extends StateMVC<CheckoutPage> {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text( S.of(context).checkout,
-          style: Theme.of(context).textTheme.headline5.merge(TextStyle( color: Colors.red,letterSpacing: 1.3), ),
+          style: Theme.of(context).textTheme.headline5!.merge(TextStyle( color: Colors.red,letterSpacing: 1.3), ),
         ),
       ),
       body: widget.isCurrentKitchen ? SingleChildScrollView(
@@ -187,7 +187,7 @@ class _CheckoutPageState extends StateMVC<CheckoutPage> {
                                 //Navigator.of(context).pushReplacementNamed('/paymentPage');
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => PaymentPage(total:widget.total),
+                                    builder: (context) => PaymentPage(total:widget.total!),
                                   ),
                                 );
                               },
@@ -229,7 +229,7 @@ class _CheckoutPageState extends StateMVC<CheckoutPage> {
       ) : widget.currentPage,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).accentColor,
+        //selectedItemColor: Theme.of(context).accentColor,
         selectedFontSize: 0,
         unselectedFontSize: 0,
         iconSize: 22,

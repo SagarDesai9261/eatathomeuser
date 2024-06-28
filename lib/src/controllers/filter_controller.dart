@@ -12,10 +12,10 @@ import '../repository/cuisine_repository.dart';
 
 class FilterController extends ControllerMVC {
 
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
   List<Cuisine> cuisines = [];
-  Filter filter;
-  Cart cart;
+  Filter? filter;
+  Cart? cart;
 
   FilterController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -33,16 +33,16 @@ class FilterController extends ControllerMVC {
 
   Future<void> saveFilter() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    filter.cuisines = this.cuisines.where((_f) => _f.selected).toList();
-    prefs.setString('filter', json.encode(filter.toMap()));
+    filter!.cuisines = this.cuisines.where((_f) => _f.selected).toList();
+    prefs.setString('filter', json.encode(filter!.toMap()));
   }
 
-  void listenForCuisines({String message}) async {
-    cuisines.add(new Cuisine.fromJSON({'id': '0', 'name': S.of(state.context).all, 'selected': true}));
+  void listenForCuisines({String? message}) async {
+    cuisines.add(new Cuisine.fromJSON({'id': '0', 'name': S.of(state!.context).all, 'selected': true}));
     final Stream<Cuisine> stream = await getCuisines();
     stream.listen((Cuisine _cuisine) {
       setState(() {
-        if (filter.cuisines.contains(_cuisine)) {
+        if (filter!.cuisines.contains(_cuisine)) {
           _cuisine.selected = true;
           cuisines.elementAt(0).selected = false;
         }
@@ -50,12 +50,12 @@ class FilterController extends ControllerMVC {
       });
     }, onError: (a) {
     //  // print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
@@ -64,19 +64,19 @@ class FilterController extends ControllerMVC {
 
   Future<void> refreshCuisines() async {
     cuisines.clear();
-    listenForCuisines(message: S.of(state.context).addresses_refreshed_successfuly);
+    listenForCuisines(message: S.of(state!.context).addresses_refreshed_successfuly);
   }
 
   void clearFilter() {
     setState(() {
-      filter.open = false;
-      filter.delivery = false;
+      filter!.open = false;
+      filter!.delivery = false;
       resetCuisines();
     });
   }
 
   void resetCuisines() {
-    filter.cuisines = [];
+    filter!.cuisines = [];
     cuisines.forEach((Cuisine _f) {
       _f.selected = false;
     });

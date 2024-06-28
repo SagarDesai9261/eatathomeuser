@@ -117,16 +117,16 @@ class ApiResponse {
   final List<RestaurantModel> popularKitchens;
 
   ApiResponse({
-    this.trending,
-    this.topKitchens,
-    this.popularKitchens,
+    required this.trending,
+    required this.topKitchens,
+    required this.popularKitchens,
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
     return ApiResponse(
       trending: Trending.fromJson(json['trending']),
-      topKitchens: List<RestaurantModel>.from(json['topkitchens']['data'].map((item) => RestaurantModel.fromJson(item))),
-      popularKitchens: List<RestaurantModel>.from(json['popular']['data'].map((item) => RestaurantModel.fromJson(item))),
+      topKitchens: List<RestaurantModel>.from((json['topkitchens']?['data'] ?? []).map((item) => RestaurantModel.fromJson(item))),
+      popularKitchens: List<RestaurantModel>.from((json['popular']?['data'] ?? []).map((item) => RestaurantModel.fromJson(item))),
     );
   }
 }
@@ -137,16 +137,16 @@ class Trending {
   final String message;
 
   Trending({
-    this.success,
-    this.data,
-    this.message,
+    required this.success,
+    required this.data,
+    required this.message,
   });
 
   factory Trending.fromJson(Map<String, dynamic> json) {
     return Trending(
-      success: json['success'],
-      data: List<FoodItem>.from(json['data'].map((item) => FoodItem.fromJson(item))),
-      message: json['message'],
+      success: json['success'] ?? false,
+      data: List<FoodItem>.from((json['data'] ?? []).map((item) => FoodItem.fromJson(item))),
+      message: json['message'] ?? '',
     );
   }
 }
@@ -154,15 +154,15 @@ class Trending {
 class FoodItem {
   final String id;
   final String name;
-  final num price;
-  final String description;
-  final List<String> foodType;
-  final RestaurantModel restaurant;
-  final List<Media> media;
+  final num? price;
+  final String? description;
+  final List<String>? foodType;
+  final RestaurantModel? restaurant;
+  final List<Media>? media;
 
   FoodItem({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
     this.price,
     this.description,
     this.foodType,
@@ -173,12 +173,12 @@ class FoodItem {
   factory FoodItem.fromJson(Map<String, dynamic> json) {
     return FoodItem(
       id: json['id'].toString(),
-      name: json['name'],
+      name: json['name'] ?? '',
       price: json['price'],
       description: json['description'],
-      foodType: List<String>.from(json['food_type'].map((type) => type.toString())),
-      restaurant: RestaurantModel.fromJson(json['restaurant']),
-      media: List<Media>.from(json['media'].map((item) => Media.fromJson(item))),
+      foodType: List<String>.from((json['food_type'] ?? []).map((type) => type.toString())),
+      restaurant: json['restaurant'] != null ? RestaurantModel.fromJson(json['restaurant']) : null,
+      media: json['media'] != null ? List<Media>.from((json['media'] ?? []).map((item) => Media.fromJson(item))) : [],
     );
   }
 }
@@ -186,22 +186,22 @@ class FoodItem {
 class RestaurantModel {
   final String id;
   final String name;
-  final String description;
-  final String address;
-  final String phone;
-  final String mobile;
-  final String slots;
-  final String rate;
-  final String is_open;
-  final String closed;
-  final String distance;
-  final String average_price;
-  final List<Media> media;
-  final Price price;
+  final String? description;
+  final String? address;
+  final String? phone;
+  final String? mobile;
+  final String? slots;
+  final String? rate;
+  final String? is_open;
+  final String? closed;
+  final String? distance;
+  final String? average_price;
+  final List<Media>? media;
+  final Price? price;
 
   RestaurantModel({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
     this.description,
     this.address,
     this.phone,
@@ -213,38 +213,37 @@ class RestaurantModel {
     this.closed,
     this.media,
     this.price,
-    this.average_price
+    this.average_price,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
     return RestaurantModel(
       id: json['id'].toString(),
-      name: json['name'],
+      name: json['name'] ?? '',
       description: json['description'],
       address: json['address'],
       phone: json['phone'],
       mobile: json['mobile'],
       slots: json['slots'],
-      rate: json['rate'].toString() ?? "",
-      is_open: json['is_open'].toString() ?? "",
-      average_price: json['average_price'].toString() ?? "",
-      closed: json['closed'].toString() ?? "",
+      rate: json['rate'],
+      is_open: json['is_open'],
+      average_price: json['average_price'],
+      closed: json['closed'],
       distance: json['distance'].toString(),
-      media: List<Media>.from(json['media'].map((item) => Media.fromJson(item))),
-      price:Price.fromJson(json['price_range']),
+      media: json['media'] != null ? List<Media>.from((json['media'] ?? []).map((item) => Media.fromJson(item))) : [],
+      price: json['price_range'] != null ? Price.fromJson(json['price_range']) : null,
     );
   }
 }
 
-
 class Media {
   final String id;
-  final String url;
-  final String thumb;
-  final String icon;
+  final String? url;
+  final String? thumb;
+  final String? icon;
 
   Media({
-    this.id,
+    required this.id,
     this.url,
     this.thumb,
     this.icon,
@@ -259,14 +258,16 @@ class Media {
     );
   }
 }
-class Price{
-  final String min;
-  final String max;
+
+class Price {
+  final String? min;
+  final String? max;
+
   Price({
     this.min,
-    this.max
-
+    this.max,
   });
+
   factory Price.fromJson(Map<String, dynamic> json) {
     return Price(
       min: json['min'].toString(),

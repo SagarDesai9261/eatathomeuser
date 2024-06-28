@@ -7,7 +7,7 @@ class PickUpMethodItem extends StatefulWidget {
   PaymentMethod paymentMethod;
   ValueChanged<PaymentMethod> onPressed;
 
-  PickUpMethodItem({Key key, this.paymentMethod, this.onPressed})
+  PickUpMethodItem({Key? key,required this.paymentMethod,required this.onPressed})
       : super(key: key);
 
   @override
@@ -15,13 +15,13 @@ class PickUpMethodItem extends StatefulWidget {
 }
 
 class _PickUpMethodItemState extends State<PickUpMethodItem> {
-  String heroTag;
+  String? heroTag;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
+      //splashColor: Theme.of(context).accentColor,
+      //focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
         this.widget.onPressed(widget.paymentMethod);
@@ -58,8 +58,8 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                   width: widget.paymentMethod.selected ? 60 : 0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Theme.of(context).accentColor.withOpacity(
-                        this.widget.paymentMethod.selected ? 0.74 : 0),
+                    // color: Theme.of(context).accentColor.withOpacity(
+                    //     this.widget.paymentMethod.selected ? 0.74 : 0),
                   ),
                   child: Icon(
                     Icons.check,

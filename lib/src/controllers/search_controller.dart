@@ -19,7 +19,7 @@ class SearchController extends ControllerMVC {
     listenForRestaurantsAndFoods();
   }
 
-  void listenForRestaurants({String search}) async {
+  void listenForRestaurants({String? search}) async {
     // print("search food $search");
     if (search == null) {
       search = await getRecentSearch();
@@ -33,7 +33,7 @@ class SearchController extends ControllerMVC {
     }, onDone: () {});
   }
 
-  void listenForFoods({String search}) async {
+  void listenForFoods({String? search}) async {
     if (search == null) {
       search = await getRecentSearch();
     }
@@ -45,7 +45,7 @@ class SearchController extends ControllerMVC {
       // print(a);
     }, onDone: () {});
   }
-  void listenForRestaurantsAndFoods({String search}) async {
+  void listenForRestaurantsAndFoods({String? search}) async {
     // print("search food $search");
     if (search == null) {
       search = await getRecentSearch();

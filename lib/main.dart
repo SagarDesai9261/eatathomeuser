@@ -26,7 +26,7 @@ import 'package:provider/provider.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
@@ -73,8 +73,8 @@ Future<void> main() async {
 
   //Load our .env file that contains our Stripe Secret key
   await dotenv.load(fileName: "assets/.env");
- print(CustomTrace(StackTrace.current, message: "base_url: ${GlobalConfiguration().getValue('base_url')}"));
- print(CustomTrace(StackTrace.current, message: "api_base_url: ${GlobalConfiguration().getValue('api_base_url')}"));
+// print(CustomTrace(StackTrace.current, message: "base_url: ${GlobalConfiguration().getValue('base_url')}"));
+// print(CustomTrace(StackTrace.current, message: "api_base_url: ${GlobalConfiguration().getValue('api_base_url')}"));
   runApp(Phoenix(
     child: MultiProvider(
         providers: [
@@ -187,6 +187,7 @@ class _MyAppState extends State<MyApp> {
             child: Consumer<CollectedData>(
             builder: (context, collectedData, _) {
               return MaterialApp(
+
                   navigatorKey: settingRepo.navigatorKey,
                   title: _setting.appName,
                   initialRoute: '/Splash',
@@ -201,12 +202,13 @@ class _MyAppState extends State<MyApp> {
                   supportedLocales: S.delegate.supportedLocales,
                   theme: _setting.brightness.value == Brightness.light
                       ? ThemeData(
+                    useMaterial3: false,
                     fontFamily: 'Poppins',
                     primaryColor: Colors.white,
                     floatingActionButtonTheme: FloatingActionButtonThemeData(
                         elevation: 0, foregroundColor: Colors.white),
                     brightness: Brightness.light,
-                    accentColor: config.Colors().mainColor(1),
+                   // accentColor: config.Colors().mainColor(1),
                     dividerColor: config.Colors().accentColor(0.1),
                     focusColor: config.Colors().accentColor(1),
                     hintColor: config.Colors().secondColor(1),
@@ -246,15 +248,17 @@ class _MyAppState extends State<MyApp> {
                     ),
                   )
                       : ThemeData(
+                    useMaterial3: false,
                     fontFamily: 'Poppins',
                     primaryColor: Color(0xFF252525),
                     brightness: Brightness.dark,
                     scaffoldBackgroundColor: Color(0xFF2C2C2C),
-                    accentColor: config.Colors().mainDarkColor(1),
+                  //  accentColor: config.Colors().mainDarkColor(1),
                     dividerColor: config.Colors().accentColor(0.1),
                     hintColor: config.Colors().secondDarkColor(1),
                     focusColor: config.Colors().accentDarkColor(1),
                     textTheme: TextTheme(
+
                       headline5: TextStyle(fontSize: 20.0, color: config
                           .Colors().secondDarkColor(1), height: 1.35),
                       headline4: TextStyle(fontSize: 18.0,

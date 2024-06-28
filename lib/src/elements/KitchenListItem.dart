@@ -16,14 +16,14 @@ class KitchenListItem extends StatefulWidget {
   Restaurant restaurant;
   String heroTag;
 
-  KitchenListItem({Key key, this.restaurant, this.heroTag}) : super(key: key);
+  KitchenListItem({Key? key,required this.restaurant,required this.heroTag}) : super(key: key);
 
   @override
   State<KitchenListItem> createState() => _KitchenListItemState();
 }
 
 class _KitchenListItemState extends State<KitchenListItem> {
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
           children: <Widget>[
             // Image of the card
             Hero(
-              tag: widget.restaurant.id,
+              tag: widget.restaurant.id!,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(
                     Radius.circular(10)),
@@ -88,7 +88,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                   height: 120,
                   width: 300,
                   fit: BoxFit.fill,
-                  imageUrl: widget.restaurant.image.url,
+                  imageUrl: widget.restaurant.image!.url,
                   placeholder: (context, url) =>
                       Image.asset(
                         'assets/img/loading.gif',
@@ -122,7 +122,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                                 .titleSmall.merge(TextStyle(fontWeight: FontWeight.w400)),
                           )*/
                           TranslationWidget(
-                            message:  widget.restaurant.name,
+                            message:  widget.restaurant.name!,
                             fromLanguage: "English",
                             toLanguage: defaultLanguage,
                             builder: (translatedMessage) => Text(
@@ -133,7 +133,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                               style:Theme
                                   .of(context)
                                   .textTheme
-                                  .caption.merge(TextStyle(
+                                  .caption!.merge(TextStyle(
                                   fontSize: 12
                               )),
                             ),
@@ -143,13 +143,13 @@ class _KitchenListItemState extends State<KitchenListItem> {
                           width: 120,
                           height: 17,
                           child: Text(
-                            Helper.skipHtml(widget.restaurant.address),
+                            Helper.skipHtml(widget.restaurant.address!),
                             overflow: TextOverflow.fade,
                             softWrap: false,
                             style: Theme
                                 .of(context)
                                 .textTheme
-                                .caption.merge(TextStyle(
+                                .caption!.merge(TextStyle(
                                 fontSize: 10
                             )),
                           ),
@@ -163,7 +163,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                     children: [
                       Text(
                         Helper.getDistance(
-                            double.parse( widget.restaurant.distance.toString()),
+                            double.parse( widget.restaurant.distance!),
                             Helper.of(context)
                                 .trans(setting.value.distanceUnit)),
                         overflow: TextOverflow.fade,
@@ -207,7 +207,7 @@ class _KitchenListItemState extends State<KitchenListItem> {
                 children: [
                   RatingBar.builder(
                     itemSize: 10,
-                    initialRating: double.parse( widget.restaurant.rate),
+                    initialRating: double.parse( widget.restaurant.rate!),
                     minRating: 1,
                     direction: Axis.horizontal,
                     allowHalfRating: true,

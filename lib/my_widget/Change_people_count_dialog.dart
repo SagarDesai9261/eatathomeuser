@@ -16,7 +16,7 @@ class Change_people_count extends StatefulWidget {
   List<Food> selectedFoodList;
   String default_tax;
   int total;
-  Coupon selectedCoupon;
+  Coupon? selectedCoupon;
   List<ProductItem> products ;
   List<Map<String,dynamic>>  fooditems;
   Change_people_count(
@@ -72,9 +72,9 @@ class _Change_people_countState extends State<Change_people_count> {
     _products[productIndex].quantity = quantity;
   }
 
-  String selectedPeople;
-  String defaultLanguage;
-  String heroTag;
+  String? selectedPeople;
+  String? defaultLanguage;
+  String? heroTag;
 
   void _incrementQuantity(int index) {
     // Debounce the increment action by adding a small delay
@@ -134,7 +134,7 @@ class _Change_people_countState extends State<Change_people_count> {
         title: TranslationWidget(
           message: "Schedule Dine-in",
           fromLanguage: "English",
-          toLanguage: defaultLanguage,
+          toLanguage: defaultLanguage!,
           builder: (translatedMessage) => Text(
             translatedMessage,
             overflow: TextOverflow.fade,
@@ -142,7 +142,7 @@ class _Change_people_countState extends State<Change_people_count> {
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .merge(TextStyle(letterSpacing: 1.3)),
+                !.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -166,7 +166,7 @@ class _Change_people_countState extends State<Change_people_count> {
                   TranslationWidget(
                     message: 'Who’s coming?',
                     fromLanguage: "English",
-                    toLanguage: defaultLanguage,
+                    toLanguage: defaultLanguage!,
                     builder: (translatedMessage) => Text(
                       translatedMessage,
                       textAlign: TextAlign.center,
@@ -206,13 +206,13 @@ class _Change_people_countState extends State<Change_people_count> {
                     title: TranslationWidget(
                       message: _products[index].name,
                       fromLanguage: "English",
-                      toLanguage: defaultLanguage,
+                      toLanguage: defaultLanguage!,
                       builder: (translatedMessage) => Text(translatedMessage),
                     ),
                     subtitle: TranslationWidget(
                       message: _products[index].subtitle,
                       fromLanguage: "English",
-                      toLanguage: defaultLanguage,
+                      toLanguage: defaultLanguage!,
                       builder: (translatedMessage) => Text(translatedMessage),
                     ),
                     trailing: Row(
@@ -227,7 +227,7 @@ class _Change_people_countState extends State<Change_people_count> {
                           child: TranslationWidget(
                             message: _products[index].quantity.toString(),
                             fromLanguage: "English",
-                            toLanguage: defaultLanguage,
+                            toLanguage: defaultLanguage!,
                             builder: (translatedMessage) => Text(
                               translatedMessage,
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -275,12 +275,12 @@ class _Change_people_countState extends State<Change_people_count> {
 
                     selectedPeople = stringBuffer.toString();
 
-                    if (selectedPeople.isNotEmpty) {
+                    if (selectedPeople!.isNotEmpty) {
                       Navigator.pop(context);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,selectedPeople,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,_products,widget.fooditems,widget.selectedCoupon)
+                            builder: (context) => DineInSummaryPage(widget.total,widget.restaurant,selectedPeople!,widget.selectedDate,widget.selectedTime,widget.fromTime,widget.toTime,widget.selectedFoodList,widget.default_tax,_products,widget.fooditems,widget.selectedCoupon)
                         ),
                       );
                     }
@@ -292,7 +292,7 @@ class _Change_people_countState extends State<Change_people_count> {
                   child: TranslationWidget(
                     message: "Next",
                     fromLanguage: "English",
-                    toLanguage: defaultLanguage,
+                    toLanguage: defaultLanguage!,
                     builder: (translatedMessage) => Text(
                       translatedMessage,
                       style: TextStyle(
@@ -312,8 +312,8 @@ class _Change_people_countState extends State<Change_people_count> {
 }
 
 class QuantityButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
+  final IconData? icon;
+  final VoidCallback? onPressed;
 
   const QuantityButton({ this.icon, this.onPressed});
 

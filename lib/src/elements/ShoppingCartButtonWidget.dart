@@ -6,14 +6,14 @@ import '../models/route_argument.dart';
 import '../repository/user_repository.dart';
 
 class ShoppingCartButtonWidget extends StatefulWidget {
-  const ShoppingCartButtonWidget({
+   ShoppingCartButtonWidget({
     this.iconColor,
     this.labelColor,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
-  final Color iconColor;
-  final Color labelColor;
+   Color? iconColor;
+   Color? labelColor;
 
   @override
   _ShoppingCartButtonWidgetState createState() =>
@@ -22,15 +22,15 @@ class ShoppingCartButtonWidget extends StatefulWidget {
 
 class _ShoppingCartButtonWidgetState
     extends StateMVC<ShoppingCartButtonWidget> {
-  CartController _con;
+  CartController? _con;
 
   _ShoppingCartButtonWidgetState() : super(CartController()) {
-    _con = controller;
+    _con = controller as CartController?;
   }
 
   @override
   void initState() {
-    _con.listenForCartsCount();
+    _con!.listenForCartsCount();
     super.initState();
   }
 
@@ -42,7 +42,7 @@ class _ShoppingCartButtonWidgetState
       focusElevation: 0,
       highlightElevation: 0,
       onPressed: () {
-        if (currentUser.value.apiToken != null) {
+        if (currentUser.value.apiToken != "") {
           Navigator.of(context).pushNamed('/Cart',
               arguments: RouteArgument(param: '/Pages', id: '2'));
         } else {
@@ -59,9 +59,9 @@ class _ShoppingCartButtonWidgetState
           ),
           Container(
             child: Text(
-              _con.cartCount.toString(),
+              _con!.cartCount.toString(),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.caption.merge(
+              style: Theme.of(context).textTheme.caption!.merge(
                     TextStyle(
                         color: Theme.of(context).primaryColor, fontSize: 9),
                   ),

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class HeadingIconButtonWidget extends StatelessWidget {
   const HeadingIconButtonWidget(
-      {Key key,
-      @required this.text,
-      @required this.icon,
+      {Key? key,
+      required this.text,
+      required this.icon,
       this.showActions = false})
       : super(key: key);
 

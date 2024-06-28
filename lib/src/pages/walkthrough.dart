@@ -12,7 +12,7 @@ class Walkthrough extends StatelessWidget {
 
 class WalkthroughWidget extends StatefulWidget {
   WalkthroughWidget({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

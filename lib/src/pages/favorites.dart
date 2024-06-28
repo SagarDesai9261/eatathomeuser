@@ -15,8 +15,8 @@ import '../repository/translation_widget.dart';
 import '../repository/user_repository.dart';
 
 class FavoritesWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  FavoritesWidget({Key key, this.parentScaffoldKey}) : super(key: key);
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  FavoritesWidget({Key? key, this.parentScaffoldKey}) : super(key: key);
 
   @override
   _FavoritesWidgetState createState() => _FavoritesWidgetState();
@@ -25,10 +25,10 @@ class FavoritesWidget extends StatefulWidget {
 class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
   String layout = 'grid';
 
-  FavoriteController _con;
+  FavoriteController? _con;
 
   _FavoritesWidgetState() : super(FavoriteController()) {
-    _con = controller;
+    _con = controller as FavoriteController?;
   }
 
   final Shader linearGradient = LinearGradient(
@@ -38,7 +38,7 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       drawer: DrawerWidget(),
       appBar: AppBar(
         leading: Builder(builder: (context) {
@@ -53,13 +53,13 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
         title: Text(
           S.of(context).favorites,
           style:
-          Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
       ),
       body: currentUser.value.apiToken == null
           ? PermissionDeniedWidget()
           : RefreshIndicator(
-        onRefresh: _con.refreshFavorites,
+        onRefresh: _con!.refreshFavorites,
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Column(
@@ -82,7 +82,7 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                     Padding(
                       padding: const EdgeInsets.only(right: 12, left: 0),
                       child: Icon(Icons.search,
-                          color: Theme.of(context).accentColor),
+                          color: mainColor(1)),
                     ),
                     Expanded(
                       child: TranslationWidget(
@@ -95,18 +95,18 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                             hintStyle: Theme.of(context)
                                 .textTheme
                                 .caption
-                                .merge(TextStyle(fontSize: 14)),
+                                !.merge(TextStyle(fontSize: 14)),
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
                           onChanged: (value) {
-                            _con.searchFavorites(value);
+                            _con!.searchFavorites(value);
                           },
                           style: Theme.of(context)
                               .textTheme
                               .caption
-                              .merge(TextStyle(fontSize: 14)),
+                              !.merge(TextStyle(fontSize: 14)),
                           maxLines: 1,
                         ),
                       ),
@@ -135,10 +135,10 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                   ),
                 ),
               ),
-              _con.isLoading
+              _con!.isLoading
                   ? Shimmer.fromColors(
-                baseColor: Colors.grey[300],
-                highlightColor: Colors.grey[100],
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
                 child: GridView.count(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
@@ -158,7 +158,7 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                   }),
                 ),
               )
-                  : _con.favorites.isEmpty
+                  : _con!.favorites.isEmpty
                   ? Container(
                 height: MediaQuery.of(context).size.height * .6,
                 child: Center(
@@ -187,11 +187,11 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                       ? 2
                       : 4,
                   children: List.generate(
-                      _con.favorites.length, (index) {
+                      _con!.favorites.length, (index) {
                     return FavoriteGridItemWidget(
                       heroTag: 'favorites_grid',
                       favorite:
-                      _con.favorites.elementAt(index),
+                      _con!.favorites.elementAt(index),
                       onRemoveFavorite: _handleRemoveFavorite,
                     );
                   }),
@@ -205,7 +205,7 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
   }
 
   _handleRemoveFavorite(String p1) {
-    _con.favorites.clear();
-    _con.listenForFavorites(message: "");
+    _con!.favorites.clear();
+    _con!.listenForFavorites(message: "");
   }
 }

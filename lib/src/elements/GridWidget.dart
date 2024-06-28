@@ -13,7 +13,7 @@ class GridWidget extends StatelessWidget {
   final String heroTag;
   bool delivery;
   int enjoy;
-  GridWidget({Key key, this.restaurantsList, this.heroTag,  this.delivery,this.enjoy});
+  GridWidget({Key? key, required this.restaurantsList, required this.heroTag,required  this.delivery, required this.enjoy});
 
   @override
   Widget build(BuildContext context) {

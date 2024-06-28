@@ -47,7 +47,7 @@ class DineInSummaryPage extends StatefulWidget {
   String selectedDate, selectedPeople, selectedTime, fromTime, toTime;
   List<Food> selectedFoodList;
   String default_tax;
-  Coupon selectedCoupon;
+  Coupon? selectedCoupon;
   List<Map<String,dynamic>>  fooditems;
   final GlobalKey<ScaffoldState> parentScaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -84,12 +84,12 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
   Map<String, dynamic> paymentIntent = {};
   //_con = RestaurantController();
   //_cartCon = CartController();
-  String defaultLanguage;
+  String defaultLanguage = "";
   double taxAmount = 0.0;
   bool IsMakePayment = false;
   int grandtotal = 0;
-  Coupon appliedCoupon;
-  double appliedCouponamount = 0.0;
+  Coupon? appliedCoupon;
+  double? appliedCouponamount = 0.0;
   @override
   void initState() {
     // TODO: implement initState
@@ -97,7 +97,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
     Future.delayed(Duration(seconds: 4), () {
       _initializeData();
     });
-    _selectTab(widget.currentTab);
+   // _selectTab(widget.currentTab);
     calculateSubtotal();
     appliedCoupon = widget.selectedCoupon;
     super.initState();
@@ -153,7 +153,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
           style: Theme.of(context)
               .textTheme
               .headline6
-              .merge(TextStyle(letterSpacing: 1.3)),
+              !.merge(TextStyle(letterSpacing: 1.3)),
         ),
       ),
       body: widget.isCurrentKitchen
@@ -224,7 +224,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                         background: CachedNetworkImage(
                                           fit: BoxFit.cover,
                                           height: 400,
-                                          imageUrl: widget.restaurant.image.url,
+                                          imageUrl: widget.restaurant.image!.url,
                                           placeholder: (context, url) =>
                                               Image.asset(
                                             'assets/img/loading.gif',
@@ -616,7 +616,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                       ),
                                                       children: [
                                                         TextSpan(
-                                                          text: widget.total.toString(),
+                                                          text: widget.total.toDouble().toString(),
                                                           style: TextStyle(
                                                             fontSize: 15,
                                                           ),
@@ -627,7 +627,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                             ),
                                           ),
                                           SizedBox(height: 5),
-                                          if(widget.selectedCoupon!= null && appliedCouponamount > 0.0)
+                                          if(widget.selectedCoupon!= null && appliedCouponamount! > 0.0)
                                           appliedCoupon != null
                                               ? Padding(
                                             padding: const EdgeInsets.only(
@@ -640,7 +640,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                             style: Theme.of(context).textTheme.bodyText1,
                           )*/
                                                   TranslationWidget(
-                                                    message: 'You have ${appliedCoupon.code} coupon Applied',
+                                                    message: 'You have ${appliedCoupon!.code} coupon Applied',
                                                     fromLanguage: "English",
                                                     toLanguage: defaultLanguage,
                                                     builder: (translatedMessage) => Text(
@@ -737,7 +737,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                           ),
                                               ),
                                           SizedBox(height: 5),
-                                          if (appliedCoupon != null && widget.selectedCoupon != null && appliedCouponamount > 0.0)
+                                          if (appliedCoupon != null && widget.selectedCoupon != null && appliedCouponamount! > 0.0)
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   right: 20, left: 20, bottom: 0, top: 0),
@@ -750,7 +750,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                           )*/
                                                     TranslationWidget(
                                                       message:
-                                                      "Restaurant Coupon-(${appliedCoupon.code})",
+                                                      "Restaurant Coupon-(${appliedCoupon!.code})",
                                                       fromLanguage: "English",
                                                       toLanguage: defaultLanguage,
                                                       builder: (translatedMessage) => Text(
@@ -767,11 +767,11 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                                       text: TextSpan(
                                                         text: "-₹",
                                                         style:
-                                                        TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize,color: kFBBlue),
+                                                        TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize,color: kFBBlue),
 
 
                                                         children: <TextSpan>[
-                                                          TextSpan(text: appliedCouponamount.toStringAsFixed(2) ?? '', style:  Theme.of(context).textTheme.subtitle1),
+                                                          TextSpan(text: appliedCouponamount!.toStringAsFixed(2) ?? '', style:  Theme.of(context).textTheme.subtitle1),
                                                         ],
                                                       )
 
@@ -904,7 +904,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text:  (grandtotal-appliedCouponamount).toString(),
+                                            text:  (grandtotal-appliedCouponamount!).toString(),
                                             style: TextStyle(
                                               fontSize: 25,
                                             ),
@@ -936,7 +936,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
                                          //     placeOrder(context);
                                             if(currentUser.value.is_verified == "1"){
                                               if(IsMakePayment == false){
-                                                makePayment((grandtotal-appliedCouponamount).toInt().toString(),
+                                                makePayment((grandtotal-appliedCouponamount!).toInt().toString(),
                                                     context);
                                                 setState(() {
                                                   IsMakePayment = true;
@@ -1044,7 +1044,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
-                settingRepo.navigatorKey.currentState.pushNamed('/Settings');
+                settingRepo.navigatorKey.currentState!.pushNamed('/Settings');
               },
             ),
           ],
@@ -1059,13 +1059,13 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
    // total = subTotal + taxAmount + deliveryFee;
     grandtotal = (widget.total + taxAmount).toInt();
 
-    if(widget.selectedCoupon != null && widget.total >= widget.selectedCoupon.minOrder)
+    if(widget.selectedCoupon != null && widget.total >= widget.selectedCoupon!.minOrder!)
       {
-        double calculatedDiscount = (widget.total * appliedCoupon.discount) / 100;
-        calculatedDiscount =  calculatedDiscount > appliedCoupon.maxDiscount
-            ? appliedCoupon.maxDiscount.toDouble()
+        double calculatedDiscount = (widget.total * appliedCoupon!.discount!) / 100;
+        calculatedDiscount =  calculatedDiscount > appliedCoupon!.maxDiscount!
+            ? appliedCoupon!.maxDiscount!.toDouble()
             : calculatedDiscount.toDouble();
-        appliedCouponamount = widget.selectedCoupon == appliedCoupon ? appliedCoupon.discounttype == 'fixed' ? appliedCoupon.discount  : calculatedDiscount   : 0.0 ;
+        appliedCouponamount = widget.selectedCoupon == appliedCoupon ? appliedCoupon!.discounttype == 'fixed' ? appliedCoupon!.discount  : calculatedDiscount   : 0.0 ! ;
       }
 
     setState(() {});
@@ -1149,7 +1149,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
       'foods': foods,
        'delivery_dinein' : 2,
       'restaurant_id':widget.restaurant.id,
-      'coupon_id':'${appliedCoupon!= null ? appliedCoupon.code : ""}',
+      'coupon_id':'${appliedCoupon!= null ? appliedCoupon!.code : ""}',
       "payment_id":transaction_id
     };
     /*final payload = {
@@ -1204,8 +1204,8 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
       await stripe.Stripe.instance.initPaymentSheet(
         paymentSheetParameters: stripe.SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntent['client_secret'],
-          googlePay: const stripe.PaymentSheetGooglePay(
-              testEnv: true, currencyCode: "AED", merchantCountryCode: "+971"),
+          // googlePay: const stripe.PaymentSheetGooglePay(
+          //     testEnv: true, currencyCode: "AED", merchantCountryCode: "+971"),
           style: ThemeMode.dark,
           merchantDisplayName: 'Abc',
         ),
@@ -1245,7 +1245,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
       /* ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Paid successfully")),
       );*/
-      paymentIntent = null;
+      paymentIntent = {};
     } on stripe.StripeException catch (e) {
       print('Error: $e');
       showDialog(
@@ -1267,7 +1267,7 @@ class _DineInSummaryPageState extends StateMVC<DineInSummaryPage> {
     parts.forEach((part) {
       List<String> temp = part.trim().split(' ');
       if (temp.length == 2) {
-        int count = int.tryParse(temp[0]);
+        int count = int.tryParse(temp[0])!;
         if (count != null) {
           String type = temp[1];
           resultMap[type] = count;

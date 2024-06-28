@@ -2,7 +2,7 @@ import 'package:coupon_uikit/coupon_uikit.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalCouponExample2 extends StatelessWidget {
-  const HorizontalCouponExample2({Key key}) : super(key: key);
+  const HorizontalCouponExample2();
 
   @override
   Widget build(BuildContext context) {

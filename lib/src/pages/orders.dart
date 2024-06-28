@@ -33,15 +33,15 @@ void main() {
 }
 
 class OrdersWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  final Function(int) updateCurrentTab; // Callback function
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  final Function(int)? updateCurrentTab; // Callback function
   HomeController _con = HomeController();
 
   dynamic currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
-  OrdersWidget({Key key, this.parentScaffoldKey, this.updateCurrentTab})
+  OrdersWidget({Key? key, this.parentScaffoldKey, this.updateCurrentTab})
       : super(key: key);
 
   @override
@@ -49,13 +49,13 @@ class OrdersWidget extends StatefulWidget {
 }
 
 class _OrdersWidgetState extends StateMVC<OrdersWidget> {
-  OrderController _con;
+  OrderController? _con;
   bool isLoading = false; // Add a boolean to control loader visibility
   ScrollController _dineInScrollController = ScrollController();
   ScrollController _deliveryScrollController = ScrollController();
   List<Order> dineinOrdersList = [];
   List<Order> deliveryOrdersList = [];
-  String defaultLanguage;
+  String defaultLanguage = "";
   int dineInLimit = 6; // Initial limit for dine-in orders
   int dineInOffset = 0; // Initial offset for dine-in orders
  // List<Order> dineinOrdersList = [];
@@ -65,7 +65,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
   //List<Order> deliveryOrdersList = [];
 
   _OrdersWidgetState() : super(OrderController()) {
-    _con = controller;
+    _con = controller as OrderController?;
   }
   Future<void> fetchDineInOrders({bool refresh = false}) async {
     try {
@@ -113,7 +113,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
 
   @override
   void initState() {
-    _selectTab(widget.currentTab);
+    _selectTab(widget.currentTab ?? 6);
     getCurrentDefaultLanguage();
     _dineInScrollController.addListener(_dineInScrollListener);
     _deliveryScrollController.addListener(_deliveryScrollListener);
@@ -161,9 +161,9 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
   }
   @override
   void didUpdateWidget(PagesWidget oldWidget) {
-    // _selectTab(oldWidget.currentTab);
+     _selectTab(oldWidget.currentTab ?? 6);
     super.didUpdateWidget(oldWidget);
-    widget.updateCurrentTab(oldWidget.currentTab);
+    widget.updateCurrentTab!(oldWidget.currentTab);
   }
 
   final Shader linearGradient = LinearGradient(
@@ -172,7 +172,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("DS>> order length " + _con.orders.length.toString());
+    print("DS>> order length " + _con!.orders.length.toString());
     // if (_con.orders.length > 0) {
     //   for (int i = 0; i <= _con.orders.length - 1; i++) {
     //     String orderId = _con.orders[i]
@@ -206,7 +206,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          key: _con.scaffoldKey,
+          key: _con!.scaffoldKey,
           drawer: DrawerWidget(),
           appBar: widget.isCurrentKitchen
               ? AppBar(
@@ -230,7 +230,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                       style: Theme.of(context)
                           .textTheme
                           .headline6
-                          .merge(TextStyle(letterSpacing: 1.3)),
+                         ! .merge(TextStyle(letterSpacing: 1.3)),
                     ),
                   ),
                   bottom: widget.isCurrentKitchen
@@ -263,11 +263,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                               builder: (translatedMessage) => Text(
                                 translatedMessage,
                                 style: TextStyle(
-                                    color: settingsRepo
-                                        .deliveryAddress.value?.address ==
-                                        null
-                                        ? Theme.of(context).hintColor
-                                        : Theme.of(context).primaryColor,
+                                    color:secondColor(1),
                                     fontSize: 20),
                               ),
                             ),
@@ -278,11 +274,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                               builder: (translatedMessage) => Text(
                                 translatedMessage,
                                 style: TextStyle(
-                                    color: settingsRepo
-                                                .deliveryAddress.value?.address ==
-                                            null
-                                        ? Theme.of(context).hintColor
-                                        : Theme.of(context).primaryColor,
+                                    color: secondColor(1),
                                     fontSize: 20),
                               ),
                             ),
@@ -355,9 +347,9 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                                                   var _order =
                                                       deliveryOrdersList[index];
                                                   print(
-                                                      "Order data ${_order.foodOrders.isEmpty}");
+                                                      "Order data ${_order.foodOrders!.isEmpty}");
                                                   if (_order
-                                                      .foodOrders.isEmpty) {
+                                                      .foodOrders!.isEmpty) {
                                                     return Container();
                                                   }
                                                   return Container(
@@ -368,7 +360,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                                                           : false,
                                                       order: _order,
                                                       onCanceled: (e) {
-                                                        _con.doCancelOrder(
+                                                        _con!.doCancelOrder(
                                                             _order);
                                                       },
                                                     ),
@@ -422,9 +414,9 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                           var _order =
                           dineinOrdersList[index];
                           print(
-                              "Order data ${_order.foodOrders.isEmpty}");
+                              "Order data ${_order.foodOrders!.isEmpty}");
                           if (_order
-                              .foodOrders.isEmpty) {
+                              .foodOrders!.isEmpty) {
                             return Container();
                           }
                           return Container(
@@ -435,7 +427,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                                   : false,
                               order: _order,
                               onCanceled: (e) {
-                                _con.doCancelOrder(
+                                _con!.doCancelOrder(
                                     _order);
                               },
                             ),
@@ -458,7 +450,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => HomePage(
-                      parentScaffoldKey: widget.parentScaffoldKey,
+                     // parentScaffoldKey: widget.parentScaffoldKey,
                       currentTab: 1,
                       directedFrom: "forHome",
                     )),
@@ -502,7 +494,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                         size: 30,
                       ),
                       onPressed: () {
-                        if (currentUser.value.apiToken != null) {
+                        if (currentUser.value.apiToken != "") {
                           Navigator.of(context).pushNamed('/orderPage', arguments: 0);
                         } else {
                           Navigator.of(context).pushNamed('/Login');
@@ -516,12 +508,12 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
                       size: 30,
                     ),
                     onPressed: () {
-                      if(currentUser.value.apiToken != null){
+                      if(currentUser.value.apiToken != ""){
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CartWidget(
-                              parentScaffoldKey: widget.parentScaffoldKey,
+                             // parentScaffoldKey: widget.parentScaffoldKey,
                             ),
                           ),
                         );}
@@ -557,7 +549,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          // if (currentUser.value.apiToken != null) {
+          // if (currentUser.value.apiToken != "") {
           //   Navigator.of(context).pushNamed('/orderPage', arguments: 0);
           // } else {
           //   Navigator.of(context).pushNamed('/Login');
@@ -576,7 +568,7 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => HomePage(
-                      parentScaffoldKey: widget.parentScaffoldKey,
+                      parentScaffoldKey: widget.parentScaffoldKey!,
                       currentTab: 1,
                       directedFrom: "forHome",
                     )),

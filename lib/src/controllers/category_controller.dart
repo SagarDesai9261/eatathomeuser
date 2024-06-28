@@ -14,14 +14,14 @@ import '../repository/category_repository.dart';
 import '../repository/food_repository.dart';
 import 'package:provider/provider.dart';
 class ContextHolder {
-  static BuildContext _context;
+  static BuildContext? _context;
 
   static void setContext(BuildContext context) {
     _context = context;
   }
 
   static BuildContext getContext() {
-    return _context;
+    return _context!;
   }
 }
 class FoodsProvider extends ChangeNotifier {
@@ -39,15 +39,15 @@ class CategoryController extends ControllerMVC {
   List<Food> foods = <Food>[];
   List<Food> foodList = [];
   List<FoodItem> foodsByCategory = <FoodItem>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
-  Category category;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  Category? category;
   bool loadCart = false;
   List<Cart> carts = [];
   bool isDateUpdated = false;
   Restaurant kitchenDetails = Restaurant();
   List<SeparateItem> separateItems = <SeparateItem>[];
   bool success = false;
-  String apimessage;
+  String? apimessage;
   List<FoodItem> foodItems = <FoodItem>[];
   //FoodItem7 _foodItem7;
   Map<String, dynamic> retrivedDataFromAPI = Map();
@@ -57,7 +57,7 @@ class CategoryController extends ControllerMVC {
   String message = "";
   bool isData = false;
   bool isLoading = false;
-  Timer _debounceTimer;
+  Timer? _debounceTimer;
 
   CategoryController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -90,14 +90,14 @@ class CategoryController extends ControllerMVC {
     }
   }
   void debounceLoadMore(BuildContext context,String categoryId) {
-    if (_debounceTimer != null && _debounceTimer.isActive) {
-      _debounceTimer.cancel();
+    if (_debounceTimer != null && _debounceTimer!.isActive) {
+      _debounceTimer!.cancel();
     }
     _debounceTimer = Timer(Duration(milliseconds: 500), () {
       loadMoreFoodsByCategory(context,categoryId);
     });
   }
-  void listenForFoodsByCategory({String id, String message, String restaurantId}) async {
+  void listenForFoodsByCategory({String? id, String? message, String? restaurantId}) async {
 
    /* final Stream<Food> stream = await getFoodsByCategory(id);
     stream.listen((Food _food) {
@@ -141,7 +141,7 @@ class CategoryController extends ControllerMVC {
     }
   }
 
-  void listenForFoodsByCategoryAndRestaurant({String id, String message, String restaurantId}) async {
+  void listenForFoodsByCategoryAndRestaurant({String? id, String? message, String? restaurantId}) async {
    // foods.clear();
     final Stream<Food> stream = await getFoodsByCategoryAndRestaurant(id, restaurantId);
     stream.listen((Food _food) {
@@ -153,14 +153,14 @@ class CategoryController extends ControllerMVC {
       foods.add(_food);
 
     }, onError: (a) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
     });
   }
 
-  void listenForFoodsByCategoryAndKitchen({String id, String message, String restaurantId,int categoryId}) async {
+  void listenForFoodsByCategoryAndKitchen({String? id, String? message, String? restaurantId,int? categoryId}) async {
 
 
       KitchenDetailResponse apiResponse = await getFoodsByCategoryAndKitchen(categoryId, restaurantId);
@@ -180,13 +180,13 @@ class CategoryController extends ControllerMVC {
       //      print("No data found Food Item");
           }
          for (String key in foodDataMap.keys) {
-           FoodItem foodItem = foodDataMap[key];
+           FoodItem foodItem = foodDataMap[key]!;
          //  print('Key: $key');
      //      print('Food Name: ${foodItem.name}');
     //       print('Price: ${foodItem.price}');
 
-           kitchenDetails = foodItem.restaurant;
-           separateItems = foodItem.separateItems;
+           kitchenDetails = foodItem.restaurant! as Restaurant;
+           separateItems = foodItem.separateItems!;
            // Access other properties of FoodItem as needed
 
            if (kitchenDetails != null) {
@@ -222,18 +222,18 @@ class CategoryController extends ControllerMVC {
   // print("DS>>> foodbyCategory size "+foods.length.toString());
   }
 
-  void listenForCategory({String id, String message}) async {
-    final Stream<Category> stream = await getCategory(id);
+  void listenForCategory({String? id, String? message}) async {
+    final Stream<Category> stream = await getCategory(id!);
     stream.listen((Category _category) {
       setState(() => category = _category);
     }, onError: (a) {
    //  print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
@@ -265,15 +265,15 @@ class CategoryController extends ControllerMVC {
     // if food exist in the cart then increment quantity
     var _oldCart = isExistInCart(_newCart);
     if (_oldCart != null) {
-      _oldCart.quantity++;
+      _oldCart.quantity = _oldCart.quantity! +1;
       updateCart(_oldCart).then((value) {
         setState(() {
           this.loadCart = false;
         });
       }).whenComplete(() {
 
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-          content: Text(S.of(state.context).this_food_was_added_to_cart),
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+          content: Text(S.of(state!.context).this_food_was_added_to_cart),
         ));
       });
     } else {
@@ -285,27 +285,27 @@ class CategoryController extends ControllerMVC {
       }).whenComplete(() {
         if (reset) carts.clear();
         carts.add(_newCart);
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-          content: Text(S.of(state.context).this_food_was_added_to_cart),
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+          content: Text(S.of(state!.context).this_food_was_added_to_cart),
         ));
       });
     }
   }
 
   Cart isExistInCart(Cart _cart) {
-    return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart), orElse: () => null);
+    return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart), orElse: () => Cart());
   }
 
   Future<void> refreshCategory() async {
     foods.clear();
-    category = new Category();
+
     separateItems.clear();
     foodDataMap.clear();
     kitchenDetails = new Restaurant();
-    listenForFoodsByCategory(message: S.of(state.context).category_refreshed_successfuly);
-    listenForFoodsByCategoryAndRestaurant(message: S.of(state.context).category_refreshed_successfuly);
-    listenForFoodsByCategoryAndKitchen(message: S.of(state.context).category_refreshed_successfuly);
-    listenForCategory(message: S.of(state.context).category_refreshed_successfuly);
+    listenForFoodsByCategory(message: S.of(state!.context).category_refreshed_successfuly);
+    listenForFoodsByCategoryAndRestaurant(message: S.of(state!.context).category_refreshed_successfuly);
+    listenForFoodsByCategoryAndKitchen(message: S.of(state!.context).category_refreshed_successfuly);
+    listenForCategory(message: S.of(state!.context).category_refreshed_successfuly);
   }
 
 

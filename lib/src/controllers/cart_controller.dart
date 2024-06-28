@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../helpers/helper.dart';
 import '../models/cart.dart';
 import '../models/coupon.dart';
@@ -23,9 +24,9 @@ class CartController extends ControllerMVC {
   String coupon_amount  = "" ;
   String delivery_address_text = "";
   String delivery_address_id = "";
-  GlobalKey<ScaffoldState> scaffoldKey;
-  String average_preparation_time;
-  String is_hrs;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  String? average_preparation_time;
+  String? is_hrs;
   CartController() {
 
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -66,7 +67,7 @@ class CartController extends ControllerMVC {
       onLoadingCartDone();
     });
   }*/
-  void listenForCarts({String message}) async {
+  void listenForCarts() async {
     isloading = true;
     carts.clear();
     final Map<String, dynamic> data = await getCart();
@@ -84,29 +85,29 @@ class CartController extends ControllerMVC {
         items.forEach((item) {
           Cart _cart = Cart.fromJSON(item);
 
-          // Check if the same food item is already in the list
-          Cart existingCart = carts.firstWhere(
-                (cart) => cart.food.id == _cart.food.id,
-            orElse: () => null,
+          int existingCartIndex = carts.indexWhere(
+                (cart) => cart.food!.id == _cart.food!.id,
           );
 
-          if (existingCart != null) {
-            // Update the quantity if the food item already exists
+
+          // Check if the same food item is already in the list
+          if (existingCartIndex != -1) {
+            // Update the quantity by adding the new cart quantity if the food item already exists
             setState(() {
-              existingCart.quantity += _cart.quantity;
-              coupon = existingCart.food.applyCoupon(coupon);
+              carts[existingCartIndex].quantity =
+                  (carts[existingCartIndex].quantity ?? 0) + (_cart.quantity ?? 0);
+              coupon = carts[existingCartIndex].food!.applyCoupon(coupon);
             });
-          //  print(existingCart.quantity);
           } else {
             // Add the new food item to the list
             setState(() {
-              coupon = _cart.food.applyCoupon(coupon);
-
+              coupon = _cart.food!.applyCoupon(coupon);
               carts.add(_cart);
             });
           }
         });
       }
+
       setState(() {
         deliveryCharges = deliveryCharge;
         coupon_code = counpon_cd;
@@ -133,7 +134,7 @@ class CartController extends ControllerMVC {
     }
   }
 
-  void listenForCartsaddress({String message}) async {
+  void listenForCartsaddress() async {
     isloading = true;
     carts.clear();
     final Map<String, dynamic> data = await getcartfromAddress();
@@ -151,24 +152,23 @@ class CartController extends ControllerMVC {
         items.forEach((item) {
           Cart _cart = Cart.fromJSON(item);
 
-          // Check if the same food item is already in the list
-          Cart existingCart = carts.firstWhere(
-                (cart) => cart.food.id == _cart.food.id,
-            orElse: () => null,
+          int existingCartIndex = carts.indexWhere(
+                (cart) => cart.food!.id == _cart.food!.id,
           );
 
-          if (existingCart != null) {
-            // Update the quantity if the food item already exists
+
+          // Check if the same food item is already in the list
+          if (existingCartIndex != -1) {
+            // Update the quantity by adding the new cart quantity if the food item already exists
             setState(() {
-              existingCart.quantity += _cart.quantity;
-              coupon = existingCart.food.applyCoupon(coupon);
+              carts[existingCartIndex].quantity =
+                  (carts[existingCartIndex].quantity ?? 0) + (_cart.quantity ?? 0);
+              coupon = carts[existingCartIndex].food!.applyCoupon(coupon);
             });
-            //  print(existingCart.quantity);
           } else {
             // Add the new food item to the list
             setState(() {
-              coupon = _cart.food.applyCoupon(coupon);
-
+              coupon = _cart.food!.applyCoupon(coupon);
               carts.add(_cart);
             });
           }
@@ -202,7 +202,7 @@ class CartController extends ControllerMVC {
 
   void onLoadingCartDone() {}
 
-  void listenForCartsCount({String message}) async {
+  void listenForCartsCount() async {
     final Stream<int> stream = await getCartCount();
     stream.listen((int _count) {
       setState(() {
@@ -210,8 +210,8 @@ class CartController extends ControllerMVC {
       });
     }, onError: (a) {
   //    print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     });
   }
@@ -240,8 +240,8 @@ class CartController extends ControllerMVC {
     });
     removeCart(_cart).then((value) {
       calculateSubtotal();
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).the_food_was_removed_from_your_cart(_cart.food.name)),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).the_food_was_removed_from_your_cart(_cart.food!.name)),
       ));
     });
   }
@@ -250,39 +250,35 @@ class CartController extends ControllerMVC {
     double cartPrice = 0;
     subTotal = 0;
     carts.forEach((cart) {
-      cartPrice = cart.food.price;
-      cart.extras.forEach((element) {
+      cartPrice = cart.food!.discountPrice > 0 ? cart.food!.discountPrice : cart.food!.price;
+      cart.extras!.forEach((element) {
         cartPrice += element.price;
       });
-      cartPrice *= cart.quantity;
+      cartPrice *= cart.quantity!;
       subTotal += cartPrice;
     });
-   /* if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
-      deliveryFee = carts[0].food.restaurant.deliveryFee;
-    }*/
-    //taxAmount = (subTotal) * carts[0].food.restaurant.defaultTax / 100;
 
-    if(deliveryCharges > 0){
-      total = subTotal + taxAmount  +deliveryCharges;
-     // print(total);
-      //setState(() {});
-    }
-    else{
+    // Apply tax and delivery charges to calculate the total
+    // Make sure to calculate the taxAmount if needed, similar to your existing commented code
+
+    if (deliveryCharges > 0) {
+      total = subTotal + taxAmount + deliveryCharges;
+    } else {
       total = subTotal + taxAmount;
     }
 
     setState(() {});
   }
 
-  void doApplyCoupon(String code, {String message}) async {
+  void doApplyCoupon(String code, ) async {
     coupon = new Coupon.fromJSON({"code": code, "valid": null});
     final Stream<Coupon> stream = await verifyCoupon(code);
     stream.listen((Coupon _coupon) async {
       coupon = _coupon;
     }, onError: (a) {
     // print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       listenForCarts();
@@ -292,16 +288,16 @@ class CartController extends ControllerMVC {
   }
 
   incrementQuantity(Cart cart) {
-    if (cart.quantity <= 99) {
-      ++cart.quantity;
+    if (cart.quantity! <= 99) {
+      cart.quantity = cart.quantity!  + 1;
       updateCart(cart);
       calculateSubtotal();
     }
   }
 
   decrementQuantity(Cart cart) {
-    if (cart.quantity > 1) {
-      --cart.quantity;
+    if (cart.quantity! > 1) {
+      cart.quantity = cart.quantity!  - 1;
       updateCart(cart);
       calculateSubtotal();
     }
@@ -309,19 +305,19 @@ class CartController extends ControllerMVC {
 
   void goCheckout(BuildContext context) {
     if (!currentUser.value.profileCompleted()) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
         content: Text(S.of(context).completeYourProfileDetailsToContinue),
         action: SnackBarAction(
           label: S.of(context).settings,
-          textColor: Theme.of(context).accentColor,
+          textColor: mainColor(1),
           onPressed: () {
             Navigator.of(context).pushNamed('/Settings');
           },
         ),
       ));
     } else {
-      if (carts[0].food.restaurant.closed == "") {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+      if (carts[0].food!.restaurant!.closed == "") {
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(S.of(context).this_restaurant_is_closed_),
         ));
       } else {
@@ -337,6 +333,6 @@ class CartController extends ControllerMVC {
     } else if (coupon?.valid == false) {
       return Colors.redAccent;
     }
-    return Theme.of(state.context).focusColor.withOpacity(0.7);
+    return Theme.of(state!.context).focusColor.withOpacity(0.7);
   }
 }

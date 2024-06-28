@@ -4,9 +4,9 @@ import '../helpers/helper.dart';
 import '../models/faq.dart';
 
 class FaqItemWidget extends StatelessWidget {
-  final Faq faq;
+   Faq? faq;
+   FaqItemWidget({this.faq});
 
-  FaqItemWidget({Key key, this.faq}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +29,11 @@ class FaqItemWidget extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(5), topRight: Radius.circular(5))),
             child: Text(
-              Helper.skipHtml(this.faq.question),
+              Helper.skipHtml(this.faq!.question),
               style: Theme.of(context)
                   .textTheme
                   .bodyText1
-                  .merge(TextStyle(color: Theme.of(context).primaryColor)),
+                  !.merge(TextStyle(color: Theme.of(context).primaryColor)),
             ),
           ),
           Container(
@@ -45,7 +45,7 @@ class FaqItemWidget extends StatelessWidget {
                     bottomRight: Radius.circular(5),
                     bottomLeft: Radius.circular(5))),
             child: Text(
-              Helper.skipHtml(this.faq.answer),
+              Helper.skipHtml(this.faq!.answer),
               style: Theme.of(context).textTheme.bodyText2,
             ),
           ),

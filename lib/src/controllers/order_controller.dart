@@ -7,14 +7,14 @@ import '../repository/order_repository.dart';
 
 class OrderController extends ControllerMVC {
   List<Order> orders = <Order>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
 
   OrderController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   //  listenForOrders();
   }
 
-  void listenForOrders({String message}) async {
+  void listenForOrders({String? message}) async {
     final Stream<Order> stream = await getOrders();
     stream.listen((Order _order) {
       setState(() {
@@ -29,7 +29,7 @@ class OrderController extends ControllerMVC {
       // ));
     }, onDone: () {
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
@@ -42,19 +42,19 @@ class OrderController extends ControllerMVC {
         order.active = false;
       });
     }).catchError((e) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
         content: Text(e),
       ));
     }).whenComplete(() {
       //refreshOrders();
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).orderThisorderidHasBeenCanceled(order.id)),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).orderThisorderidHasBeenCanceled(order.id!)),
       ));
     });
   }
 
   Future<void> refreshOrders() async {
     orders.clear();
-    listenForOrders(message: S.of(state.context).order_refreshed_successfuly);
+    listenForOrders(message: S.of(state!.context).order_refreshed_successfuly);
   }
 }

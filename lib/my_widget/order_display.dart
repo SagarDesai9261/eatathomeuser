@@ -4,10 +4,10 @@ import '../utils/color.dart';
 import 'dine_in_order_view.dart';
 
 class CustomOrderListTile extends StatelessWidget {
-  final String name;
-  final String address;
-  final String date;
-  final String imageUrl; // Add the URL or path for the image
+   String? name;
+   String? address;
+   String? date;
+   String? imageUrl; // Add the URL or path for the image
 
   CustomOrderListTile({
      this.name,
@@ -26,7 +26,7 @@ class CustomOrderListTile extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.0), // Adjust the border radius as needed
           child: Image.network(
-            imageUrl,
+            imageUrl!,
             fit: BoxFit.cover,
           ),
         ),
@@ -35,7 +35,7 @@ class CustomOrderListTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            name,
+            name!,
             style: TextStyle(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
@@ -43,12 +43,12 @@ class CustomOrderListTile extends StatelessWidget {
           ),
           SizedBox(height: 4.0),
           Text(
-            address,
+            address!,
             style: TextStyle(fontSize: 14.0),
           ),
           SizedBox(height: 4.0),
           Text(
-            date,
+            date!,
             style: TextStyle(fontSize: 14.0),
           ),
         ],

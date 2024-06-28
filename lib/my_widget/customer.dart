@@ -1,10 +1,10 @@
 class Customer {
-  String status;
-  String message;
-  String customerId;
-  int wishlistCount;
-  String sessionData;
-  int cartCount;
+  String? status;
+  String? message;
+  String? customerId;
+  int? wishlistCount;
+  String? sessionData;
+  int? cartCount;
 
   Customer({
     this.status,
@@ -28,9 +28,9 @@ class Customer {
 }
 
 class LoginResponse {
-  int code;
-  String msg;
-  Customer data;
+  int? code;
+  String? msg;
+  Customer? data;
 
   LoginResponse({
     this.code,

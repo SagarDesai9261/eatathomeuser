@@ -2,37 +2,34 @@ import '../helpers/custom_trace.dart';
 
 class Discountable {
   String id;
-  String discountableType;
-  String discountableId;
+  String? discountableType;
+  String? discountableId;
 
-  Discountable();
+  Discountable({
+    this.id = '',
+    this.discountableType,
+    this.discountableId,
+  });
 
-  Discountable.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      discountableType = jsonMap['discountable_type'] != null ? jsonMap['discountable_type'].toString() : null;
-      discountableId = jsonMap['discountable_id'] != null ? jsonMap['discountable_id'].toString() : null;
-    } catch (e) {
-      id = '';
-      discountableType = null;
-      discountableId = null;
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Discountable.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        discountableType = jsonMap['discountable_type'] ?? '',
+        discountableId = jsonMap['discountable_id'] ?? '';
 
-  Map toMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["discountable_type"] = discountableType;
-    map["discountable_id"] = discountableId;
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{};
+    map['id'] = id;
+    map['discountable_type'] = discountableType;
+    map['discountable_id'] = discountableId;
     return map;
   }
 
   @override
   bool operator ==(dynamic other) {
-    return other.id == this.id;
+    if (identical(this, other)) return true;
+    return other is Discountable && other.id == id;
   }
 
   @override
-  int get hashCode => this.id.hashCode;
+  int get hashCode => id.hashCode;
 }

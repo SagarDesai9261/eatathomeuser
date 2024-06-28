@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-
 import '../../generated/l10n.dart';
 
 class PaymentMethod {
@@ -11,28 +10,80 @@ class PaymentMethod {
   bool isDefault;
   bool selected;
 
-  PaymentMethod(this.id, this.name, this.description, this.route, this.logo, {this.isDefault = false, this.selected = false});
+  PaymentMethod(
+      this.id,
+      this.name,
+      this.description,
+      this.route,
+      this.logo, {
+        this.isDefault = false,
+        this.selected = false,
+      });
 }
 
 class PaymentMethodList {
-  List<PaymentMethod> _paymentsList;
-  List<PaymentMethod> _cashList;
-  List<PaymentMethod> _pickupList;
+  late List<PaymentMethod> _paymentsList;
+  late List<PaymentMethod> _cashList;
+  late List<PaymentMethod> _pickupList;
 
-  PaymentMethodList(BuildContext _context) {
-    this._paymentsList = [
-      new PaymentMethod("visacard", S.of(_context).visa_card, S.of(_context).click_to_pay_with_your_visa_card, "/Checkout", "assets/img/visacard.png",
-          isDefault: true),
-      new PaymentMethod("mastercard", S.of(_context).mastercard, S.of(_context).click_to_pay_with_your_mastercard, "/Checkout", "assets/img/mastercard.png"),
-      new PaymentMethod("razorpay", S.of(_context).razorpay, S.of(_context).clickToPayWithRazorpayMethod, "/RazorPay", "assets/img/razorpay.png"),
-      new PaymentMethod("paypal", S.of(_context).paypal, S.of(_context).click_to_pay_with_your_paypal_account, "/PayPal", "assets/img/paypal.png"),
+  PaymentMethodList(BuildContext context) {
+    _paymentsList = [
+      PaymentMethod(
+        "visacard",
+        S.of(context).visa_card,
+        S.of(context).click_to_pay_with_your_visa_card,
+        "/Checkout",
+        "assets/img/visacard.png",
+        isDefault: true,
+      ),
+      PaymentMethod(
+        "mastercard",
+        S.of(context).mastercard,
+        S.of(context).click_to_pay_with_your_mastercard,
+        "/Checkout",
+        "assets/img/mastercard.png",
+      ),
+      PaymentMethod(
+        "razorpay",
+        S.of(context).razorpay,
+        S.of(context).clickToPayWithRazorpayMethod,
+        "/RazorPay",
+        "assets/img/razorpay.png",
+      ),
+      PaymentMethod(
+        "paypal",
+        S.of(context).paypal,
+        S.of(context).click_to_pay_with_your_paypal_account,
+        "/PayPal",
+        "assets/img/paypal.png",
+      ),
     ];
-    this._cashList = [
-      new PaymentMethod("cod", S.of(_context).cash_on_delivery, S.of(_context).click_to_pay_cash_on_delivery, "/CashOnDelivery", "assets/img/cash.png"),
+
+    _cashList = [
+      PaymentMethod(
+        "cod",
+        S.of(context).cash_on_delivery,
+        S.of(context).click_to_pay_cash_on_delivery,
+        "/CashOnDelivery",
+        "assets/img/cash.png",
+      ),
     ];
-    this._pickupList = [
-      new PaymentMethod("pop", S.of(_context).pay_on_pickup, S.of(_context).click_to_pay_on_pickup, "/PayOnPickup", "assets/img/pay_pickup.png"),
-      new PaymentMethod("delivery", S.of(_context).delivery_address, S.of(_context).click_to_pay_on_pickup, "/PaymentMethod", "assets/img/pay_pickup.png"),
+
+    _pickupList = [
+      PaymentMethod(
+        "pop",
+        S.of(context).pay_on_pickup,
+        S.of(context).click_to_pay_on_pickup,
+        "/PayOnPickup",
+        "assets/img/pay_pickup.png",
+      ),
+      PaymentMethod(
+        "delivery",
+        S.of(context).delivery_address,
+        S.of(context).click_to_pay_on_pickup,
+        "/PaymentMethod",
+        "assets/img/pay_pickup.png",
+      ),
     ];
   }
 

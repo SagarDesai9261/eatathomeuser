@@ -17,22 +17,22 @@ class CheckoutWidget extends StatefulWidget {
 }
 
 class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
-  CheckoutController _con;
+  CheckoutController? _con;
 
   _CheckoutWidgetState() : super(CheckoutController()) {
-    _con = controller;
+    _con = controller as CheckoutController?;
   }
 
   @override
   void initState() {
-    _con.listenForCarts();
+    _con!.listenForCarts();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -42,10 +42,10 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
           style: Theme.of(context)
               .textTheme
               .headline6
-              .merge(TextStyle(letterSpacing: 1.3)),
+              !.merge(TextStyle(letterSpacing: 1.3)),
         ),
       ),
-      body: _con.carts.isEmpty
+      body: _con!.carts.isEmpty
           ? CircularLoadingWidget(height: 400)
           : Stack(
               fit: StackFit.expand,
@@ -81,9 +81,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                         ),
                         SizedBox(height: 20),
                         new CreditCardsWidget(
-                            creditCard: _con.creditCard,
+                            creditCard: _con!.creditCard,
                             onChanged: (creditCard) {
-                              _con.updateCreditCard(creditCard);
+                              _con!.updateCreditCard(creditCard);
                             }),
                         SizedBox(height: 40),
                         setting.value.payPalEnabled
@@ -154,7 +154,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                   style: Theme.of(context).textTheme.bodyText1,
                                 ),
                               ),
-                              Helper.getPrice(_con.subTotal, context,
+                              Helper.getPrice(_con!.subTotal, context,
                                   style: Theme.of(context).textTheme.subtitle1)
                             ],
                           ),
@@ -168,7 +168,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                 ),
                               ),
                               Helper.getPrice(
-                                  _con.carts[0].food.restaurant.deliveryFee,
+                                  _con!.carts[0].food!.restaurant!.deliveryFee!,
                                   context,
                                   style: Theme.of(context).textTheme.subtitle1)
                             ],
@@ -178,11 +178,11 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                             children: <Widget>[
                               Expanded(
                                 child: Text(
-                                  "${S.of(context).tax} (${_con.carts[0].food.restaurant.defaultTax}%)",
+                                  "${S.of(context).tax} (${_con!.carts[0].food!.restaurant!.defaultTax}%)",
                                   style: Theme.of(context).textTheme.bodyText1,
                                 ),
                               ),
-                              Helper.getPrice(_con.taxAmount, context,
+                              Helper.getPrice(_con!.taxAmount, context,
                                   style: Theme.of(context).textTheme.subtitle1)
                             ],
                           ),
@@ -195,7 +195,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                   style: Theme.of(context).textTheme.headline6,
                                 ),
                               ),
-                              Helper.getPrice(_con.total, context,
+                              Helper.getPrice(_con!.total, context,
                                   style: Theme.of(context).textTheme.headline6)
                             ],
                           ),
@@ -209,14 +209,14 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                               onPressed: () {
                                 // Navigator.of(context).pushNamed('/OrderSuccess', arguments: new RouteArgument(param: 'Credit Card (Stripe Gateway)'));
 
-                                if (_con.creditCard.validated()) {
+                                if (_con!.creditCard.validated()) {
                                   Navigator.of(context).pushNamed('/OrderSuccess', arguments: new RouteArgument(param: 'Credit Card (Stripe Gateway)'));
                                 } else {
-                                  ScaffoldMessenger.of(_con.scaffoldKey?.currentContext).showSnackBar(SnackBar(content: Text(S.of(context).your_credit_card_not_valid),));
+                                  ScaffoldMessenger.of(_con!.scaffoldKey!.currentContext!).showSnackBar(SnackBar(content: Text(S.of(context).your_credit_card_not_valid),));
                                 }
                               },
                               padding: EdgeInsets.symmetric(vertical: 14),
-                              color: Theme.of(context).accentColor,
+                           //   color: Theme.of(context).accentColor,
                               shape: StadiumBorder(),
                               child: Text(
                                 S.of(context).confirm_payment,

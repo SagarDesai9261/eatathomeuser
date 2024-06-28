@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/src/repository/translation_widget.dart';
+import '../src/models/coupons.dart';
 import '../src/models/food.dart';
 import '../src/models/restaurant.dart';
 import '../src/models/route_argument.dart';
@@ -35,9 +36,9 @@ class _People_count_Dailog_searchState extends State<People_count_Dailog_search>
         name: 'Pets', subtitle: 'Bringing a service animal?', quantity: 0),
   ];
 
-  String selectedPeople;
-  String defaultLanguage;
-  String heroTag;
+  String selectedPeople="";
+  String defaultLanguage="";
+  String heroTag="";
 
   void _incrementQuantity(int index) {
     // Debounce the increment action by adding a small delay
@@ -98,7 +99,7 @@ class _People_count_Dailog_searchState extends State<People_count_Dailog_search>
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .merge(TextStyle(letterSpacing: 1.3)),
+                !.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -256,7 +257,8 @@ class _People_count_Dailog_searchState extends State<People_count_Dailog_search>
                           widget.restaurant.defaultTax.toString(),
                           _products,
                           widget.fooditems,
-                          null
+                            null
+
 
 
                       )));
@@ -306,8 +308,8 @@ class _People_count_Dailog_searchState extends State<People_count_Dailog_search>
 }
 
 class QuantityButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
+  final IconData? icon;
+  final VoidCallback? onPressed;
 
   const QuantityButton({ this.icon, this.onPressed});
 

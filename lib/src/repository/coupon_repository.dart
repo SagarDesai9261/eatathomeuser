@@ -13,7 +13,7 @@ Future<Stream<Coupon>> verifyCoupon(String code) async {
   Uri uri = Helper.getUri('api/coupons');
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Stream.value(null);
+    return new Stream.value(Coupon());
   }
   Map<String, dynamic> query = {
     'api_token': _user.apiToken,
@@ -26,7 +26,7 @@ Future<Stream<Coupon>> verifyCoupon(String code) async {
   try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Coupon.fromJSON(data);
     });
   } catch (e) {
@@ -47,7 +47,7 @@ Future<Coupon> getCoupon() async {
   Coupon _coupon = Coupon.fromJSON({});
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.containsKey('coupon')) {
-    _coupon = Coupon.fromJSON(json.decode(await prefs.get('coupon')));
+    _coupon = Coupon.fromJSON(json.decode(await prefs.getString('coupon')!));
   }
   return _coupon;
 }

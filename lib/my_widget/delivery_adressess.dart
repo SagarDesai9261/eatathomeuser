@@ -191,13 +191,13 @@ class _Delivery_address_seelctionState extends State<Delivery_address_seelction>
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('No delivery addresses found.'));
-                } else if (!snapshot.hasData || snapshot.data.isEmpty) {
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(child: Text('No delivery addresses found.'));
                 } else {
                   final addresses = snapshot.data;
                   return SingleChildScrollView(
                     child: Column(
-                      children: addresses.map((address) {
+                      children: addresses!.map((address) {
                         IconData icon;
                         if (address['address_type'] == 'Home') {
                           icon = Icons.home;
@@ -327,13 +327,13 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  GoogleMapController mapController;
-  LatLng selectedLocation;
-  Marker selectedMarker;
-  String address;
+  GoogleMapController? mapController;
+  LatLng? selectedLocation;
+  Marker? selectedMarker;
+  String? address;
   bool isLoading = true;
-  String seletedlocationmarker;
-  String selectedlocationcity;
+  String? seletedlocationmarker;
+  String? selectedlocationcity;
   String selectedAddressType = "home";
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   @override
@@ -345,7 +345,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    geolocator.Position position;
+    geolocator.Position? position;
 
     try {
       position = await geolocator.Geolocator.getCurrentPosition(
@@ -357,7 +357,7 @@ class _MapScreenState extends State<MapScreen> {
 
     if (position != null && selectedLocation== null) {
       setState(() {
-        selectedLocation = LatLng(position.latitude, position.longitude);
+        selectedLocation = LatLng(position!.latitude, position!.longitude);
       });
     }
 
@@ -401,7 +401,7 @@ class _MapScreenState extends State<MapScreen> {
           child: MaterialButton(
             onPressed: () {
               //   _showAddressDialog();
-              _showBottomSheet(context,address,selectedLocation);
+              _showBottomSheet(context,address!,selectedLocation!);
               /*  widget.onLocationSelected(selectedLocation, "selectedAddress");
               Navigator.pop(context);*/
             },
@@ -423,7 +423,7 @@ class _MapScreenState extends State<MapScreen> {
                 } else {
                   return GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: selectedLocation,
+                      target: selectedLocation!,
                       zoom: 15.0,
                     ),
                     onMapCreated: (controller) {
@@ -571,7 +571,7 @@ class _MapScreenState extends State<MapScreen> {
                                 TextFormField(
                                   controller: name,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return "Receiver Name is Required";
                                     }
                                     return null;
@@ -596,7 +596,7 @@ class _MapScreenState extends State<MapScreen> {
                                     border: OutlineInputBorder(),
                                   ),
                                   validator: (value){
-                                    if(value.isEmpty){
+                                    if(value!.isEmpty){
                                       return "Receiver Contact is Required";
                                     }
                                     return null;
@@ -611,7 +611,7 @@ class _MapScreenState extends State<MapScreen> {
                                     border: OutlineInputBorder(),
                                   ),
                                   validator: (value){
-                                    if(value.isEmpty){
+                                    if(value!.isEmpty){
                                       return "Flat/House No./Floor/Building is Required";
                                     }
                                     return null;
@@ -621,7 +621,7 @@ class _MapScreenState extends State<MapScreen> {
                                 TextFormField(
                                   controller: addresscontroller,
                                   validator: (value){
-                                    if(value.isEmpty){
+                                    if(value!.isEmpty){
                                       return "Address is Required";
                                     }
                                     return null;
@@ -648,7 +648,7 @@ class _MapScreenState extends State<MapScreen> {
                                     ),
                                     child: MaterialButton(
                                       onPressed: () async{
-                                        if(!formkey.currentState.validate()){
+                                        if(!formkey.currentState!.validate()){
                                           print('Name: ${name.text}');
                                           print('Contact: ${contact.text}');
                                           print('Flat: ${flat.text}');
@@ -664,8 +664,8 @@ class _MapScreenState extends State<MapScreen> {
                                             flatNumber: flat.text,
                                             address: addresscontroller.text,
                                             addressType: selectedAddressType,
-                                            latitude: selectedLocation.latitude,
-                                            longitude: selectedLocation.longitude,
+                                            latitude: selectedLocation!.latitude,
+                                            longitude: selectedLocation!.longitude,
                                             userId: int.parse(currentUser.value.id,
                                             ),
                                             isDefault: true
@@ -698,16 +698,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<Map<String, dynamic>> addDeliveryAddress({
-    String description,
-    String name,
-    String contact,
-    String addressType,
-    String flatNumber,
-    String address,
-    double latitude,
-    double longitude,
-    bool isDefault,
-    int userId,
+    String? description,
+    String? name,
+    String? contact,
+    String? addressType,
+    String? flatNumber,
+    String? address,
+    double? latitude,
+    double? longitude,
+    bool? isDefault,
+    int? userId,
   }) async {
     const String url = 'https://eatathome.in/app/api/delivery_addresses';
 
@@ -762,7 +762,7 @@ class _MapScreenState extends State<MapScreen> {
       selectedLocation = latLng;
       selectedMarker = marker;
 
-      print(selectedLocation.latitude);
+      print(selectedLocation!.latitude);
       _showAddressDialog();
     });
   }
@@ -791,8 +791,8 @@ class _MapScreenState extends State<MapScreen> {
 
     try {
       List<geocoding.Placemark> placemarks = await geocoding.placemarkFromCoordinates(
-        selectedLocation.latitude,
-        selectedLocation.longitude,
+        selectedLocation!.latitude,
+        selectedLocation!.longitude,
       );
 
       if (placemarks.isNotEmpty) {
@@ -821,9 +821,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 class AddressTypeBox extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final VoidCallback onTap;
+  final String? title;
+  final bool? isSelected;
+  final VoidCallback? onTap;
 
   const AddressTypeBox({
     this.title,
@@ -838,12 +838,12 @@ class AddressTypeBox extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? Colors.redAccent : Colors.grey),
+          border: Border.all(color: isSelected! ? Colors.redAccent : Colors.grey),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Text(
-          title,
-          style: TextStyle(fontSize: 16, color: isSelected ? Colors.redAccent : Colors.black),
+          title!,
+          style: TextStyle(fontSize: 16, color: isSelected! ? Colors.redAccent : Colors.black),
         ),
       ),
     );

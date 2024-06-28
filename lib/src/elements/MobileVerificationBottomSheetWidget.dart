@@ -12,15 +12,15 @@ class MobileVerificationBottomSheetWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   final userModel.User user;
   Function callback;
-  MobileVerificationBottomSheetWidget(this.callback,{Key key, this.scaffoldKey, this.user}) : super(key: key);
+  MobileVerificationBottomSheetWidget(this.callback,{Key? key, required this.scaffoldKey,required this.user}) : super(key: key);
 
   @override
   _MobileVerificationBottomSheetWidgetState createState() => _MobileVerificationBottomSheetWidgetState();
 }
 
 class _MobileVerificationBottomSheetWidgetState extends State<MobileVerificationBottomSheetWidget> {
-  String smsSent;
-  String errorMessage;
+  String smsSent = "";
+  String errorMessage = "";
   var otp = 123465;
 
   @override
@@ -31,22 +31,22 @@ class _MobileVerificationBottomSheetWidgetState extends State<MobileVerification
 
   verifyPhone() async {
 
-    currentUser.value.verificationId = '1';
-    smsSent = '';
-    final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {};
-    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResent]) {
-      currentUser.value.verificationId = "1";
-    };
-    final PhoneVerificationCompleted _verifiedSuccess = (AuthCredential auth) {};
-    final PhoneVerificationFailed _verifyFailed = (FirebaseAuthException e) {};
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: widget.user.phone,
-      timeout: const Duration(seconds: 5),
-      verificationCompleted: _verifiedSuccess,
-      verificationFailed: _verifyFailed,
-      codeSent: smsCodeSent,
-      codeAutoRetrievalTimeout: autoRetrieve,
-    );
+    // currentUser.value.verificationId = '1';
+    // smsSent = '';
+    // final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {};
+    // // final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResent]) {
+    // //   currentUser.value.verificationId = "1";
+    // // };
+    // final PhoneVerificationCompleted _verifiedSuccess = (AuthCredential auth) {};
+    // final PhoneVerificationFailed _verifyFailed = (FirebaseAuthException e) {};
+    // await FirebaseAuth.instance.verifyPhoneNumber(
+    //   phoneNumber: widget.user.phone,
+    //   timeout: const Duration(seconds: 5),
+    //   verificationCompleted: _verifiedSuccess,
+    //   verificationFailed: _verifyFailed,
+    //   codeSent: ,
+    //   codeAutoRetrievalTimeout: autoRetrieve,
+    // );
   }
 
   @override
@@ -83,7 +83,7 @@ class _MobileVerificationBottomSheetWidgetState extends State<MobileVerification
                           )
                         : Text(
                             errorMessage ?? '',
-                            style: Theme.of(context).textTheme.bodyText2.merge(TextStyle(color: Colors.redAccent)),
+                            style: Theme.of(context).textTheme.bodyText2!.merge(TextStyle(color: Colors.redAccent)),
                             textAlign: TextAlign.center,
                           ),
                   ],
@@ -106,11 +106,11 @@ class _MobileVerificationBottomSheetWidgetState extends State<MobileVerification
                   //runs when every textfield is filled
                   onSubmit: (value){
                     print(value);
-                      if(value.isEmpty||value==null){
-                        this.smsSent=null;
-                      }
-                      this.smsSent = value;
-                      currentUser.value.verifiedPhone="1234";
+                      // if(value.isEmpty||value==null){
+                      //   this.smsSent=null;
+                      // }
+                      // this.smsSent = value;
+                      // currentUser.value.verifiedPhone="1234";
                     // showDialog(
                     //     context: context,
                     //     builder: (context){
@@ -176,9 +176,9 @@ class _MobileVerificationBottomSheetWidgetState extends State<MobileVerification
                       //   print(e.toString());
                       // });
                   },
-                  color: Theme.of(context).accentColor,
+                  //color: Theme.of(context).accentColor,
                   text: Text(S.of(context).verify.toUpperCase(),
-                      style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).primaryColor))),
+                      style: Theme.of(context).textTheme.headline6!.merge(TextStyle(color: Theme.of(context).primaryColor))), color: Colors.white,
                 ),
               ],
             ),

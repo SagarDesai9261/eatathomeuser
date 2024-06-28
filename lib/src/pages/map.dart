@@ -10,33 +10,33 @@ import '../models/restaurant.dart';
 import '../models/route_argument.dart';
 
 class MapWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  final RouteArgument? routeArgument;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
 
-  MapWidget({Key key, this.routeArgument, this.parentScaffoldKey}) : super(key: key);
+  MapWidget({Key? key, this.routeArgument, this.parentScaffoldKey}) : super(key: key);
 
   @override
   _MapWidgetState createState() => _MapWidgetState();
 }
 
 class _MapWidgetState extends StateMVC<MapWidget> {
-  MapController _con;
-  HomeController _homeCon;
+  MapController? _con;
+  HomeController? _homeCon;
 
   _MapWidgetState() : super(MapController()) {
-    _con = controller;
+    _con = controller as MapController?;
     _homeCon = HomeController();
   }
 
   @override
   void initState() {
-    _con.currentRestaurant = widget.routeArgument?.param as Restaurant;
-    if (_con.currentRestaurant?.latitude != null) {
+    _con!.currentRestaurant = widget.routeArgument?.param as Restaurant;
+    if (_con!.currentRestaurant?.latitude != null) {
       // user select a restaurant
-      _con.getRestaurantLocation();
-      _con.getDirectionSteps();
+      _con!.getRestaurantLocation();
+      _con!.getDirectionSteps();
     } else {
-      _con.getCurrentLocation();
+      _con!.getCurrentLocation();
     }
     super.initState();
   }
@@ -48,10 +48,10 @@ class _MapWidgetState extends StateMVC<MapWidget> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: _con.currentRestaurant?.latitude == null
+        leading: _con!.currentRestaurant?.latitude == null
             ? new IconButton(
                 icon: new Icon(Icons.sort, color: Theme.of(context).hintColor),
-                onPressed: () => widget.parentScaffoldKey.currentState.openDrawer(),
+                onPressed: () => widget.parentScaffoldKey!.currentState!.openDrawer(),
               )
             : IconButton(
                 icon: new Icon(Icons.arrow_back, color: Theme.of(context).hintColor),
@@ -59,7 +59,7 @@ class _MapWidgetState extends StateMVC<MapWidget> {
               ),
         title: Text(
           S.of(context).maps_explorer,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
         actions: <Widget>[
           IconButton(
@@ -69,7 +69,7 @@ class _MapWidgetState extends StateMVC<MapWidget> {
             ),
             onPressed: () {
               //todo
-              // _con.goCurrentLocation();
+              // _con!.goCurrentLocation();
             },
           ),
           IconButton(
@@ -78,7 +78,7 @@ class _MapWidgetState extends StateMVC<MapWidget> {
               color: Theme.of(context).hintColor,
             ),
             onPressed: () {
-              widget.parentScaffoldKey.currentState.openEndDrawer();
+              widget.parentScaffoldKey!.currentState!.openEndDrawer();
             },
           ),
         ],
@@ -87,28 +87,28 @@ class _MapWidgetState extends StateMVC<MapWidget> {
 //        fit: StackFit.expand,
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
-          _con.cameraPosition == null
+          _con!.cameraPosition == null
               ? CircularLoadingWidget(height: 0)
               : GoogleMap(
                   mapToolbarEnabled: false,
                   mapType: MapType.normal,
-                  initialCameraPosition: _con.cameraPosition,
-                  markers: Set.from(_con.allMarkers),
+                  initialCameraPosition: _con!.cameraPosition!,
+                  markers: Set.from(_con!.allMarkers),
                   onMapCreated: (GoogleMapController controller) {
-                    _con.mapController.complete(controller);
+                    _con!.mapController.complete(controller);
                   },
                   onCameraMove: (CameraPosition cameraPosition) {
-                    _con.cameraPosition = cameraPosition;
+                    _con!.cameraPosition = cameraPosition;
                   },
                   onCameraIdle: () {
-                    _con.getRestaurantsOfArea();
+                    _con!.getRestaurantsOfArea();
                   },
-                  polylines: _con.polylines,
+                  polylines: _con!.polylines,
                 ),
-          CardsCarouselWidget(
-            restaurantsList: _homeCon.topKitchens,
+          /*CardsCarouselWidget(
+            restaurantsList: _homeCon!.topKitchens!,
             heroTag: 'map_restaurants',
-          ),
+          ),*/
         ],
       ),
     );

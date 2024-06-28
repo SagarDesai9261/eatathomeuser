@@ -17,22 +17,23 @@ import 'package:http/http.dart' as http;
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../utils/color.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/homr_test.dart';
 import '../elements/DrawerWidget.dart';
 import '../models/restaurant.dart';
 
 class KitchenList extends StatefulWidget {
-  String heroTag, responseMessage;
-  bool delivery;
+  String? heroTag, responseMessage;
+  bool? delivery;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
-  String selectedDate, selectedTime, selectedPeople;
+  String? selectedDate, selectedTime, selectedPeople;
 
   HomeController _con = HomeController();
 
   KitchenList(
-      {Key key, this.heroTag, this.delivery, this.selectedDate, this.selectedTime, this.selectedPeople,}) : super(key: key);
+      {Key? key, this.heroTag, this.delivery, this.selectedDate, this.selectedTime, this.selectedPeople,}) : super(key: key);
 
   @override
   _KitchenListState createState() => _KitchenListState();
@@ -50,7 +51,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
      //print('Collected Data: $selectedDate $selectedSession $selectedPeople');
 
       List<String> parts =
-      widget.selectedPeople.split(','); // Split the string into individual parts
+      widget.selectedPeople!.split(','); // Split the string into individual parts
 
       int totalPeople = 0;
       int sessionId = 0;
@@ -58,7 +59,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
         List<String> words = part.trim().split(' ');
         if (words.length >= 2) {
           int number =
-          int.tryParse(words[0]); // Extract the number from the part
+          int.tryParse(words[0])!; // Extract the number from the part
           if (number != null) {
             totalPeople += number; // Add the number to the total count
           }
@@ -89,7 +90,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
           " " +
           sessionId.toString());*/
       await listenForAllRestaurantshere(
-      "1", widget.selectedDate, totalPeople.toString(), sessionId.toString());
+      "1", widget.selectedDate!, totalPeople.toString(), sessionId.toString());
     }
   }
 
@@ -138,9 +139,9 @@ class _KitchenListState extends StateMVC<KitchenList> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Filter filter =
         Filter.fromJSON(json.decode(prefs.getString('filter') ?? '{}'));
-    String latitude = prefs.getString("latitude");
-    String longitude = prefs.getString("longitude");
-    String permission = prefs.getString("permission");
+    String latitude = prefs.getString("latitude").toString();
+    String longitude = prefs.getString("longitude").toString();
+    String permission = prefs.getString("permission").toString();
     _queryParams['kitchenList'] = 'true';
     _queryParams['kitchenType'] = kitchenType;
     _queryParams['DineInDate'] = todayDate;
@@ -231,7 +232,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
               style: Theme.of(context)
                   .textTheme
                   .headline6
-                  .merge(TextStyle(letterSpacing: 1.3)),
+                  !.merge(TextStyle(letterSpacing: 1.3)),
             ),
           ),
           body:  isLoading ? Center(child: CircularProgressIndicator(color: Colors.deepOrangeAccent,)) : Container(
@@ -252,7 +253,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            if (restaurantsList.elementAt(firstIndex).availableForDineIn) {
+                            if (restaurantsList.elementAt(firstIndex).availableForDineIn!) {
                               Navigator.of(context).pushNamed('/Details',
                                   arguments: RouteArgument(
                                     id: '0',
@@ -268,7 +269,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
                           },
                           child: KitchenListItem(
                             restaurant: restaurantsList[firstIndex],
-                            heroTag: widget.heroTag,
+                            heroTag: widget.heroTag!,
                           ),
                         ),
                       ),
@@ -276,7 +277,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            if (restaurantsList.elementAt(secondIndex).availableForDineIn) {
+                            if (restaurantsList.elementAt(secondIndex).availableForDineIn!) {
                               Navigator.of(context).pushNamed('/Details',
                                   arguments: RouteArgument(
                                     id: '0',
@@ -292,7 +293,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
                           },
                           child: KitchenListItem(
                             restaurant: restaurantsList[secondIndex],
-                            heroTag: widget.heroTag,
+                            heroTag: widget.heroTag!,
                           ),
                         ),
                       ),
@@ -303,7 +304,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: Theme.of(context).accentColor,
+            selectedItemColor: mainColor(1),
             selectedFontSize: 0,
             unselectedFontSize: 0,
             iconSize: 22,
@@ -370,7 +371,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => SettingsWidget()),
@@ -410,7 +411,7 @@ class _KitchenListState extends StateMVC<KitchenList> {
           break;
         case 4:
           //widget.currentPage = CartWidget(parentScaffoldKey: widget.scaffoldKey);
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
           Navigator.push(
             context,
             MaterialPageRoute(

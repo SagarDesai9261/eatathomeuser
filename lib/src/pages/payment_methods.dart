@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../elements/PaymentMethodListItemWidget.dart';
 import '../elements/SearchBarWidget.dart';
 import '../elements/ShoppingCartButtonWidget.dart';
@@ -9,30 +10,31 @@ import '../models/route_argument.dart';
 import '../repository/settings_repository.dart';
 
 class PaymentMethodsWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  PaymentMethodsWidget({Key key, this.routeArgument}) : super(key: key);
+  PaymentMethodsWidget({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _PaymentMethodsWidgetState createState() => _PaymentMethodsWidgetState();
 }
 
 class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
-  PaymentMethodList list;
+  PaymentMethodList? list;
+  final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     list = new PaymentMethodList(context);
     if (!setting.value.payPalEnabled)
-      list.paymentsList.removeWhere((element) {
+      list!.paymentsList.removeWhere((element) {
         return element.id == "paypal";
       });
     if (!setting.value.razorPayEnabled)
-      list.paymentsList.removeWhere((element) {
+      list!.paymentsList.removeWhere((element) {
         return element.id == "razorpay";
       });
     if (!setting.value.stripeEnabled)
-      list.paymentsList.removeWhere((element) {
+      list!.paymentsList.removeWhere((element) {
         return element.id == "visacard" || element.id == "mastercard";
       });
     return Scaffold(
@@ -42,10 +44,10 @@ class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
         centerTitle: true,
         title: Text(
           S.of(context).payment_mode,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: mainColor(1)),
         ],
       ),
       body: SingleChildScrollView(
@@ -57,10 +59,10 @@ class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SearchBarWidget(),
+              child: SearchBarWidget(onClickFilter: (value) {  },enjoy: 1, isDinein: false, parentScaffoldKey: scaffoldkey,),
             ),
             SizedBox(height: 15),
-            list.paymentsList.length > 0
+            list!.paymentsList.length > 0
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ListTile(
@@ -86,15 +88,15 @@ class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               primary: false,
-              itemCount: list.paymentsList.length,
+              itemCount: list!.paymentsList.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 10);
               },
               itemBuilder: (context, index) {
-                return PaymentMethodListItemWidget(paymentMethod: list.paymentsList.elementAt(index));
+                return PaymentMethodListItemWidget(paymentMethod: list!.paymentsList.elementAt(index));
               },
             ),
-            list.cashList.length > 0
+            list!.cashList.length > 0
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                     child: ListTile(
@@ -119,12 +121,12 @@ class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               primary: false,
-              itemCount: list.cashList.length,
+              itemCount: list!.cashList.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 10);
               },
               itemBuilder: (context, index) {
-                return PaymentMethodListItemWidget(paymentMethod: list.cashList.elementAt(index));
+                return PaymentMethodListItemWidget(paymentMethod: list!.cashList.elementAt(index));
               },
             ),
           ],

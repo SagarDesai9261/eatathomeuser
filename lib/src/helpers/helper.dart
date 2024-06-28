@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-
+import 'package:html/parser.dart' as html_parser;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
+// import 'package:flutter_html/flutter_html.dart';
+//import 'package:flutter_html/style.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:html/parser.dart';
+//import 'package:html/parser.dart';
 
 import '../../generated/l10n.dart';
 import '../elements/CircularLoadingWidget.dart';
@@ -24,8 +24,8 @@ import 'app_config.dart' as config;
 import 'custom_trace.dart';
 
 class Helper {
-  BuildContext context;
-  DateTime currentBackPressTime;
+  BuildContext? context;
+  DateTime? currentBackPressTime;
 
   Helper.of(BuildContext _context) {
     this.context = _context;
@@ -57,7 +57,7 @@ class Helper {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png)).buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
   }
 
   static Future<Marker> getMarker(Map<String, dynamic> res) async {
@@ -105,10 +105,10 @@ class Helper {
     return list;
   }
 
-  static Widget getPrice(double myPrice, BuildContext context, {TextStyle style, String zeroPlaceholder = '0'}) {
+  static Widget getPrice(double myPrice, BuildContext context, {TextStyle? style, String zeroPlaceholder = '0'}) {
   //  print("myPrice is calling ==> ${myPrice}" );
     if (style != null) {
-      style = style.merge(TextStyle(fontSize: style.fontSize + 2));
+      style = style.merge(TextStyle(fontSize: style.fontSize! + 2));
     }
     try {
       if (myPrice == 0) {
@@ -126,23 +126,23 @@ class Helper {
               ? TextSpan(
             text: "-₹",
             style: style == null
-                ? Theme.of(context).textTheme.subtitle1.merge(
-              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+                ? Theme.of(context).textTheme.subtitle1!.merge(
+              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize),
             )
                 : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
             children: <TextSpan>[
-              TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+              TextSpan(text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
             ],
           )
               : TextSpan(
-            text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+            text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '',
             style: style ?? Theme.of(context).textTheme.subtitle1,
             children: <TextSpan>[
               TextSpan(
                 text: "-₹",
                 style: style == null
-                    ? Theme.of(context).textTheme.subtitle1.merge(
-                  TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+                    ? Theme.of(context).textTheme.subtitle1!.merge(
+                  TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize ),
                 )
                     : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize , )),
               ),
@@ -158,23 +158,23 @@ class Helper {
             ? TextSpan(
                 text: "₹",
                 style: style == null
-                    ? Theme.of(context).textTheme.subtitle1.merge(
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+                    ? Theme.of(context).textTheme.subtitle1!.merge(
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize),
                         )
                     : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
                 children: <TextSpan>[
-                  TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+                  TextSpan(text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
                 ],
               )
             : TextSpan(
-                text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+                text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '',
                 style: style ?? Theme.of(context).textTheme.subtitle1,
                 children: <TextSpan>[
                   TextSpan(
                     text: "₹",
                     style: style == null
-                        ? Theme.of(context).textTheme.subtitle1.merge(
-                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+                        ? Theme.of(context).textTheme.subtitle1!.merge(
+                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize ),
                             )
                         : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize )),
                   ),
@@ -185,10 +185,10 @@ class Helper {
       return Text('');
     }
   }
-  static Widget getPriceforcart(double myPrice, BuildContext context, {TextStyle style, String zeroPlaceholder = '0'}) {
+  static Widget getPriceforcart(double myPrice, BuildContext context, {TextStyle? style, String zeroPlaceholder = '0'}) {
     //  print("myPrice is calling ==> ${myPrice}" );
     if (style != null) {
-      style = style.merge(TextStyle(fontSize: style.fontSize + 2));
+      style = style.merge(TextStyle(fontSize: style.fontSize! + 2));
     }
     try {
       if (myPrice == 0) {
@@ -206,23 +206,23 @@ class Helper {
               ? TextSpan(
             text: "-₹",
             style: style == null
-                ? Theme.of(context).textTheme.subtitle1.merge(
-              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+                ? Theme.of(context).textTheme.subtitle1!.merge(
+              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize),
             )
                 : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
             children: <TextSpan>[
-              TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+              TextSpan(text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
             ],
           )
               : TextSpan(
-            text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+            text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '',
             style: style ?? Theme.of(context).textTheme.subtitle1,
             children: <TextSpan>[
               TextSpan(
                 text: "-₹",
                 style: style == null
-                    ? Theme.of(context).textTheme.subtitle1.merge(
-                  TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+                    ? Theme.of(context).textTheme.subtitle1!.merge(
+                  TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize ),
                 )
                     : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize , )),
               ),
@@ -238,23 +238,23 @@ class Helper {
             ? TextSpan(
           text: "₹",
           style: style == null
-              ? Theme.of(context).textTheme.subtitle1.merge(
-            TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize),
+              ? Theme.of(context).textTheme.subtitle1!.merge(
+            TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize),
           )
               : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize)),
           children: <TextSpan>[
-            TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+            TextSpan(text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
           ],
         )
             : TextSpan(
-          text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+          text: myPrice.toStringAsFixed(setting.value.currencyDecimalDigits) ?? '',
           style: style ?? Theme.of(context).textTheme.subtitle1,
           children: <TextSpan>[
             TextSpan(
               text: "₹",
               style: style == null
-                  ? Theme.of(context).textTheme.subtitle1.merge(
-                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize ),
+                  ? Theme.of(context).textTheme.subtitle1!.merge(
+                TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize ),
               )
                   : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize )),
             ),
@@ -268,7 +268,7 @@ class Helper {
 
   static double getTotalOrderPrice(FoodOrder foodOrder) {
     double total = foodOrder.price;
-    foodOrder.extras.forEach((extra) {
+    foodOrder.extras!.forEach((extra) {
       total += extra.price != null ? extra.price : 0;
     });
     total *= foodOrder.quantity;
@@ -277,7 +277,7 @@ class Helper {
 
   static double getOrderPrice(FoodOrder foodOrder) {
     double total = foodOrder.price;
-    foodOrder.extras.forEach((extra) {
+    foodOrder.extras!.forEach((extra) {
       total += extra.price != null ? extra.price : 0;
     });
     return total;
@@ -285,21 +285,21 @@ class Helper {
 
   static double getTaxOrder(Order order) {
     double total = 0;
-    order.foodOrders.forEach((foodOrder) {
+    order.foodOrders!.forEach((foodOrder) {
       total += getTotalOrderPrice(foodOrder);
     });
-    return order.foodOrders.first.food.restaurant.defaultTax * total / 100;
+    return order.foodOrders!.first.food!.restaurant!.defaultTax! * total / 100;
   }
 
   static double getTotalOrdersPrice(Order order) {
     double total = 0;
-    order.foodOrders.forEach((foodOrder) {
+    order.foodOrders!.forEach((foodOrder) {
       total += getTotalOrderPrice(foodOrder);
     });
-    total += (order.foodOrders.first.food.restaurant.defaultTax * total) / 100;
-    total += order.deliveryFee;
+    total += (order.foodOrders!.first.food!.restaurant!.defaultTax! * total) / 100;
+    total += order.deliveryFee!;
     if(order.coupon_amount != null)
-    total -= double.parse(order.coupon_amount);
+    total -= double.parse(order.coupon_amount!);
     print(total);
 
     print(total);
@@ -314,37 +314,36 @@ class Helper {
     return distance != null ? distance.toStringAsFixed(2) + " " + unit : "";
   }
 
-  static bool canDelivery(Restaurant _restaurant, {List<Cart> carts}) {
+  static bool canDelivery(Restaurant _restaurant, {List<Cart>? carts}) {
     bool _can = true;
     String _unit = setting.value.distanceUnit;
-    double _deliveryRange = _restaurant.deliveryRange;
-    double _distance = _restaurant.distance;
+    double _deliveryRange = _restaurant.deliveryRange!;
+    double _distance = double.parse(_restaurant.distance!);
     carts?.forEach((Cart _cart) {
-      _can &= _cart.food.deliverable;
+      _can &= _cart.food!.deliverable;
     });
 
     if (_unit == 'km') {
       _deliveryRange /= 1.0000;
     }
     if (_distance == 0 && !deliveryAddress.value.isUnknown()) {
-      _distance = sqrt(pow(69.1 * (double.parse(_restaurant.latitude) - deliveryAddress.value.latitude), 2) +
-          pow(69.1 * (deliveryAddress.value.longitude - double.parse(_restaurant.longitude)) * cos(double.parse(_restaurant.latitude) / 57.3), 2));
+      _distance = sqrt(pow(69.1 * (double.parse(_restaurant.latitude!) - deliveryAddress.value.latitude!), 2) +
+          pow(69.1 * (deliveryAddress.value.longitude! - double.parse(_restaurant.longitude!)) * cos(double.parse(_restaurant.latitude!) / 57.3), 2));
     }
-    _can &= _restaurant.availableForDelivery && (_distance < _deliveryRange) && !deliveryAddress.value.isUnknown();
+    _can &= _restaurant.availableForDelivery! && (_distance < _deliveryRange) && !deliveryAddress.value.isUnknown();
     return _can;
   }
 
   static String skipHtml(String htmlString) {
     try {
-      var document = parse(htmlString);
-      String parsedString = parse(document.body.text).documentElement.text;
+      var document = html_parser.parse(htmlString);
+      String parsedString = document.body!.text;
       return parsedString;
     } catch (e) {
       return '';
     }
   }
-
-  static Html applyHtml(context, String html, {TextStyle style}) {
+  /*static Html applyHtml(context, String html, {TextStyle? style}) {
     return Html(
       data: html ?? '',
       style: {
@@ -371,8 +370,7 @@ class Helper {
       },
     );
   }
-
-  static OverlayEntry overlayLoader(context) {
+*/  static OverlayEntry overlayLoader(context) {
     OverlayEntry loader = OverlayEntry(builder: (context) {
       final size = MediaQuery.of(context).size;
       return Positioned(
@@ -481,9 +479,9 @@ class Helper {
 
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
-    if (currentBackPressTime == null || now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+    if (currentBackPressTime == null || now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
       currentBackPressTime = now;
-      Fluttertoast.showToast(msg: S.of(context).tapAgainToLeave);
+      Fluttertoast.showToast(msg: S.of(context!).tapAgainToLeave);
       return Future.value(false);
     }
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -493,13 +491,13 @@ class Helper {
   String trans(String text) {
     switch (text) {
       case "App\\Notifications\\StatusChangedOrder":
-        return S.of(context).order_status_changed;
+        return S.of(context!).order_status_changed;
       case "App\\Notifications\\NewOrder":
-        return S.of(context).new_order_from_client;
+        return S.of(context!).new_order_from_client;
       case "km":
-        return S.of(context).km;
+        return S.of(context!).km;
       case "mi":
-        return S.of(context).mi;
+        return S.of(context!).mi;
       default:
         return "";
     }

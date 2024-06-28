@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../elements/SearchResultsWidget.dart';
 
 class SearchModal extends ModalRoute<void> {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  final bool isDinein;
-  SearchModal({ this.isDinein,this.parentScaffoldKey});
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  final bool? isDinein;
+  final int enjoy ;
+  SearchModal({ this.isDinein,this.parentScaffoldKey, required this.enjoy});
   @override
   Duration get transitionDuration => Duration(milliseconds: 400);
 
@@ -21,7 +22,7 @@ class SearchModal extends ModalRoute<void> {
   }
 
   @override
-  String get barrierLabel => null;
+  String? get barrierLabel => null;
 
   @override
   bool get maintainState => true;
@@ -39,8 +40,9 @@ class SearchModal extends ModalRoute<void> {
       child: SafeArea(
         minimum: EdgeInsets.only(top: 40),
         child: /*Text("")*/ SearchResultWidget(
+          enjoy: enjoy,
           heroTag: "search",
-          isDinein:isDinein,
+          isDinein:isDinein!,
           parentScaffoldKey: parentScaffoldKey,
         ),
       ),

@@ -12,7 +12,7 @@ import '../repository/user_repository.dart' as userRepo;
 
 class SplashScreenController extends ControllerMVC {
   ValueNotifier<Map<String, double>> progress = new ValueNotifier(new Map());
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
 
@@ -102,7 +102,7 @@ class SplashScreenController extends ControllerMVC {
   Future fcmOnMessageListeners() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       Fluttertoast.showToast(
-        msg: message.notification.title,
+        msg: message.notification!.title!,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
         timeInSecForIosWeb: 6,
@@ -112,16 +112,16 @@ class SplashScreenController extends ControllerMVC {
   }
 
   Future fcmOnLaunchListeners() async {
-    RemoteMessage message = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
     if (message != null) {
       String messageId = await settingRepo.getMessageId();
       try {
         if (messageId != message.messageId) {
-          await settingRepo.saveMessageId(message.messageId);
+          await settingRepo.saveMessageId(message.messageId!);
           if (message.data['id'] == "orders") {
-            settingRepo.navigatorKey.currentState.pushReplacementNamed('/Pages', arguments: 3);
+            settingRepo.navigatorKey.currentState!.pushReplacementNamed('/Pages', arguments: 3);
           } else if (message.data['id'] == "messages") {
-            settingRepo.navigatorKey.currentState.pushReplacementNamed('/Pages', arguments: 4);
+            settingRepo.navigatorKey.currentState!.pushReplacementNamed('/Pages', arguments: 4);
           }
         }
       } catch (e) {
@@ -136,9 +136,9 @@ class SplashScreenController extends ControllerMVC {
       // print(CustomTrace(StackTrace.current, message: message.data['id']));
       try {
         if (message.data['id'] == "orders") {
-          settingRepo.navigatorKey.currentState.pushReplacementNamed('/Pages', arguments: 3);
+          settingRepo.navigatorKey.currentState!.pushReplacementNamed('/Pages', arguments: 3);
         } else if (message.data['id'] == "messages") {
-          settingRepo.navigatorKey.currentState.pushReplacementNamed('/Pages', arguments: 4);
+          settingRepo.navigatorKey.currentState!.pushReplacementNamed('/Pages', arguments: 4);
         }
       } catch (e) {
         // print(CustomTrace(StackTrace.current, message: e));

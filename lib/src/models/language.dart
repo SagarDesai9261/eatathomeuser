@@ -9,18 +9,18 @@ class Language {
 }
 
 class LanguagesList {
-  List<Language> _languages;
+  late List<Language> _languages;
 
   LanguagesList() {
     this._languages = [
-      new Language("en", "English", "English", "assets/img/united-states-of-america.png"),
-      new Language("vi", "vietnamese", "Tiếng Việt", "assets/img/vietnam.png"),
-      new Language("es", "Spanish", "Spana", "assets/img/spain.png"),
-      new Language("ar", "Arabic", "arabic", "assets/img/spain.png"),
-      new Language("fr", "French (France)", "Français - France", "assets/img/france.png"),
-      new Language("fr_CA", "French (Canada)", "Français - Canadien", "assets/img/canada.png"),
-      new Language("pt_BR", "Portugese (Brazil)", "Brazilian", "assets/img/brazil.png"),
-      new Language("ko", "Korean", "Korean", "assets/img/united-states-of-america.png"),
+      Language("en", "English", "English", "assets/img/united-states-of-america.png"),
+      Language("vi", "Vietnamese", "Tiếng Việt", "assets/img/vietnam.png"),
+      Language("es", "Spanish", "Spana", "assets/img/spain.png"),
+      Language("ar", "Arabic", "Arabic", "assets/img/spain.png"),
+      Language("fr", "French (France)", "Français - France", "assets/img/france.png"),
+      Language("fr_CA", "French (Canada)", "Français - Canadien", "assets/img/canada.png"),
+      Language("pt_BR", "Portuguese (Brazil)", "Brazilian", "assets/img/brazil.png"),
+      Language("ko", "Korean", "Korean", "assets/img/united-states-of-america.png"),
     ];
   }
 

@@ -19,7 +19,7 @@ class _YourWidgetState extends State<YourWidget> {
     'https://via.placeholder.com/300x300',
   ];
 
-  Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _YourWidgetState extends State<YourWidget> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer!.cancel();
     super.dispose();
   }
 

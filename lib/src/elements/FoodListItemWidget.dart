@@ -9,13 +9,13 @@ class FoodListItemWidget extends StatelessWidget {
   String heroTag;
   Food food;
 
-  FoodListItemWidget({Key key, this.heroTag, this.food}) : super(key: key);
+  FoodListItemWidget({Key? key,required this.heroTag,required this.food}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
+    //  splashColor: Theme.of(context).accentColor,
+     // focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
         /*Navigator.of(context).pushNamed('/Food',
@@ -25,7 +25,7 @@ class FoodListItemWidget extends StatelessWidget {
         Navigator.of(context).pushNamed('/Details',
             arguments: RouteArgument(
               id: '0',
-              param: food.restaurant.id,
+              param: food.restaurant!.id,
               heroTag: heroTag,
               isDelivery: true,
               selectedDate: "",
@@ -54,7 +54,7 @@ class FoodListItemWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5)),
                   image: DecorationImage(
-                      image: NetworkImage(food.image.thumb), fit: BoxFit.cover),
+                      image: NetworkImage(food.image!.thumb), fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -74,7 +74,7 @@ class FoodListItemWidget extends StatelessWidget {
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Text(
-                          food.restaurant.name,
+                          food.restaurant!.name!,
                           overflow: TextOverflow.fade,
                           softWrap: false,
                           style: Theme.of(context).textTheme.caption,

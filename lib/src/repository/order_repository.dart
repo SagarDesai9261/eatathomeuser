@@ -12,10 +12,10 @@ import '../models/payment.dart';
 import '../models/user.dart';
 import '../repository/user_repository.dart' as userRepo;
 
-Future<Stream<Order>> getOrders({int limit = 6, int offset = 0, int deliveryType}) async {
+Future<Stream<Order>> getOrders({int limit = 6, int offset = 0, int deliveryType = 1}) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Stream.value(null);
+    return new Stream.value(Order());
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
   final String url =
@@ -30,7 +30,7 @@ Future<Stream<Order>> getOrders({int limit = 6, int offset = 0, int deliveryType
 
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
  //   // print(data);
     return Order.fromJSON(data);
   });
@@ -39,7 +39,7 @@ Future<Stream<Order>> getOrders({int limit = 6, int offset = 0, int deliveryType
 Future<Stream<Order>> getOrder(orderId) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Stream.value(null);
+    return new Stream.value(Order());
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
   final String url =
@@ -49,7 +49,7 @@ Future<Stream<Order>> getOrder(orderId) async {
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).map((data) {
     return Order.fromJSON(data);
   });
 }
@@ -57,7 +57,7 @@ Future<Stream<Order>> getOrder(orderId) async {
 Future<Stream<Order>> getRecentOrders() async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Stream.value(null);
+    return new Stream.value(Order());
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
   final String url =
@@ -66,7 +66,7 @@ Future<Stream<Order>> getRecentOrders() async {
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
     return Order.fromJSON(data);
   });
 }
@@ -74,7 +74,7 @@ Future<Stream<Order>> getRecentOrders() async {
 Future<Stream<OrderStatus>> getOrderStatus() async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return new Stream.value(null);
+    return new Stream.value(OrderStatus());
   }
   final String _apiToken = 'api_token=${_user.apiToken}';
   final String url = '${GlobalConfiguration().getValue('api_base_url')}order_statuses?$_apiToken';
@@ -82,8 +82,8 @@ Future<Stream<OrderStatus>> getOrderStatus() async {
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
-    return OrderStatus.fromJSON(data);
+  return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
+    return OrderStatus.fromJson(data);
   });
 }
 

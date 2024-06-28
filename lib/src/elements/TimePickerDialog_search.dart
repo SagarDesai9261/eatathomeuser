@@ -28,9 +28,9 @@ class TimePickerDialog_search extends StatefulWidget {
 }
 
 class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
-  TimeOfDay selectedTime;
-  String formattedTime, selectedSession;
-  String defaultLanguage;
+  TimeOfDay? selectedTime;
+  String? formattedTime, selectedSession;
+  String defaultLanguage="";
 
 
   @override
@@ -50,7 +50,7 @@ class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
     });
   }
 
-  void _showTimePickerDialog_search(BuildContext context) async {
+ /* void _showTimePickerDialog_search(BuildContext context) async {
     final TimeOfDay pickedTime = await showTimePicker(
       context: context,
       initialTime: selectedTime,
@@ -74,7 +74,7 @@ class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
       formattedTime = pickedTime.format(context);
       print(formattedTime); // Output: 12:40
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,7 @@ class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
             translatedMessage,
             overflow: TextOverflow.fade,
             softWrap: false,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -126,7 +126,7 @@ class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
                   children: [
                     IconButton(
                       icon: new Icon(Icons.alarm,
-                          color: Theme.of(context).hintColor),
+                          color: Theme.of(context).hintColor), onPressed: () {  },
                     ),
                     /*Text(
                       "Pick a Session",
@@ -497,7 +497,7 @@ class _TimePickerDialog_searchState extends State<TimePickerDialog_search> {
                             widget.restaurantId,
                             widget.isDelivery,
                             widget.selectedDate,
-                            selectedSession,
+                            selectedSession!,
                           widget.issearch,
                           widget.fooditems,
                           widget.subtotal,

@@ -3,21 +3,22 @@ import 'package:food_delivery_app/src/repository/translation_widget.dart';
 
 import '../../generated/l10n.dart';
 import '../elements/SearchWidget.dart';
-
+import '../helpers/app_config.dart' as config;
 import '../repository/settings_repository.dart' as settingsRepo;
 
 class SearchBarWidget extends StatefulWidget {
   final ValueChanged onClickFilter;
   final bool isDinein ;
+  final int enjoy;
   final GlobalKey<ScaffoldState> parentScaffoldKey;
-  const SearchBarWidget({Key key, this.onClickFilter,this.isDinein,this.parentScaffoldKey}) : super(key: key);
+  const SearchBarWidget({Key? key, required this.onClickFilter,required this.isDinein, required this.parentScaffoldKey,required this.enjoy}) : super(key: key);
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
 }
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -39,7 +40,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(SearchModal(isDinein: widget.isDinein));
+        Navigator.of(context).push(SearchModal(isDinein: widget.isDinein,enjoy: widget.enjoy));
       },
       child: Container(
         padding: EdgeInsets.all(9),
@@ -53,7 +54,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(right: 12, left: 0),
-              child: Icon(Icons.search, color: Theme.of(context).accentColor),
+              child: Icon(Icons.search, color: config.Colors().mainColor(1)),
             ),
             Expanded(
               child: /*Text(
@@ -77,7 +78,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                     style: Theme.of(context)
                         .textTheme
                         .caption
-                        .merge(TextStyle(fontSize: 14))
+                        !.merge(TextStyle(fontSize: 14))
                 ),
               ),
             ),

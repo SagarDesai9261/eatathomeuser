@@ -6,35 +6,49 @@ class CouponModel {
   final int discount;
   final String discountType;
   final String description;
-  final DateTime  expiresAt;
+  final DateTime expiresAt;
   final bool enabled;
   final String createdAt;
   final String updatedAt;
 
   CouponModel({
-     this.id,
-     this.code,
-     this.discount,
-     this.discountType,
-     this.description,
-     this.expiresAt,
-     this.enabled,
-     this.createdAt,
-     this.updatedAt,
+    required this.id,
+    required this.code,
+    required this.discount,
+    required this.discountType,
+    required this.description,
+    required this.expiresAt,
+    required this.enabled,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory CouponModel.fromJson(Map<String, dynamic> json) {
-    final expiresAt = DateFormat('yyyy-MM-dd HH:mm:ss').parse(json['expires_at']);
+    final expiresAt = DateFormat('yyyy-MM-dd HH:mm:ss').parse(json['expires_at'] as String);
     return CouponModel(
-      id: json['id'],
-      code: json['code'],
-      discount: json['discount'],
-      discountType: json['discount_type'],
-      description: json['description'],
+      id: json['id'] as int,
+      code: json['code'] as String,
+      discount: json['discount'] as int,
+      discountType: json['discount_type'] as String,
+      description: json['description'] as String,
       expiresAt: expiresAt,
-      enabled: json['enabled'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      enabled: json['enabled'] as bool,
+      createdAt: json['created_at'] as String,
+      updatedAt: json['updated_at'] as String,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'discount': discount,
+      'discount_type': discountType,
+      'description': description,
+      'expires_at': DateFormat('yyyy-MM-dd HH:mm:ss').format(expiresAt),
+      'enabled': enabled,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 }

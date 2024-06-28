@@ -12,15 +12,15 @@ class FavouriteModel {
   int favourite_id;
 
   FavouriteModel({
-    @required this.id,
-    @required this.name,
-    @required this.description,
-    @required this.image,
-    @required this.minPrice,
-    @required this.maxPrice,
-    @required this.currency,
-    @required this.favourite_id,
-    @required this.restaurant_id
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.image,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.currency,
+    required this.favourite_id,
+    required this.restaurant_id
   });
 
   factory FavouriteModel.fromJson(Map<String, dynamic> json) {
@@ -44,9 +44,9 @@ class RestaurantResponse {
   String message;
 
   RestaurantResponse({
-    @required this.success,
-    @required this.data,
-    @required this.message,
+    required this.success,
+    required this.data,
+    required this.message,
   });
 
   factory RestaurantResponse.fromJson(Map<String, dynamic> json) {

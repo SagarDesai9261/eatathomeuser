@@ -162,7 +162,7 @@ void toggleLocation(String location) {
                               "index " +
                               cuisineList[index].id.toString());
                           cuisineList[index].selected =
-                              value; // Update the state of the selected cuisine
+                              value!; // Update the state of the selected cuisine
                           toggleCuisine(int.parse(cuisineList[index].id));
                         });
                       },

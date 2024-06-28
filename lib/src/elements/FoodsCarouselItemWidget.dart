@@ -11,7 +11,7 @@ class FoodsCarouselItemWidget extends StatefulWidget {
   final FoodItem food;
   final String heroTag;
 
-  FoodsCarouselItemWidget({Key key, this.heroTag, this.marginLeft, this.food})
+  FoodsCarouselItemWidget({Key? key, required this.heroTag,required this.marginLeft,required this.food})
       : super(key: key);
 
   @override
@@ -19,7 +19,7 @@ class FoodsCarouselItemWidget extends StatefulWidget {
 }
 
 class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
   Widget build(BuildContext context) {
 
     return InkWell(
-      splashColor: Theme.of(context).accentColor.withOpacity(0.08),
+     // splashColor: Theme.of(context).accentColor.withOpacity(0.08),
       highlightColor: Colors.transparent,
      /* onTap: () {
         Navigator.of(context).pushNamed('/Food',
@@ -63,7 +63,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
                     borderRadius: BorderRadius.all(Radius.circular(8)),
                     child: CachedNetworkImage(
                       fit: BoxFit.cover,
-                      imageUrl: widget.food.media[0].thumb,
+                      imageUrl: widget.food.media![0].thumb!,
                       placeholder: (context, url) => Image.asset(
                         'assets/img/loading.gif',
                         fit: BoxFit.cover,
@@ -153,7 +153,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   )*/
                   TranslationWidget(
-                    message: widget.food.restaurant.name.isEmpty ? "" : widget.food.restaurant.name,
+                    message: widget.food.restaurant!.name.isEmpty ? "" : widget.food.restaurant!.name,
                     fromLanguage: "English",
                     toLanguage: defaultLanguage,
                     builder: (translatedMessage) => Text(
@@ -170,7 +170,7 @@ class _FoodsCarouselItemWidgetState extends State<FoodsCarouselItemWidget> {
                     style: TextStyle(fontWeight: FontWeight.w400),
                   )*/
                   TranslationWidget(
-                    message:  widget.food.restaurant.address.isEmpty ? "" : widget.food.restaurant.address,
+                    message:  widget.food.restaurant!.address!.isEmpty ? "" : widget.food.restaurant!.address!,
                     fromLanguage: "English",
                     toLanguage: defaultLanguage,
                     builder: (translatedMessage) => Text(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../controllers/notification_controller.dart';
 import '../elements/DrawerWidget.dart';
 import '../elements/EmptyNotificationsWidget.dart';
@@ -11,18 +12,18 @@ import '../elements/ShoppingCartButtonWidget.dart';
 import '../repository/user_repository.dart';
 
 class NotificationsWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
 
-  NotificationsWidget({Key key, this.parentScaffoldKey}) : super(key: key);
+  NotificationsWidget({Key? key, this.parentScaffoldKey}) : super(key: key);
   @override
   _NotificationsWidgetState createState() => _NotificationsWidgetState();
 }
 
 class _NotificationsWidgetState extends StateMVC<NotificationsWidget> {
-  NotificationController _con;
+  NotificationController? _con;
 
   _NotificationsWidgetState() : super(NotificationController()) {
-    _con = controller;
+    _con = controller as NotificationController?;
   }
 
   @override
@@ -30,7 +31,7 @@ class _NotificationsWidgetState extends StateMVC<NotificationsWidget> {
     return Builder(
       builder: (context) {
         return Scaffold(
-          key: _con.scaffoldKey,
+          key: _con!.scaffoldKey,
           drawer: DrawerWidget(),
           appBar: AppBar(
             leading: Builder(
@@ -47,17 +48,17 @@ class _NotificationsWidgetState extends StateMVC<NotificationsWidget> {
             centerTitle: true,
             title: Text(
               S.of(context).notifications,
-              style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+              style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
             ),
             actions: <Widget>[
-              new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+              new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: mainColor(1)),
             ],
           ),
           body: currentUser.value.apiToken == null
               ? PermissionDeniedWidget()
               : RefreshIndicator(
-                  onRefresh: _con.refreshNotifications,
-                  child: _con.notifications.isEmpty
+                  onRefresh: _con!.refreshNotifications,
+                  child: _con!.notifications.isEmpty
                       ? EmptyNotificationsWidget()
                       : ListView(
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -89,21 +90,21 @@ class _NotificationsWidgetState extends StateMVC<NotificationsWidget> {
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               primary: false,
-                              itemCount: _con.notifications.length,
+                              itemCount: _con!.notifications.length,
                               separatorBuilder: (context, index) {
                                 return SizedBox(height: 15);
                               },
                               itemBuilder: (context, index) {
                                 return NotificationItemWidget(
-                                  notification: _con.notifications.elementAt(index),
+                                  notification: _con!.notifications.elementAt(index),
                                   onMarkAsRead: () {
-                                    _con.doMarkAsReadNotifications(_con.notifications.elementAt(index));
+                                    _con!.doMarkAsReadNotifications(_con!.notifications.elementAt(index));
                                   },
                                   onMarkAsUnRead: () {
-                                    _con.doMarkAsUnReadNotifications(_con.notifications.elementAt(index));
+                                    _con!.doMarkAsUnReadNotifications(_con!.notifications.elementAt(index));
                                   },
                                   onRemoved: () {
-                                    _con.doRemoveNotification(_con.notifications.elementAt(index));
+                                    _con!.doRemoveNotification(_con!.notifications.elementAt(index));
                                   },
                                 );
                               },

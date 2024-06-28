@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/restaurant_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
@@ -18,36 +19,36 @@ import '../models/route_argument.dart';
 class MenuWidget extends StatefulWidget {
   @override
   _MenuWidgetState createState() => _MenuWidgetState();
-  final RouteArgument routeArgument;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  final RouteArgument? routeArgument;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
 
-  MenuWidget({Key key, this.parentScaffoldKey, this.routeArgument}) : super(key: key);
+  MenuWidget({Key? key, this.parentScaffoldKey, this.routeArgument}) : super(key: key);
 }
 
 class _MenuWidgetState extends StateMVC<MenuWidget> {
-  RestaurantController _con;
-  List<String> selectedCategories;
-  HomeController _homeCon;
+  RestaurantController? _con;
+  List<String>? selectedCategories;
+  HomeController? _homeCon;
 
   _MenuWidgetState() : super(RestaurantController()) {
-    _con = controller;
+    _con = controller as RestaurantController?;
     _homeCon = HomeController();
   }
 
   @override
   void initState() {
-    _con.restaurant = widget.routeArgument.param as Restaurant;
-    _con.listenForTrendingFoods(_con.restaurant.id);
-    _con.listenForCategories(_con.restaurant.id);
+    _con!.restaurant = widget.routeArgument!.param as Restaurant;
+    _con!.listenForTrendingFoods(_con!.restaurant!.id!);
+    _con!.listenForCategories(_con!.restaurant!.id!);
     selectedCategories = ['0'];
-    _con.listenForFoods(_con.restaurant.id);
+    _con!.listenForFoods(_con!.restaurant!.id!);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       drawer: DrawerWidget(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -56,16 +57,16 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
         automaticallyImplyLeading: false,
         leading: new IconButton(
           icon: new Icon(Icons.arrow_back, color: Theme.of(context).hintColor),
-          onPressed: () => Navigator.of(context).pushNamed('/Details', arguments: RouteArgument(id: '0', param: _con.restaurant.id, heroTag: 'menu_tab')),
+          onPressed: () => Navigator.of(context).pushNamed('/Details', arguments: RouteArgument(id: '0', param: _con!.restaurant!.id, heroTag: 'menu_tab')),
         ),
         title: Text(
-          _con.restaurant?.name ?? '',
+          _con!.restaurant?.name ?? '',
           overflow: TextOverflow.fade,
           softWrap: false,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 0)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 0)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: mainColor(1)),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -76,10 +77,10 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Padding(
+            /*Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SearchBarWidget(),
-            ),
+            ),*/
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -97,7 +98,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
-            FoodsCarouselWidget(heroTag: 'menu_trending_food', foodsList: _homeCon.trendingFoodItems,enjoy:1),
+            FoodsCarouselWidget(heroTag: 'menu_trending_food', foodsList: _homeCon!.trendingFoodItems!,enjoy:1, delivery: true,),
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -115,7 +116,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
-            _con.categories.isEmpty
+            _con!.categories.isEmpty
                 ? SizedBox(height: 90)
                 : Container(
                     height: 90,
@@ -123,20 +124,20 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                       primary: false,
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      children: List.generate(_con.categories.length, (index) {
-                        var _category = _con.categories.elementAt(index);
-                        var _selected = this.selectedCategories.contains(_category.id);
+                      children: List.generate(_con!.categories.length, (index) {
+                        var _category = _con!.categories.elementAt(index);
+                        var _selected = this.selectedCategories!.contains(_category.id);
                         return Padding(
                           padding: const EdgeInsetsDirectional.only(start: 20),
                           child: RawChip(
                             elevation: 0,
                             label: Text(_category.name),
                             labelStyle: _selected
-                                ? Theme.of(context).textTheme.bodyText2.merge(TextStyle(color: Theme.of(context).primaryColor))
+                                ? Theme.of(context).textTheme.bodyText2!.merge(TextStyle(color: Theme.of(context).primaryColor))
                                 : Theme.of(context).textTheme.bodyText2,
                             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
                             backgroundColor: Theme.of(context).focusColor.withOpacity(0.1),
-                            selectedColor: Theme.of(context).accentColor,
+                            selectedColor: mainColor(1),
                             selected: _selected,
                             //shape: StadiumBorder(side: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.05))),
                             showCheckmark: false,
@@ -145,7 +146,7 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                                 : (_category.image.url.toLowerCase().endsWith('.svg')
                                     ? SvgPicture.network(
                                         _category.image.url,
-                                        color: _selected ? Theme.of(context).primaryColor : Theme.of(context).accentColor,
+                                        color: _selected ? Theme.of(context).primaryColor : mainColor(1),
                                       )
                                     : CachedNetworkImage(
                                         fit: BoxFit.cover,
@@ -161,14 +162,14 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                                 if (_category.id == '0') {
                                   this.selectedCategories = ['0'];
                                 } else {
-                                  this.selectedCategories.removeWhere((element) => element == '0');
+                                  this.selectedCategories!.removeWhere((element) => element == '0');
                                 }
                                 if (value) {
-                                  this.selectedCategories.add(_category.id);
+                                  this.selectedCategories!.add(_category.id);
                                 } else {
-                                  this.selectedCategories.removeWhere((element) => element == _category.id);
+                                  this.selectedCategories!.removeWhere((element) => element == _category.id);
                                 }
-                                _con.selectCategory(this.selectedCategories);
+                                _con!.selectCategory(this.selectedCategories!);
                               });
                             },
                           ),
@@ -176,20 +177,20 @@ class _MenuWidgetState extends StateMVC<MenuWidget> {
                       }),
                     ),
                   ),
-            _con.foods.isEmpty
+            _con!.foods.isEmpty
                 ? CircularLoadingWidget(height: 250)
                 : ListView.separated(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     primary: false,
-                    itemCount: _con.foods.length,
+                    itemCount: _con!.foods.length,
                     separatorBuilder: (context, index) {
                       return SizedBox(height: 10);
                     },
                     itemBuilder: (context, index) {
                       return FoodItemWidget(
                         heroTag: 'menu_list',
-                        food: _con.foods.elementAt(index),
+                        food: _con!.foods.elementAt(index), onTap: () {  }, fieldenable: true,
                       );
                     },
                   ),

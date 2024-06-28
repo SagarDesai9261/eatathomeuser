@@ -5,9 +5,9 @@ class AddToFavouriteModel {
   final String message;
 
   AddToFavouriteModel({
-     this.success,
-     this.data,
-     this.message,
+    required this.success,
+    required this.data,
+    required this.message,
   });
 
   /*factory AddToFavouriteModel.fromJson(Map<String, dynamic> json) {
@@ -38,12 +38,12 @@ class AddToFavouriteModelData {
   //final List<dynamic> extras;
 
   AddToFavouriteModelData({
-    this.restaurantId,
-    this.userId,
+    required this.restaurantId,
+    required this.userId,
     //this.foodId,
-     this.updatedAt,
-     this.createdAt,
-     this.id,
+    required this.updatedAt,
+    required this.createdAt,
+    required this.id,
    // required this.customFields,
    // required this.extras,
   });

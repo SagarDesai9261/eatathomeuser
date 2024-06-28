@@ -28,7 +28,7 @@ class RecipeListItemWidget extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .headline6
-                    .merge(TextStyle(color: Theme.of(context).hintColor)),
+                    !.merge(TextStyle(color: Theme.of(context).hintColor)),
               ),
               Text(
                 '15 min video',

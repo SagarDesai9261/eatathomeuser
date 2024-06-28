@@ -7,7 +7,7 @@ import '../models/route_argument.dart';
 import '../repository/user_repository.dart';
 
 class MessageItemWidget extends StatefulWidget {
-  MessageItemWidget({Key key, this.message, this.onDismissed})
+  MessageItemWidget({Key? key, required this.message,required this.onDismissed})
       : super(key: key);
   final model.Conversation message;
   final ValueChanged<model.Conversation> onDismissed;
@@ -71,7 +71,7 @@ class _MessageItemWidgetState extends State<MessageItemWidget> {
                         fit: BoxFit.cover,
                         // imageUrl:
 
-                        imageUrl: this.widget.message.users.firstWhere((element) => element.id != currentUser.value.id,orElse: () => null,).image.thumb,
+                        imageUrl: "",//this.widget.message.users.firstWhere((element) => element.id != currentUser.value.id,orElse: () => null,).image.thumb,
                         placeholder: (context, url) => Image.asset(
                           'assets/img/loading.gif',
                           fit: BoxFit.cover,
@@ -111,7 +111,7 @@ class _MessageItemWidgetState extends State<MessageItemWidget> {
                             this.widget.message.name,
                             overflow: TextOverflow.fade,
                             softWrap: false,
-                            style: Theme.of(context).textTheme.bodyText1.merge(
+                            style: Theme.of(context).textTheme.bodyText1!.merge(
                                 TextStyle(
                                     fontWeight: this
                                             .widget
@@ -141,7 +141,7 @@ class _MessageItemWidgetState extends State<MessageItemWidget> {
                             this.widget.message.lastMessage,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
-                            style: Theme.of(context).textTheme.caption.merge(
+                            style: Theme.of(context).textTheme.caption!.merge(
                                 TextStyle(
                                     fontWeight: this
                                             .widget

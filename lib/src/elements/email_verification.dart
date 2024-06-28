@@ -9,7 +9,7 @@ import '../controllers/user_controller.dart';
 import '../repository/user_repository.dart';
 
 class VerificationScreen2 extends StatefulWidget {
-  String email;
+  String? email;
   VerificationScreen2({
     this.email
 });
@@ -18,10 +18,10 @@ class VerificationScreen2 extends StatefulWidget {
 }
 
 class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
-  List<TextStyle> otpTextStyles;
-  UserController _con;
+  List<TextStyle>? otpTextStyles;
+  UserController? _con;
   _VerificationScreen2State() : super(UserController()) {
-    _con = controller;
+    _con = controller as UserController?;
   }
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
               showFieldAsBox: true,
               onCodeChanged: (String code) {},
               onSubmit: (String verificationCode) {
-                repository.verifyOtp(widget.email,verificationCode,"Registration").then((value) {
+                repository.verifyOtp(widget.email!,verificationCode,"Registration").then((value) {
                   //  print("DS>>>" + value.apiToken);
                   if (value == "Verify") {
                     //  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VerificationScreen2(email: email,)));
@@ -132,7 +132,7 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
             Center(
               child: InkWell(
                 onTap: (){
-                  resendOtp(widget.email).then((value) {
+                  resendOtp(widget.email!).then((value) {
                     if(value == "resend"){
                       Fluttertoast.showToast(msg: "Otp Resend Successfully");
                     }
@@ -166,7 +166,7 @@ class _VerificationScreen2State extends StateMVC<VerificationScreen2> {
     );
   }
 
-  TextStyle createStyle(Color color) {
+  TextStyle? createStyle(Color color) {
     ThemeData theme = Theme.of(context);
     return theme.textTheme.headline3?.copyWith(color: color);
   }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+//import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import '../../utils/color.dart';
@@ -43,11 +43,11 @@ import '../repository/user_repository.dart' as userRepo;
 // Step 3: Create a stateful widget for the Coupon Display Page with card-based display and "Apply" button
 class CouponRestaurantPage extends StatefulWidget {
 
-  String res_id;
-  bool dine_in;
-  final Function(AppliedCouponResult) onCouponApplied;
+  String? res_id;
 
-  CouponRestaurantPage({ this.onCouponApplied, this.res_id, this.dine_in});
+
+
+  CouponRestaurantPage({  this.res_id,});
 
   @override
   _CouponRestaurantPageState createState() => _CouponRestaurantPageState();
@@ -55,12 +55,12 @@ class CouponRestaurantPage extends StatefulWidget {
 
 class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
   String searchTerm = ""; // Variable to hold the search term
-  Future<List<Coupon>> _couponsFuture;
-  Coupon coupons;
+  Future<List<Coupon>>? _couponsFuture;
+  Coupon? coupons;
   @override
   void initState() {
     super.initState();
-    _couponsFuture = fetchCoupons(widget.res_id); // Example kitchen_id
+    _couponsFuture = fetchCoupons(widget.res_id!); // Example kitchen_id
   }
   applidCoupen() async{
     User _user = userRepo.currentUser.value;
@@ -71,14 +71,14 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
         },
         body:{
           "kitchen_id":widget.res_id,
-          "coupon_code":coupons.code
+          "coupon_code":coupons!.code
         }
     );
     print(response.body);
     final Map jsondata = jsonDecode(response.body);
     if (jsondata["success"] == true) {
       final discount =
-      coupons.discount.toDouble();
+      coupons!.discount!.toDouble();
 
     /*  final result = AppliedCouponResult(
           coupons, discountAmount);
@@ -110,6 +110,9 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
       // } else {
       //   throw Exception('Failed to load coupons');
     }
+    else{
+      return [];
+    }
   }
 
   double calculateDiscount(Coupon coupon, double totalPrice) {
@@ -117,12 +120,12 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
     print(coupon.discounttype == 'fixed');
 
     if (coupon.discounttype == 'percent') {
-      final calculatedDiscount = (totalPrice * coupon.discount) / 100;
-      return calculatedDiscount > coupon.maxDiscount
-          ? coupon.maxDiscount.toDouble()
+      final calculatedDiscount = (totalPrice * coupon.discount!) / 100;
+      return calculatedDiscount > coupon.maxDiscount!
+          ? coupon.maxDiscount!.toDouble()
           : calculatedDiscount.toDouble();
     } else if (coupon.discounttype == 'fixed') {
-      return coupon.discount; // For fixed discount, return the fixed value
+      return coupon.discount!; // For fixed discount, return the fixed value
     } else {
       return 0; // Default to zero if unknown discount type
     }
@@ -159,7 +162,7 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .merge(TextStyle(letterSpacing: 1.3)),
+                !.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -174,8 +177,8 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
             } else if (snapshot.hasData) {
               var couponData = snapshot.data;
               if(searchTerm !=null){
-                couponData = couponData.where((element) {
-                  String code = element.code.toLowerCase();
+                couponData = couponData!.where((element) {
+                  String code = element.code!.toLowerCase();
                   return code.contains(searchTerm.toLowerCase());
                 }).toList();
               }
@@ -218,13 +221,13 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: couponData.length,
+                      itemCount: couponData!.length,
                       itemBuilder: (context, index) {
-                        final coupon = couponData[index];
+                        final coupon = couponData![index];
                         String currancy =
                             settingRepo.setting.value.defaultCurrency;
                         // Check if the total price is enough to apply the coupon
-                        final canApply = 0 >= coupon.minOrder;
+                        final canApply = 0 >= coupon.minOrder!;
                         // final difference = canApply
                         //     ? 0.0
                         //     : coupon.minOrder - widget.totalprice;
@@ -242,7 +245,7 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
                                   MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      coupon.code,
+                                      coupon.code!,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -263,7 +266,7 @@ class _CouponRestaurantPageState extends State<CouponRestaurantPage> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  coupon.getCustomDescription(coupon.discounttype),
+                                  coupon.getCustomDescription(coupon.discounttype!),
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontFamily: GoogleFonts.lato().fontFamily,

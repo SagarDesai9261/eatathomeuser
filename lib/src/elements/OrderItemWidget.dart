@@ -15,7 +15,7 @@ class OrderItemWidget extends StatefulWidget {
   final Order order;
   final ValueChanged<void> onCanceled;
 
-  OrderItemWidget({Key key, this.expanded, this.order, this.onCanceled})
+  OrderItemWidget({Key? key, required this.expanded,required this.order,required this.onCanceled})
       : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
   ).createShader(Rect.fromLTWH(0.0, 0.0, 100.0, 70.0));
 
   // Create a function to generate the gradient shader
-  String defaultLanguage;
+  String defaultLanguage="";
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Duration timeDifference = DateTime.now().difference(widget.order.dateTime);
+    Duration timeDifference = DateTime.now().difference(widget.order.dateTime!);
     print(timeDifference.inDays);
     bool isOrderExpired = timeDifference.inDays > 1;
 
@@ -55,7 +55,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
     return Stack(
       children: <Widget>[
         Opacity(
-          opacity: widget.order.active ? 1 : 0.4,
+          opacity: widget.order.active! ? 1 : 0.4,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
@@ -95,7 +95,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                                 ),
                               ),
                               TranslationWidget(
-                                message: widget.order.id,
+                                message: widget.order.id!,
                                 fromLanguage: "English",
                                 toLanguage: defaultLanguage,
                                 builder: (translatedMessage) => Text(
@@ -121,7 +121,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                         )*/
                         TranslationWidget(
                           message: DateFormat('dd-MM-yyyy').format(
-                              widget.order.foodOrders.elementAt(0).dateTime),
+                              widget.order.foodOrders!.elementAt(0).dateTime!),
                           fromLanguage: "English",
                           toLanguage: defaultLanguage,
                           builder: (translatedMessage) => Text(
@@ -144,7 +144,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                           color: config.Colors().secondColor(1),
                           height: 1.35)),
                         Text(
-                          '${widget.order.payment.method}',
+                          '${widget.order.payment!.method}',
                           style: Theme.of(context).textTheme.caption,
                         )
                         /* TranslationWidget(
@@ -161,13 +161,13 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                     children: <Widget>[
                       Column(
                           children: List.generate(
-                        widget.order.foodOrders.length,
+                        widget.order.foodOrders!.length,
                         (indexFood) {
                           return FoodOrderItemWidget(
                               heroTag: 'mywidget.orders',
                               order: widget.order,
                               foodOrder:
-                                  widget.order.foodOrders.elementAt(indexFood));
+                                  widget.order.foodOrders!.elementAt(indexFood));
                         },
                       )),
                       Padding(
@@ -195,7 +195,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                                   ),
                                 ),
                                 Helper.getPrice(
-                                    widget.order.deliveryFee, context,
+                                    widget.order.deliveryFee!, context,
                                     style:
                                     TextStyle(fontSize: 15.0,
                                         fontWeight: FontWeight.w500,
@@ -221,7 +221,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                                     text: TextSpan(
                                       text: "-₹",
                                       style:
-                                      TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize,color: kFBBlue),
+                                      TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize,color: kFBBlue),
                                       children: <TextSpan>[
                                         TextSpan(text: widget.order.coupon_amount ?? '', style:  Theme.of(context).textTheme.subtitle1),
                                       ],
@@ -335,7 +335,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                       padding: EdgeInsets.symmetric(horizontal: 0),
                     ),
                     if (isOrderExpired == false)
-                      if (widget.order.canCancelOrder() && widget.order.orderStatus.status =="")
+                      if (widget.order.canCancelOrder() && widget.order.orderStatus!.status =="")
                         MaterialButton(
                           elevation: 0,
                           focusElevation: 0,
@@ -456,8 +456,8 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                 TextStyle(height: 1, color: Theme.of(context).primaryColor)),
           )*/
               TranslationWidget(
-            message: widget.order.active
-                ? '${widget.order.orderStatus.status}'
+            message: widget.order.active!
+                ? '${widget.order.orderStatus!.status}'
                 : S.of(context).canceled,
             fromLanguage: "English",
             toLanguage: defaultLanguage,
@@ -466,7 +466,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
               maxLines: 1,
               overflow: TextOverflow.fade,
               softWrap: false,
-              style: Theme.of(context).textTheme.caption.merge(
+              style: Theme.of(context).textTheme.caption!.merge(
                   TextStyle(height: 1, color: Theme.of(context).primaryColor)),
             ),
           ),

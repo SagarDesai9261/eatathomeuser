@@ -29,6 +29,7 @@ import '../../utils/color.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/category_controller.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/homecontroller_provider.dart';
 import '../controllers/homr_test.dart';
 import '../controllers/restaurant_controller.dart';
 import '../elements/CircularLoadingWidget.dart';
@@ -46,11 +47,11 @@ import '../repository/settings_repository.dart' as settingRepo;
 import 'map.dart';
 
 class DineInRestaurantWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  String SelectedDate;
-  String SelectedTime;
-  String selectedPeople;
+  final RouteArgument? routeArgument;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  String? SelectedDate;
+  String? SelectedTime;
+  String? selectedPeople;
   dynamic currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
@@ -68,7 +69,7 @@ class DineInRestaurantWidget extends StatefulWidget {
   HomeController _con = HomeController();
 
   DineInRestaurantWidget(
-      {Key key,
+      {Key? key,
       this.parentScaffoldKey,
       this.routeArgument,
       this.SelectedDate,
@@ -83,16 +84,16 @@ class DineInRestaurantWidget extends StatefulWidget {
 }
 
 class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
-  RestaurantController _con;
-  FoodController _foodcon;
-  HomeController _homecon;
+  RestaurantController? _con;
+  FoodController? _foodcon;
+  HomeController? _homecon;
   String updatedQuantity = "0.0";
-  List<Food> foodList = List<Food>();
-  List<Food> foodListNew = List<Food>();
-  CategoryController _controller;
+  List<Food> foodList = [];
+  List<Food> foodListNew = [];
+  CategoryController? _controller;
   CartController _cartController = CartController();
-  String day, month;
-  int total;
+  String? day, month;
+  int? total;
   int loader_count = 1;
   List<FoodItem> breakfast_food = <FoodItem>[];
   List<FoodItem> selected_food = <FoodItem>[];
@@ -105,11 +106,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   final ScrollController _scrollController = ScrollController();
   bool showProgress = true;
   String selectedFood = "snacks";
-  String defaultLanguage;
+  String defaultLanguage = "";
   DateTime currentTime = DateTime.now();
-  int currentHour;
-  int currentday;
-  Coupon selectedCoupon;
+  int? currentHour;
+  int? currentday;
+  Coupon? selectedCoupon;
   bool isbreackfastLoadmore = false;
   bool islunchLoadmore = false;
   bool issnacksLoadmore = false;
@@ -118,7 +119,31 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   bool islunchLoad = false;
   bool issnacksLoad = false;
   bool isdinnerLoad = false;
-  FoodItem breakfastFoodItem,
+  var breakfastslot_start ;
+  var breakfastslot_end ;
+  var lunchslot_start ;
+  var lunchslot_end ;
+  var snacksslot_start ;
+  var snacksslot_end ;
+  var dinnerslot_start ;
+  var dinnerslot_end ;
+  var breakfastslotstart ="";
+  var breakfastslotend ="";
+  var lunchslotstart ="";
+  var lunchslotend ="";
+  var snacksslotstart ="";
+  var snacksslotend ="";
+  var dinnerslotstart ="";
+  var dinnerslotend ="";
+  DateTime? b_startTime ;
+  DateTime? b_endTime ;
+  DateTime? l_startTime ;
+  DateTime? l_endTime ;
+  DateTime? s_startTime ;
+  DateTime? s_endTime ;
+  DateTime? d_startTime ;
+  DateTime? d_endTime ;
+  FoodItem? breakfastFoodItem,
       lunchFoodItem,
       snacksFoodItem,
       dinnerFoodItem,
@@ -131,7 +156,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   Map<String, int> itemQuantities = {};
 
   _RestaurantWidgetState() : super(RestaurantController()) {
-    _con = controller;
+    _con = controller as RestaurantController?;
     _foodcon = FoodController();
     _homecon = HomeController();
     _controller = CategoryController();
@@ -150,23 +175,24 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   void initState() {
     getCurrentDefaultLanguage();
     //
-    _foodcon.getKetchainDetails(widget.routeArgument.id, '1').then((value) {
+    _foodcon!.getKetchainDetails(widget.routeArgument!.id!, '1').then((value) {
       print("tacc");
     });
+    _scheduleButtonPress();
     Provider.of<LoaderProvider>(context, listen: false).startLoading();
     Future.delayed(Duration(seconds: 3), () {
       Provider.of<LoaderProvider>(context, listen: false).stopLoading();
       //  setState(() { });
     });
-    _con.restaurant = widget.routeArgument.param as Restaurant;
+    _con!.restaurant = widget.routeArgument!.param as Restaurant;
     // /* _controller.listenForFoodsByCategoryAndRestaurant(id: "8",
-    //     restaurantId: _con.restaurant.id);*/
+    //     restaurantId: _con!.restaurant.id);*/
     listenForFoodsByCategoryAndRestaurantHere(
-        id: "8", restaurantId: _con.restaurant.id);
+        id: "8", restaurantId: _con!.restaurant!.id);
     /* listenForFoodsByCategoryAndRestaurantHere(
-        id: "8", restaurantId: _con.restaurant.id);
-    _con.listenForGalleries(_con.restaurant.id);
-    _con.listenForFoodImages(_con.restaurant.image.toString());
+        id: "8", restaurantId: _con!.restaurant.id);
+    _con!.listenForGalleries(_con!.restaurant.id);
+    _con!.listenForFoodImages(_con.restaurant.image.toString());
     _con.listenForFeaturedFoods(_con.restaurant.id);
     _con.listenForRestaurantReviews(id: _con.restaurant.id);
     _con.listenForIndividualFoods(_con.restaurant.id);
@@ -174,9 +200,9 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
     _controller.listenForFoodsByCategoryAndKitchen(
         id: "8", restaurantId: _con.restaurant.id);*/
-    _con.foods = [];
-    _homecon.trendingFoodItems = [];
-    _controller.foods = [];
+    _con!.foods = [];
+    _homecon!.trendingFoodItems = [];
+    _controller!.foods = [];
     print(widget.SelectedTime);
     String date = "";
     DateTime datetime = DateTime.parse(widget.SelectedDate.toString());
@@ -186,7 +212,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
     day = parts[0]; // Extract the day
     month = parts[1]; // Extract the month
-    _selectTab(widget.currentTab);
+  //  _selectTab(widget.currentTab);
     currentHour = currentTime.hour;
 
     if (widget.SelectedTime == "Breakfast") {
@@ -209,12 +235,17 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   void updateFoodList(Food food) {
     foodList.add(food);
   }
-
+  DateTime todayWithTime(String time) {
+    var currentTime = DateTime.now();
+    final DateFormat timeFormat = DateFormat('HH:mm:ss');
+    final parsedTime = timeFormat.parse(time);
+    return DateTime(currentTime.year, currentTime.month, currentTime.day, parsedTime.hour, parsedTime.minute, parsedTime.second);
+  }
   void listenForFoodsByCategoryAndRestaurantHere(
-      {String id, String message, String restaurantId}) async {
+      {String? id, String? message, String? restaurantId}) async {
     // foods.clear();
     final FoodItem stream =
-        await getFoodsByCategoryAndKitchenData(restaurantId);
+        await getFoodsByCategoryAndKitchenData(restaurantId!);
     //print("price data ---------->"+stream.length.toString());
     if (stream == null) {
       print("No data found");
@@ -222,10 +253,10 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       return;
     }
 
-    setState(() {
-      min_price = double.parse(stream.restaurant.price.min);
-      max_price = double.parse(stream.restaurant.price.max);
-    });
+    // setState(() {
+    //   min_price = double.parse(stream.restaurant!.price.min);
+    //   max_price = double.parse(stream.restaurant!.price.max);
+    // });
   }
 
   @override
@@ -235,13 +266,13 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   }
 
   calculateTotal() {
-    total = (selectedFoodItem.price +
-            (selectedFoodItem.price *
-                double.parse(_con.restaurant.defaultTax.toString()) /
-                100))
-        .toInt();
-    print("tax" + _con.restaurant.defaultTax.toString());
-    print("total:::" + total.toString());
+    // total = (selectedFoodItem.price +
+    //         (selectedFoodItem.price *
+    //             double.parse(_con!.restaurant.defaultTax.toString()) /
+    //             100))
+    //     .toInt();
+    // print("tax" + _con!.restaurant.defaultTax.toString());
+    // print("total:::" + total.toString());
   }
 
   bool _isToday(DateTime date) {
@@ -250,6 +281,61 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
         date.month == now.month &&
         date.day == now.day;
   }
+  void _scheduleButtonPress() {
+    Future.delayed(Duration(seconds: 4), () {
+
+      breakfastslot_start = Provider.of<HomeProvider>(context,listen: false).categories[0].start_slot;
+      breakfastslot_end = Provider.of<HomeProvider>(context,listen: false).categories[0].end_slot;
+      lunchslot_start = Provider.of<HomeProvider>(context,listen: false).categories[1].start_slot;
+      lunchslot_end = Provider.of<HomeProvider>(context,listen: false).categories[1].end_slot;
+      snacksslot_start = Provider.of<HomeProvider>(context,listen: false).categories[2].start_slot;
+      snacksslot_end = Provider.of<HomeProvider>(context,listen: false).categories[2].end_slot;
+      dinnerslot_start = Provider.of<HomeProvider>(context,listen: false).categories[3].start_slot;
+      dinnerslot_end = Provider.of<HomeProvider>(context,listen: false).categories[3].end_slot;
+      print(breakfastslot_start);
+      print(breakfastslot_end);
+      var currentTime = DateTime.now();
+      final DateFormat dateFormat = DateFormat('HH:mm:ss');
+      b_startTime = todayWithTime(breakfastslot_start);
+      b_endTime = todayWithTime(breakfastslot_end);
+      l_startTime = todayWithTime(lunchslot_start);
+      l_endTime = todayWithTime(lunchslot_end);
+      s_startTime = todayWithTime(snacksslot_start);
+      s_endTime = todayWithTime(snacksslot_end);
+      d_startTime = todayWithTime(dinnerslot_start);
+      d_endTime = todayWithTime(dinnerslot_end);
+      final DateFormat timeFormat = DateFormat.Hm();
+      breakfastslotstart  = timeFormat.format(b_startTime!);
+      breakfastslotend = timeFormat.format(b_endTime!);
+      lunchslotstart = timeFormat.format(l_startTime!);
+      lunchslotend = timeFormat.format(l_endTime!);
+      snacksslotstart = timeFormat.format(s_startTime!);
+      snacksslotend = timeFormat.format(s_endTime!);
+      dinnerslotstart = timeFormat.format(d_startTime!);
+      dinnerslotend = timeFormat.format(d_endTime!);
+      print(l_startTime);
+      print(currentTime);
+      print( currentTime.isAfter(l_startTime!));
+      print( currentTime.isAfter(b_startTime!));
+
+
+
+      /*  if (currentHour >= 7 && currentHour <= 11) {
+        showBreakFastView();
+      }
+
+      if (currentHour >= 11 && currentHour <= 15) {
+        showLunchView();
+      }
+
+      if (currentHour >= 15 && currentHour <= 19) {
+        showSnacksView();
+      }
+      if (currentHour >= 19 && currentHour <= 23) {
+        showDinnerView();
+      }*/
+    });
+  }
 
   final Shader linearGradient = LinearGradient(
     colors: <Color>[kPrimaryColororange, kPrimaryColorLiteorange],
@@ -257,70 +343,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // total = breakfastFoodItem.price.toInt() + _con.restaurant.defaultTax.toInt();
-    print("DS>> Dine in length increase" + widget.isCurrentKitchen.toString());
-    print(_controller.foodDataMap.isEmpty);
-    if (_controller.foodDataMap.containsKey("8")) {
-      isBreakfastAvailable = true;
-      breakfastFoodItem = _controller.foodDataMap["8"];
-      // selectedFoodItem = _controller.foodDataMap["8"];
-      //  print('Food Name: ${breakfastFoodItem.name}');
-      //   print('Price: ${breakfastFoodItem.price}');
-    } else {
-      print('Key not found:');
-    }
+    // total = breakfastFoodItem.price.toInt() + _con!.restaurant.defaultTax.toInt();
 
-    if (_controller.foodDataMap.containsKey("7")) {
-      isSnacksAvailable = true;
-      snacksFoodItem = _controller.foodDataMap["7"];
-
-      //  print('Food Name: ${snacksFoodItem.name}');
-      //  print('Price: ${snacksFoodItem.price}');
-    } else {
-      print('Key not found:');
-    }
-
-    if (_controller.foodDataMap.containsKey("9")) {
-      isLunchAvailable = true;
-      //  lunchFoodItem = _controller.foodDataMap["9"];
-
-      // print('Food Name: ${lunchFoodItem.name}');
-      //   print('Price: ${lunchFoodItem.price}');
-    } else {
-      print('Key not found:');
-    }
-
-    if (_controller.foodDataMap.containsKey("10")) {
-      isDinnerAvailable = true;
-      dinnerFoodItem = _controller.foodDataMap["10"];
-
-      //  print('Food Name: ${dinnerFoodItem.name}');
-      //   print('Price: ${dinnerFoodItem.price}');
-    } else {
-      print('Key not found:');
-    }
-
-    if (_controller.foodDataMap.length > 0 &&
-        _controller.separateItems.length > 0) {
-      showProgress = false;
-    }
-    // min_price = double.parse( lunchFoodItem.restaurant.price.min);
-    // max_price = double.parse( lunchFoodItem.restaurant.price.max);
-    if (breakfastFoodItem != null) {
-      //  res_imag = breakfastFoodItem.restaurant.image.url;
-      min_price = double.parse(breakfastFoodItem.restaurant.price.min);
-      max_price = double.parse(breakfastFoodItem.restaurant.price.max);
-    } else if (lunchFoodItem != null) {
-      ///   res_imag = lunchFoodItem.restaurant.image.url;
-    } else if (snacksFoodItem != null) {
-      //res_imag = snacksFoodItem.restaurant.image.url;
-      min_price = double.parse(snacksFoodItem.restaurant.price.min);
-      max_price = double.parse(snacksFoodItem.restaurant.price.max);
-    } else if (dinnerFoodItem != null) {
-      //   res_imag = dinnerFoodItem.restaurant.image.url;
-      min_price = double.parse(dinnerFoodItem.restaurant.price.min);
-      max_price = double.parse(dinnerFoodItem.restaurant.price.max);
-    }
     /* if(widget.SelectedTime == "Breakfast"){
       selectedFoodItem = breakfastFoodItem;
     }
@@ -339,7 +363,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
     return Scaffold(
       // bottomNavigationBar: DetailsWidget(),
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       body: FutureBuilder(
           future: Future.delayed(Duration(seconds: 2), () {}),
           builder: (context, snapshot) {
@@ -354,36 +378,36 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                 ? RefreshIndicator(
                     onRefresh: () async {
                       _foodcon
-                          .getKetchainDetails(widget.routeArgument.id, '2')
+                          !.getKetchainDetails(widget.routeArgument!.id!, '2')
                           .then((value) {});
-                      _con.restaurant =
-                          widget.routeArgument.param as Restaurant;
+                      _con!.restaurant =
+                          widget.routeArgument!.param as Restaurant;
                       /* _controller.listenForFoodsByCategoryAndRestaurant(
-        id: "8", restaurantId: _con.restaurant.id);
+        id: "8", restaurantId: _con!.restaurant.id);
     showBreakFastView();*/
 
                       /*  listenForFoodsByCategoryAndRestaurantHere(
-        id: "8", restaurantId: _con.restaurant.id);*/
-                      _con.listenForRestaurant(id: _con.restaurant.id);
-                      _con.listenForGalleries(_con.restaurant.id);
-                      /*_con.listenForGalleries(_con.restaurant.id);
-    _con.listenForFoodImages(_con.restaurant.image.toString());
-    _con.listenForFeaturedFoods(_con.restaurant.id);
-    _con.listenForRestaurantReviews(id: _con.restaurant.id);
-    _con.listenForIndividualFoods(_con.restaurant.id);
+        id: "8", restaurantId: _con!.restaurant.id);*/
+                      _con!.listenForRestaurant(id: _con!.restaurant!.id);
+                      _con!.listenForGalleries(_con!.restaurant!.id!);
+                      /*_con!.listenForGalleries(_con!.restaurant.id);
+    _con!.listenForFoodImages(_con!.restaurant.image.toString());
+    _con!.listenForFeaturedFoods(_con!.restaurant.id);
+    _con!.listenForRestaurantReviews(id: _con!.restaurant.id);
+    _con!.listenForIndividualFoods(_con!.restaurant.id);
     _controller.listenForFoodsByCategoryAndKitchen(
-        id: "7", restaurantId: _con.restaurant.id);*/
+        id: "7", restaurantId: _con!.restaurant.id);*/
                       listenForFoodsByCategoryAndRestaurantHere(
-                          id: "8", restaurantId: _con.restaurant.id);
+                          id: "8", restaurantId: _con!.restaurant!.id);
                       _selectTab(widget.currentTab);
 
                       // _scheduleButtonPress();
                       //currentHour = currentTime.hour;
                     },
-                    child: _con.restaurant == null
+                    child: _con!.restaurant == null
                         ? Center(child: MyShimmerEffect())
-                        : _con.restaurant.name.isEmpty ||
-                                _controller.isData == true
+                        : _con!.restaurant!.name!.isEmpty ||
+                                _controller!.isData == true
                             ? Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -419,9 +443,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                     shrinkWrap: false,
                                     slivers: <Widget>[
                                       SliverAppBar(
-                                        backgroundColor: Theme.of(context)
-                                            .accentColor
-                                            .withOpacity(0.9),
+                                        backgroundColor: mainColor(0.9),
                                         expandedHeight: 300,
                                         elevation: 0,
 //                          iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
@@ -442,12 +464,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                             tag: (widget?.routeArgument
                                                         ?.heroTag ??
                                                     '') +
-                                                _con.restaurant.id,
+                                                _con!.restaurant!.id!,
                                             child: Stack(
                                               children: [
                                                 ColorFiltered(
-                                                  colorFilter: _con.restaurant
-                                                              .closed ==
+                                                  colorFilter: _con!.restaurant
+                                                              !.closed ==
                                                           "0"
                                                       ? ColorFilter.mode(
                                                           Colors.transparent,
@@ -462,11 +484,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             .width,
                                                     height: 350,
                                                     fit: BoxFit.fill,
-                                                    imageUrl:   _con.restaurant
-                                                        .image.url ??
+                                                    imageUrl:   _con!.restaurant
+                                                        !.image!.url ??
                                                         "https://picsum.photos/250?image=9",
-                                                    // imageUrl: _con.restaurant.banner_image.isEmpty ?  _con.restaurant
-                                                    //         .image.url : _con.restaurant.banner_image ??
+                                                    // imageUrl: _con!.restaurant.banner_image.isEmpty ?  _con!.restaurant
+                                                    //         .image.url : _con!.restaurant.banner_image ??
                                                     //     "https://picsum.photos/250?image=9",
                                                     placeholder:
                                                         (context, url) =>
@@ -479,7 +501,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             Icon(Icons.error),
                                                   ),
                                                 ),
-                                                if (_con.restaurant.closed ==
+                                                if (_con!.restaurant!.closed ==
                                                     "1")
                                                   Center(
                                                       child: Image.asset(
@@ -504,7 +526,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 children: <Widget>[
                                                   Expanded(
                                                     child: /*Text(
-                                    _con.restaurant?.name ?? '',
+                                    _con!.restaurant?.name ?? '',
                                     overflow: TextOverflow.fade,
                                     softWrap: false,
                                     maxLines: 2,
@@ -514,8 +536,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         .headline3,
                                   )*/
                                                         TranslationWidget(
-                                                      message: _con.restaurant
-                                                              .name ??
+                                                      message: _con!.restaurant
+                                                              !.name ??
                                                           '',
                                                       fromLanguage: "English",
                                                       toLanguage:
@@ -556,7 +578,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             MainAxisAlignment
                                                                 .center,
                                                         children: <Widget>[
-                                                          /*Text(_con.restaurant.rate,
+                                                          /*Text(_con!.restaurant.rate,
                                             style: Theme
                                                 .of(context)
                                                 .textTheme
@@ -568,7 +590,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                     .primaryColor)))*/
                                                           TranslationWidget(
                                                             message: _controller
-                                                                    .kitchenDetails
+                                                                    !.kitchenDetails
                                                                     .rate ??
                                                                 '',
                                                             fromLanguage:
@@ -581,7 +603,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                         context)
                                                                     .textTheme
                                                                     .bodyText1
-                                                                    .merge(TextStyle(
+                                                                    !.merge(TextStyle(
                                                                         color: Theme.of(context)
                                                                             .primaryColor))),
                                                           ),
@@ -608,15 +630,15 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 SizedBox(width: 20),
                                               ],
                                             ),
-                                            Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20,
-                                                        vertical: 0),
-                                                child: Helper.applyHtml(
-                                                  context,
-                                                  _con.restaurant.description,
-                                                )),
+                                            // Padding(
+                                            //     padding:
+                                            //         const EdgeInsets.symmetric(
+                                            //             horizontal: 20,
+                                            //             vertical: 0),
+                                            //     child: Helper.applyHtml(
+                                            //       context,
+                                            //       _con!.restaurant!.description,
+                                            //     )),
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   left: 20,
@@ -634,7 +656,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             .start,
                                                     children: [
                                                       /*Text(
-                                      _con.restaurant.address,
+                                      _con!.restaurant.address,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600),
                                     )*/
@@ -649,8 +671,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                 )),
                                                                 TranslationWidget(
                                                           message: _con
-                                                                      .restaurant
-                                                                      .fssai_number ??
+                                                                      !.restaurant
+                                                                      !.fssai_number ??
                                                                   '',
                                                           fromLanguage:
                                                                   "English",
@@ -692,8 +714,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         itemSize: 18,
                                                         initialRating:
                                                             double.parse(_con
-                                                                .restaurant
-                                                                .rate),
+                                                                !.restaurant
+                                                                !.rate!),
                                                         minRating: 1,
                                                         direction:
                                                             Axis.horizontal,
@@ -743,7 +765,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             children: [
                                                               TextSpan(
                                                                 text:
-                                                                    "${_con.restaurant.average_price}",
+                                                                    "${_con!.restaurant!.average_price}",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 20,
@@ -776,7 +798,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 ],
                                               ),
                                             ),
-                                            if(_con.restaurant.is_hrs == "0")
+                                            if(_con!.restaurant!.is_hrs == "0")
                                               Container(
                                                 margin: const EdgeInsets.symmetric(
                                                     vertical: 10) ,
@@ -787,7 +809,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                        double.parse(_con!.restaurant!.average_preparation_time!) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
                                                           icon: Icons.timer,
                                                           size: 20,
                                                           color: Colors.green,
@@ -795,7 +817,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         SizedBox(
                                                           width: 5,
                                                         ),
-                                                        Text("${_con.restaurant.average_preparation_time} mins  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                        Text("${_con!.restaurant!.average_preparation_time} mins  |  ${_con!.restaurant!.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
                                                       ],
                                                     ),
 
@@ -803,7 +825,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   ],
                                                 ),
                                               ),
-                                            if(_con.restaurant.is_hrs == "1")
+                                            if(_con!.restaurant!.is_hrs == "1")
                                               Container(
                                                 margin: const EdgeInsets.symmetric(
                                                     vertical: 10) ,
@@ -814,7 +836,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        double.parse(_con.restaurant.average_preparation_time) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
+                                                        double.parse(_con!.restaurant!.average_preparation_time!) > 30 ? Icon(Icons.timer,size:20,color:Colors.green) :  HalfColoredIcon(
                                                           icon: Icons.timer,
                                                           size: 20,
                                                           color: Colors.green,
@@ -822,7 +844,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         SizedBox(
                                                           width: 5,
                                                         ),
-                                                        Text("${_con.restaurant.average_preparation_time} hrs  |  ${_con.restaurant.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
+                                                        Text("${_con!.restaurant!.average_preparation_time} hrs  |  ${_con!.restaurant!.restaurant_distance}",style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold),)
                                                       ],
                                                     ),
 
@@ -862,8 +884,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                   child: TextButton(
                                                     onPressed: () async{
                                                       if(_con != null){
-                                                        http://maps.google.com/maps?daddr=${_con.restaurant.latitude},${_con.restaurant.longitude}
-                                                        String url = 'http://maps.google.com/maps?daddr=${_con.restaurant.latitude},${_con.restaurant.longitude}';
+                                                        http://maps.google.com/maps?daddr=${_con!.restaurant.latitude},${_con!.restaurant.longitude}
+                                                        String url = 'http://maps.google.com/maps?daddr=${_con!.restaurant.latitude},${_con!.restaurant.longitude}';
                                                         if (await canLaunchUrl(Uri.parse(url))) {
                                                           await launch(url);
                                                         } else {
@@ -885,8 +907,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                     /*
 
                                                         if(_con != null){
-                                                          http://maps.google.com/maps?daddr=${_con.restaurant.latitude},${_con.restaurant.longitude}
-                                                          String url = 'http://maps.google.com/maps?daddr=${_con.restaurant.latitude},${_con.restaurant.longitude}';
+                                                          http://maps.google.com/maps?daddr=${_con!.restaurant.latitude},${_con!.restaurant.longitude}
+                                                          String url = 'http://maps.google.com/maps?daddr=${_con!.restaurant.latitude},${_con!.restaurant.longitude}';
                                                           if (await canLaunchUrl(Uri.parse(url))) {
                                                             await launch(url);
                                                           } else {
@@ -959,10 +981,10 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                     Expanded(
                                                       child: InkWell(
                                                         onTap: ()async{
-                                                         var coupon = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CouponRestaurantPage()));
+                                                         var coupon = await Navigator.push(context, MaterialPageRoute(builder: (context)=>CouponRestaurantPage(res_id: _con!.restaurant!.id,)));
                                                         setState(() {
                                                           selectedCoupon = coupon;
-                                                          print(selectedCoupon.code);
+                                                          print(selectedCoupon!.code);
                                                         });
                                                          },
                                                         child: Container(
@@ -1063,7 +1085,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             if (currentUser
                                                                     .value
                                                                     .apiToken ==
-                                                                null) {
+                                                                "") {
                                                               Navigator.of(
                                                                       context)
                                                                   .pushNamed(
@@ -1071,7 +1093,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                             } else {
                                                               /* final AddToFavouriteModel apiResponse = await _con
                                                             .addRestaurantToFavouriteList(
-                                                            _con.restaurant.id,
+                                                            _con!.restaurant.id,
                                                             currentUser
                                                                 .value.id,
                                                             currentUser.value
@@ -1095,33 +1117,33 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                         false)
                                                                 .restaurant_name
                                                                 .contains(_con
-                                                                    .restaurant
-                                                                    .name)) {
+                                                                    !.restaurant
+                                                                    !.name)) {
                                                               Provider.of<favourite_item_provider>(
                                                                       context,
                                                                       listen:
                                                                           false)
                                                                   .removeFromFavorite(_con
-                                                                      .restaurant
-                                                                      .name);
+                                                                      !.restaurant
+                                                                      !.name!);
                                                               setState(() {
                                                                 loader_count =
                                                                     2;
                                                               });
-                                                              _con.refreshRestaurant();
+                                                              _con!.refreshRestaurant();
                                                             } else {
                                                               Provider.of<favourite_item_provider>(
                                                                       context,
                                                                       listen:
                                                                           false)
                                                                   .add_to_favorite(_con
-                                                                      .restaurant
-                                                                      .name);
+                                                                      !.restaurant
+                                                                      !.name!);
                                                               final AddToFavouriteModel
                                                                   apiResponse =
-                                                                  await _con.addRestaurantToFavouriteList(
-                                                                      _con.restaurant
-                                                                          .id,
+                                                                  await _con!.addRestaurantToFavouriteList(
+                                                                      _con!.restaurant
+                                                                          !.id!,
                                                                       currentUser
                                                                           .value
                                                                           .id,
@@ -1143,7 +1165,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                 loader_count =
                                                                     2;
                                                               });
-                                                              _con.refreshRestaurant();
+                                                              _con!.refreshRestaurant();
                                                             }
                                                           },
                                                           child:
@@ -1154,7 +1176,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                               if (currentUser
                                                                       .value
                                                                       .apiToken ==
-                                                                  null) {
+                                                                  "") {
                                                                 Navigator.of(
                                                                         context)
                                                                     .pushNamed(
@@ -1167,26 +1189,26 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                             false)
                                                                     .restaurant_name
                                                                     .contains(_con
-                                                                        .restaurant
-                                                                        .name)) {
+                                                                        !.restaurant
+                                                                        !.name)) {
                                                                   Provider.of<favourite_item_provider>(
                                                                           context,
                                                                           listen:
                                                                               false)
                                                                       .removeFromFavorite(_con
-                                                                          .restaurant
-                                                                          .name);
+                                                                          !.restaurant
+                                                                          !.name!);
                                                                 } else {
                                                                   Provider.of<favourite_item_provider>(
                                                                           context,
                                                                           listen:
                                                                               false)
                                                                       .add_to_favorite(_con
-                                                                          .restaurant
-                                                                          .name);
-                                                                  final AddToFavouriteModel apiResponse = await _con.addRestaurantToFavouriteList(
-                                                                      _con.restaurant
-                                                                          .id,
+                                                                          !.restaurant
+                                                                          !.name!);
+                                                                  final AddToFavouriteModel apiResponse = await _con!.addRestaurantToFavouriteList(
+                                                                      _con!.restaurant
+                                                                          !.id!,
                                                                       currentUser
                                                                           .value
                                                                           .id,
@@ -1209,7 +1231,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                   loader_count =
                                                                       2;
                                                                 });
-                                                                _con.refreshRestaurant();
+                                                                _con!.refreshRestaurant();
                                                               }
                                                             },
                                                             child: Row(
@@ -1219,16 +1241,16 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                               children: [
                                                                 Icon(
                                                                     Provider.of<favourite_item_provider>(context, listen: false).restaurant_name.contains(_con
-                                                                            .restaurant
-                                                                            .name)
+                                                                            !.restaurant
+                                                                            !.name)
                                                                         ? Icons
                                                                             .favorite
                                                                         : Icons
                                                                             .favorite_border,
                                                                     size: 16,
                                                                     color: Provider.of<favourite_item_provider>(context, listen: false).restaurant_name.contains(_con
-                                                                            .restaurant
-                                                                            .name)
+                                                                            !.restaurant
+                                                                            !.name)
                                                                         ? Colors
                                                                             .red
                                                                         : Theme.of(context)
@@ -1309,7 +1331,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                 Size.fromRadius(48),
                                                             // Image radius
                                                             child: Image.network(
-                                                              _con.restaurant.image
+                                                              _con!.restaurant.image
                                                                   .thumb
                                                                   .toString(),
                                                               // "assets/img/image-Ae.png",
@@ -1323,105 +1345,70 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         ),
                                       ),*/
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 12),
+                                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                               child: IntrinsicHeight(
                                                 child: Row(
                                                   children: [
                                                     Expanded(
                                                       child: InkWell(
-                                                        onTap: currentHour >=
-                                                            11 &&
-                                                            isToday
+                                                        onTap: currentHour! >= 11 && isToday
                                                             ? null // Disable button if current hour is greater than 11
                                                             : () {
-                                                          _controller
-                                                              .isDateUpdated =
-                                                          false;
+                                                          _controller!.isDateUpdated = false;
                                                           showBreakFastView();
                                                         },
-
                                                         child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .only(
-                                                                    topLeft: Radius
-                                                                        .circular(
-                                                                            4),
-                                                                    bottomLeft: Radius
-                                                                        .circular(
-                                                                            4),
-                                                                  ),
-                                                                  /* color:
-                                          widget.isBreakfastSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,*/
-
-                                                                  color: currentHour >= 11 && isToday
-                                                                      ? Colors.grey[200] // Disable button if not in the time slot
-                                                                      : widget.isBreakfastSelected
-                                                                          ? kPrimaryColororange
-                                                                          : Colors.white,
-                                                                  boxShadow: [
-                                                                BoxShadow(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    blurRadius:
-                                                                        12,
-                                                                    spreadRadius:
-                                                                        -9)
-                                                              ]),
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.only(
+                                                              topLeft: Radius.circular(4),
+                                                              bottomLeft: Radius.circular(4),
+                                                            ),
+                                                            color: currentHour! >= 11 && isToday
+                                                                ? Colors.grey[200] // Disable button if not in the time slot
+                                                                : widget.isBreakfastSelected
+                                                                ? kPrimaryColororange
+                                                                : Colors.white,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors.grey,
+                                                                blurRadius: 12,
+                                                                spreadRadius: -9,
+                                                              )
+                                                            ],
+                                                          ),
                                                           child: TextButton(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: currentHour >=
-                                                                          11 &&
-                                                                      isToday
-                                                                  ? null // Disable button if current hour is greater than 11
-                                                                  : () {
-                                                                      _controller
-                                                                              .isDateUpdated =
-                                                                          false;
-                                                                      showBreakFastView();
-                                                                    },
-                                                              child: /*Text(
-                                            "Breakfast",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight:
-                                                FontWeight.normal,
-                                                color: widget
-                                                    .isBreakfastSelected
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          )*/
-                                                                  TranslationWidget(
-                                                                message:
-                                                                    "Breakfast",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isBreakfastSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                            onPressed: currentHour! >= 11 && isToday
+                                                                ? null // Disable button if current hour is greater than 11
+                                                                : () {
+                                                              _controller!.isDateUpdated = false;
+                                                              showBreakFastView();
+                                                            },
+                                                            child: TranslationWidget(
+                                                              message: "Breakfast",
+                                                              fromLanguage: "English",
+                                                              toLanguage: defaultLanguage,
+                                                              builder: (translatedMessage) =>Text.rich(
+                                                                TextSpan(
+                                                                  children: [
+                                                                    TextSpan(
+                                                                      text: "Breakfast\n",
+                                                                      style: TextStyle(
+                                                                        fontSize: 10,
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    TextSpan(
+                                                                      text: "${breakfastslotstart}-${breakfastslotend}",
+                                                                      style: TextStyle(
+                                                                        fontSize: 8, // Smaller font size for the time
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isBreakfastSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
+                                                                textAlign: TextAlign.center,
                                                               ),
                                                             ),
                                                           ),
@@ -1429,107 +1416,67 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                       ),
                                                     ),
                                                     VerticalDivider(
-                                                      color:
-                                                          Colors.grey.shade100,
+                                                      color: Colors.grey.shade100,
                                                       thickness: 1,
                                                       indent: 0,
                                                       width: 2,
                                                     ),
                                                     Expanded(
                                                       child: InkWell(
-                                                        onTap: currentHour >=
-                                                            15 &&
-                                                            isToday
-                                                            ? null // Disable button if current hour is greater than 11
+                                                        onTap: currentHour! >= 15 && isToday
+                                                            ? null // Disable button if current hour is greater than 15
                                                             : () {
-                                                          _controller
-                                                              .isDateUpdated =
-                                                          false;
-                                                          /*_controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "7",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
+                                                          _controller!.isDateUpdated = false;
                                                           showLunchView();
                                                         },
                                                         child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  /*color: widget.isLunchSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,*/
-                                                                  color: currentHour >= 15 && isToday
-                                                                      ? Colors.grey[200] // Disable button if not in the time slot
-                                                                      : widget.isLunchSelected
-                                                                          ? kPrimaryColororange
-                                                                          : Colors.white,
-                                                                  boxShadow: [
-                                                                BoxShadow(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    blurRadius:
-                                                                        12,
-                                                                    spreadRadius:
-                                                                        -9)
-                                                              ]),
+                                                          decoration: BoxDecoration(
+                                                            color: currentHour! >= 15 && isToday
+                                                                ? Colors.grey[200] // Disable button if not in the time slot
+                                                                : widget.isLunchSelected
+                                                                ? kPrimaryColororange
+                                                                : Colors.white,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors.grey,
+                                                                blurRadius: 12,
+                                                                spreadRadius: -9,
+                                                              )
+                                                            ],
+                                                          ),
                                                           child: TextButton(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: currentHour >=
-                                                                          15 &&
-                                                                      isToday
-                                                                  ? null // Disable button if current hour is greater than 11
-                                                                  : () {
-                                                                      _controller
-                                                                              .isDateUpdated =
-                                                                          false;
-                                                                      /*_controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "7",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
-                                                                      showLunchView();
-                                                                    },
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  /*Text(
-                                                "Lunch",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight:
-                                                  FontWeight.normal,
-                                                  color: widget
-                                                        .isLunchSelected
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                ),
-                                              )*/
-                                                                  TranslationWidget(
-                                                                    message:
-                                                                        "Lunch",
-                                                                    fromLanguage:
-                                                                        "English",
-                                                                    toLanguage:
-                                                                        defaultLanguage,
-                                                                    builder:
-                                                                        (translatedMessage) =>
-                                                                            Text(
-                                                                      translatedMessage,
+                                                            onPressed: currentHour! >= 15 && isToday
+                                                                ? null // Disable button if current hour is greater than 15
+                                                                : () {
+                                                              _controller!.isDateUpdated = false;
+                                                              showLunchView();
+                                                            },
+                                                            child: TranslationWidget(
+                                                              message: "Lunch",
+                                                              fromLanguage: "English",
+                                                              toLanguage: defaultLanguage,
+                                                              builder: (translatedMessage) =>  Text.rich(
+                                                                TextSpan(
+                                                                  children: [
+                                                                    TextSpan(
+                                                                      text: "Lunch\n",
                                                                       style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .normal,
-                                                                          color: widget.isLunchSelected
-                                                                              ? Colors.white
-                                                                              : Colors.black),
+                                                                        fontSize: 10,
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                ],
+                                                                    TextSpan(
+                                                                      text: "${lunchslotstart}-${lunchslotend}",
+                                                                      style: TextStyle(
+                                                                        fontSize: 8, // Smaller font size for the time
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isLunchSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                textAlign: TextAlign.center,
                                                               ),
                                                             ),
                                                           ),
@@ -1537,101 +1484,67 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                       ),
                                                     ),
                                                     VerticalDivider(
-                                                      color:
-                                                          Colors.grey.shade100,
+                                                      color: Colors.grey.shade100,
                                                       thickness: 1,
                                                       indent: 0,
                                                       width: 2,
                                                     ),
                                                     Expanded(
                                                       child: InkWell(
-                                                        onTap: currentHour >=
-                                                            19 &&
-                                                            isToday
-                                                            ? null // Disable button if current hour is greater than 11
+                                                        onTap: currentHour! >= 19 && isToday
+                                                            ? null // Disable button if current hour is greater than 19
                                                             : () {
-                                                          _controller
-                                                              .isDateUpdated =
-                                                          false;
-                                                          /* _controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "7",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
+                                                          _controller!.isDateUpdated = false;
                                                           showSnacksView();
                                                         },
                                                         child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  /* color: widget.isSnacksSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,*/
-                                                                  color: currentHour >= 19 && isToday
-                                                                      ? Colors.grey[200] // Disable button if not in the time slot
-                                                                      : widget.isSnacksSelected
-                                                                          ? kPrimaryColororange
-                                                                          : Colors.white,
-                                                                  boxShadow: [
-                                                                BoxShadow(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    blurRadius:
-                                                                        12,
-                                                                    spreadRadius:
-                                                                        -9)
-                                                              ]),
+                                                          decoration: BoxDecoration(
+                                                            color: currentHour! >= 19 && isToday
+                                                                ? Colors.grey[200] // Disable button if not in the time slot
+                                                                : widget.isSnacksSelected
+                                                                ? kPrimaryColororange
+                                                                : Colors.white,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors.grey,
+                                                                blurRadius: 12,
+                                                                spreadRadius: -9,
+                                                              )
+                                                            ],
+                                                          ),
                                                           child: TextButton(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: currentHour >=
-                                                                          19 &&
-                                                                      isToday
-                                                                  ? null // Disable button if current hour is greater than 11
-                                                                  : () {
-                                                                      _controller
-                                                                              .isDateUpdated =
-                                                                          false;
-                                                                      /* _controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "7",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
-                                                                      showSnacksView();
-                                                                    },
-                                                              child: /*Text(
-                                            "Snacks",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight:
-                                              FontWeight.normal,
-                                              color: widget
-                                                  .isSnacksSelected
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            ),
-                                          )*/
-                                                                  TranslationWidget(
-                                                                message: "Snacks",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isSnacksSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                            onPressed: currentHour! >= 19 && isToday
+                                                                ? null // Disable button if current hour is greater than 19
+                                                                : () {
+                                                              _controller!.isDateUpdated = false;
+                                                              showSnacksView();
+                                                            },
+                                                            child: TranslationWidget(
+                                                              message: "Snacks",
+                                                              fromLanguage: "English",
+                                                              toLanguage: defaultLanguage,
+                                                              builder: (translatedMessage) => Text.rich(
+                                                                TextSpan(
+                                                                  children: [
+                                                                    TextSpan(
+                                                                      text: "Snacks\n",
+                                                                      style: TextStyle(
+                                                                        fontSize: 10,
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    TextSpan(
+                                                                      text: "${snacksslotstart}-${snacksslotend}",
+                                                                      style: TextStyle(
+                                                                        fontSize: 8, // Smaller font size for the time
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isSnacksSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
+                                                                textAlign: TextAlign.center,
                                                               ),
                                                             ),
                                                           ),
@@ -1639,111 +1552,71 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                       ),
                                                     ),
                                                     VerticalDivider(
-                                                      color:
-                                                          Colors.grey.shade100,
+                                                      color: Colors.grey.shade100,
                                                       thickness: 1,
                                                       indent: 0,
                                                       width: 2,
                                                     ),
                                                     Expanded(
                                                       child: InkWell(
-                                                        onTap: currentHour >=
-                                                            23 &&
-                                                            isToday
-                                                            ? null // Disable button if current hour is greater than 11
+                                                        onTap: currentHour! >= 23 && isToday
+                                                            ? null // Disable button if current hour is greater than 23
                                                             : () {
-                                                          _controller
-                                                              .isDateUpdated =
-                                                          false;
-                                                          /*_controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "10",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
+                                                          _controller!.isDateUpdated = false;
                                                           showDinnerView();
                                                         },
                                                         child: Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .only(
-                                                                    topRight: Radius
-                                                                        .circular(
-                                                                            4),
-                                                                    bottomRight: Radius
-                                                                        .circular(
-                                                                            4),
-                                                                  ),
-                                                                  /*color: widget.isDinnerSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,*/
-                                                                  color: currentHour >= 23 && isToday
-                                                                      ? Colors.grey[200] // Disable button if not in the time slot
-                                                                      : widget.isDinnerSelected
-                                                                          ? kPrimaryColororange
-                                                                          : Colors.white,
-                                                                  boxShadow: [
-                                                                BoxShadow(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    blurRadius:
-                                                                        12,
-                                                                    spreadRadius:
-                                                                        -9)
-                                                              ]),
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.only(
+                                                              topRight: Radius.circular(4),
+                                                              bottomRight: Radius.circular(4),
+                                                            ),
+                                                            color: currentHour! >= 23 && isToday
+                                                                ? Colors.grey[200] // Disable button if not in the time slot
+                                                                : widget.isDinnerSelected
+                                                                ? kPrimaryColororange
+                                                                : Colors.white,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color: Colors.grey,
+                                                                blurRadius: 12,
+                                                                spreadRadius: -9,
+                                                              )
+                                                            ],
+                                                          ),
                                                           child: TextButton(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: currentHour >=
-                                                                          23 &&
-                                                                      isToday
-                                                                  ? null // Disable button if current hour is greater than 11
-                                                                  : () {
-                                                                      _controller
-                                                                              .isDateUpdated =
-                                                                          false;
-                                                                      /*_controller
-                                                .listenForFoodsByCategoryAndRestaurant(
-                                                id: "10",
-                                                restaurantId: _con
-                                                    .restaurant.id);*/
-                                                                      showDinnerView();
-                                                                    },
-                                                              child: /*Text(
-                                            "Dinner",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight:
-                                              FontWeight.normal,
-                                              color: widget
-                                                  .isDinnerSelected
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                            ),
-                                          )*/
-                                                                  TranslationWidget(
-                                                                message: "Dinner",
-                                                                fromLanguage:
-                                                                    "English",
-                                                                toLanguage:
-                                                                    defaultLanguage,
-                                                                builder:
-                                                                    (translatedMessage) =>
-                                                                        Text(
-                                                                  translatedMessage,
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal,
-                                                                      color: widget.isDinnerSelected
-                                                                          ? Colors
-                                                                              .white
-                                                                          : Colors
-                                                                              .black),
+                                                            onPressed: currentHour! >= 23 && isToday
+                                                                ? null // Disable button if current hour is greater than 23
+                                                                : () {
+                                                              _controller!.isDateUpdated = false;
+                                                              showDinnerView();
+                                                            },
+                                                            child: TranslationWidget(
+                                                              message: "Dinner",
+                                                              fromLanguage: "English",
+                                                              toLanguage: defaultLanguage,
+                                                              builder: (translatedMessage) => Text.rich(
+                                                                TextSpan(
+                                                                  children: [
+                                                                    TextSpan(
+                                                                      text: "Dinner\n",
+                                                                      style: TextStyle(
+                                                                        fontSize: 10,
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    TextSpan(
+                                                                      text: "${dinnerslotstart}-${dinnerslotend}",
+                                                                      style: TextStyle(
+                                                                        fontSize: 8, // Smaller font size for the time
+                                                                        fontWeight: FontWeight.normal,
+                                                                        color: widget.isDinnerSelected ? Colors.white : Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
+                                                                textAlign: TextAlign.center,
                                                               ),
                                                             ),
                                                           ),
@@ -1754,15 +1627,16 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                 ),
                                               ),
                                             ),
+
                                             widget.isBreakfastVisible
                                                 ? RefreshIndicator(
                                                     onRefresh: _controller
-                                                        .refreshCategory,
+                                                        !.refreshCategory,
                                                     child: buildBreakfastFoods(
                                                         context,
                                                         breakfast_food,
                                                         8,
-                                                        _con.restaurant.id))
+                                                        _con!.restaurant!.id!))
                                                 : Visibility(
                                                     visible: false,
                                                     child:
@@ -1773,12 +1647,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                             widget.isLunchVisible
                                                 ? RefreshIndicator(
                                                     onRefresh: _controller
-                                                        .refreshCategory,
+                                                        !.refreshCategory,
                                                     child: buildLunchFoods(
                                                         context,
                                                         lunch_food,
                                                         9,
-                                                        _con.restaurant.id))
+                                                        _con!.restaurant!.id!))
                                                 : Visibility(
                                                     visible: false,
                                                     child:
@@ -1789,12 +1663,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                             widget.isSnacksVisible
                                                 ? RefreshIndicator(
                                                     onRefresh: _controller
-                                                        .refreshCategory,
+                                                        !.refreshCategory,
                                                     child: buildSnacksFoods(
                                                         context,
                                                         snack_food,
                                                         7,
-                                                        _con.restaurant.id))
+                                                        _con!.restaurant!.id!))
                                                 : Visibility(
                                                     visible: false,
                                                     child:
@@ -1805,12 +1679,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                             widget.isDinnerVisible
                                                 ? RefreshIndicator(
                                                     onRefresh: _controller
-                                                        .refreshCategory,
+                                                        !.refreshCategory,
                                                     child: buildDinnerFoods(
                                                         context,
                                                         dinner_food,
                                                         10,
-                                                        _con.restaurant.id))
+                                                        _con!.restaurant!.id!))
                                                 : Visibility(
                                                     visible: false,
                                                     child:
@@ -1821,22 +1695,22 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                             if (widget.isBreakfastVisible &&
                                                     breakfastFoodItem != null &&
                                                     breakfastFoodItem
-                                                        .separateItems
-                                                        .isNotEmpty ||
+                                                        !.separateItems
+                                                        !.isNotEmpty ||
                                                 widget.isSnacksVisible &&
                                                     snacksFoodItem != null &&
-                                                    snacksFoodItem.separateItems
-                                                        .isNotEmpty ||
+                                                    snacksFoodItem!.separateItems
+                                                        !.isNotEmpty ||
                                                 widget.isLunchVisible &&
                                                     lunchFoodItem != null &&
-                                                    lunchFoodItem.separateItems
-                                                        .isNotEmpty &&
-                                                    lunchFoodItem.comboMedia
+                                                    lunchFoodItem!.separateItems
+                                                        !.isNotEmpty &&
+                                                    lunchFoodItem!.comboMedia
                                                         .isNotEmpty ||
                                                 widget.isDinnerVisible &&
                                                     dinnerFoodItem != null &&
-                                                    dinnerFoodItem.separateItems
-                                                        .isNotEmpty)
+                                                    dinnerFoodItem!.separateItems
+                                                        !.isNotEmpty)
                                               Column(
                                                 children: [
                                                   Padding(
@@ -1863,11 +1737,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                           breakfastFoodItem !=
                                                               null &&
                                                           breakfastFoodItem
-                                                              .separateItems
-                                                              .isNotEmpty
+                                                              !.separateItems
+                                                              !.isNotEmpty
                                                       ? RefreshIndicator(
                                                           onRefresh: _controller
-                                                              .refreshCategory,
+                                                              !.refreshCategory,
                                                           child: Transform
                                                               .translate(
                                                             offset:
@@ -1880,8 +1754,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                               primary: false,
                                                               itemCount:
                                                                   breakfastFoodItem
-                                                                      .separateItems
-                                                                      .length,
+                                                                      !.separateItems
+                                                                      !.length,
                                                               separatorBuilder:
                                                                   (context,
                                                                       index) {
@@ -1895,7 +1769,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                   heroTag:
                                                                       'individual_food_list',
                                                                   food: breakfastFoodItem
-                                                                          .separateItems[
+                                                                          !.separateItems![
                                                                       index],
                                                                   updateFoodList:
                                                                       updateFoodList,
@@ -1908,11 +1782,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                               lunchFoodItem !=
                                                                   null &&
                                                               lunchFoodItem
-                                                                  .separateItems
-                                                                  .isNotEmpty
+                                                                  !.separateItems
+                                                                  !.isNotEmpty
                                                           ? RefreshIndicator(
                                                               onRefresh: _controller
-                                                                  .refreshCategory,
+                                                                  !.refreshCategory,
                                                               child: Transform
                                                                   .translate(
                                                                 offset: Offset(
@@ -1927,8 +1801,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                       false,
                                                                   itemCount:
                                                                       lunchFoodItem
-                                                                          .separateItems
-                                                                          .length,
+                                                                          !.separateItems
+                                                                          !.length,
                                                                   separatorBuilder:
                                                                       (context,
                                                                           index) {
@@ -1943,7 +1817,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                       heroTag:
                                                                           'individual_food_list',
                                                                       food: lunchFoodItem
-                                                                              .separateItems[
+                                                                              !.separateItems![
                                                                           index],
                                                                       updateFoodList:
                                                                           updateFoodList,
@@ -1956,12 +1830,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                   dinnerFoodItem !=
                                                                       null &&
                                                                   dinnerFoodItem
-                                                                      .separateItems
-                                                                      .isNotEmpty
+                                                                      !.separateItems
+                                                                      !.isNotEmpty
                                                               ? RefreshIndicator(
                                                                   onRefresh:
                                                                       _controller
-                                                                          .refreshCategory,
+                                                                          !.refreshCategory,
                                                                   child: Transform
                                                                       .translate(
                                                                     offset:
@@ -1977,8 +1851,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                       primary:
                                                                           false,
                                                                       itemCount: dinnerFoodItem
-                                                                          .separateItems
-                                                                          .length,
+                                                                          !.separateItems
+                                                                          !.length,
                                                                       separatorBuilder:
                                                                           (context,
                                                                               index) {
@@ -1993,7 +1867,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                           heroTag:
                                                                               'individual_food_list',
                                                                           food:
-                                                                              dinnerFoodItem.separateItems[index],
+                                                                              dinnerFoodItem!.separateItems![index],
                                                                           updateFoodList:
                                                                               updateFoodList,
                                                                         );
@@ -2005,12 +1879,12 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                       snacksFoodItem !=
                                                                           null &&
                                                                       snacksFoodItem
-                                                                          .separateItems
-                                                                          .isNotEmpty
+                                                                          !.separateItems
+                                                                          !.isNotEmpty
                                                                   ? RefreshIndicator(
                                                                       onRefresh:
                                                                           _controller
-                                                                              .refreshCategory,
+                                                                              !.refreshCategory,
                                                                       child: Transform
                                                                           .translate(
                                                                         offset: Offset(
@@ -2025,8 +1899,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                           primary:
                                                                               false,
                                                                           itemCount: snacksFoodItem
-                                                                              .separateItems
-                                                                              .length,
+                                                                              !.separateItems
+                                                                              !.length,
                                                                           separatorBuilder:
                                                                               (context, index) {
                                                                             return SizedBox(height: 6);
@@ -2035,7 +1909,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                               (context, index) {
                                                                             return DineInIndividualFoodItemWidget(
                                                                               heroTag: 'individual_food_list',
-                                                                              food: snacksFoodItem.separateItems[index],
+                                                                              food: snacksFoodItem!.separateItems![index],
                                                                               updateFoodList: updateFoodList,
                                                                             );
                                                                           },
@@ -2126,7 +2000,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .grey.shade600),
                                               )*/
                                                                 TranslationWidget(
-                                                                  message: day,
+                                                                  message: day!,
                                                                   fromLanguage:
                                                                       "English",
                                                                   toLanguage:
@@ -2159,7 +2033,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .grey.shade600),
                                               )*/
                                                                 TranslationWidget(
-                                                                  message: month,
+                                                                  message: month!,
                                                                   fromLanguage:
                                                                       "English",
                                                                   toLanguage:
@@ -2232,14 +2106,14 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                 TranslationWidget(
                                                                   message: widget
                                                                               .selectedPeople
-                                                                              .length >
+                                                                              !.length >
                                                                           15
-                                                                      ? widget.selectedPeople.substring(
+                                                                      ? widget.selectedPeople!.substring(
                                                                               0,
                                                                               15) +
                                                                           "..." // Truncate text after 10 characters
                                                                       : widget
-                                                                          .selectedPeople,
+                                                                          .selectedPeople!,
                                                                   fromLanguage:
                                                                       "English",
                                                                   toLanguage:
@@ -2339,9 +2213,9 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                                   } else {
 
                                                                     if (_foodcon
-                                                                        .isSameRestaurants(
+                                                                        !.isSameRestaurants(
                                                                             _foodcon
-                                                                                .food)) {
+                                                                                !.food!)!) {
                                                                       for (var selectedFoodsItem
                                                                           in selected_food) {
 
@@ -2449,10 +2323,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                       "Please Select the food");
                                                 } else {*/
 
-                                                  if (_foodcon
-                                                      .isSameRestaurants(
-                                                      _foodcon
-                                                          .food)) {
+
                                                     for (var selectedFoodsItem
                                                     in selected_food) {
 
@@ -2476,7 +2347,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                     }
                                                     addFoodToCart();
                                                     // _foodcon.addToCart(_foodcon.food);
-                                                  }
+
                                              //   }
                                               }
                                             },
@@ -2641,7 +2512,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                     size: 30,
                   ),
                   onPressed: () {
-                    if (currentUser.value.apiToken != null) {
+                    if (currentUser.value.apiToken != "") {
                       Navigator.of(context).pushNamed('/orderPage', arguments: 0);
                     } else {
                       Navigator.of(context).pushNamed('/Login');
@@ -2655,7 +2526,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                   size: 30,
                 ),
                 onPressed: () {
-                  if(currentUser.value.apiToken != null){
+                  if(currentUser.value.apiToken != ""){
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -2700,8 +2571,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     groupedFood.forEach((foodId, quantity) {
       Food food = foodList.firstWhere((item) => item.name == foodId.toString());
       // print(food.restaurant.id);
-      print(_controller.kitchenDetails.id);
-      print("object calling======>asa ${food.restaurant.name}");
+      print(_controller!.kitchenDetails.id);
+      print("object calling======>asa ${food.restaurant!.name}");
       print("Quantity" + quantity.toString());
       subtotal += food.price * quantity ;
       fooditems.add({"food":food,"Quantity" : quantity});
@@ -2717,7 +2588,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
         _foodcon.addToCart(foodList[i]);
       });*/
     }
-    if (currentUser.value.apiToken != null) {
+    if (currentUser.value.apiToken != "") {
       switch (selectedFood) {
         case "breakfast":
           //  selectedFoodItem = breakfastFoodItem;
@@ -2740,15 +2611,15 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
           MaterialPageRoute(
             builder: (context) => DineInSummaryPage(
                 subtotal.toInt(),
-                _con.restaurant,
-                widget.selectedPeople,
-                widget.SelectedDate,
-                widget.SelectedTime,
+                _con!.restaurant!,
+                widget.selectedPeople!,
+                widget.SelectedDate!,
+                widget.SelectedTime!,
                "selectedFoodItem.timeSlots.from".toString(),
                 "selectedFoodItem.timeSlots.to".toString(),
                 foodList,
-                _con.restaurant.defaultTax.toString(),
-                widget.routeArgument.products,
+                _con!.restaurant!.defaultTax.toString(),
+                widget.routeArgument!.products!,
                 fooditems,
                 selectedCoupon
 
@@ -2770,7 +2641,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if (currentUser.value.apiToken != null) {
+          if (currentUser.value.apiToken != "") {
             Navigator.of(context).pushNamed('/orderPage', arguments: 0);
           } else {
             Navigator.of(context).pushNamed('/Login');
@@ -2800,7 +2671,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => KitchenListDeliveryWidget(
-                      restaurantsList: widget._con.AllRestaurantsDelivery,
+                      restaurantsList: widget._con!.AllRestaurantsDelivery,
                       heroTag: "KitchenListDelivery",
                     )),
           );
@@ -2838,7 +2709,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       isbreackfastLoad = true;
     });
     List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(8, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(8, _con!.restaurant!.id!).then((value) {
       setState(() {
         breakfast_food.clear();
         breakfast_food.addAll(value);
@@ -2867,7 +2738,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       islunchLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(9, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(9, _con!.restaurant!.id!).then((value) {
       setState(() {
         lunch_food.clear();
         lunch_food.addAll(value);
@@ -2880,7 +2751,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     snack_food.clear();
     print("show snacks called");
     // List<FoodItem> breakfastFoods =
-    //     await getFoodsByCategoryAndKitchenlist(7, _con.restaurant.id);
+    //     await getFoodsByCategoryAndKitchenlist(7, _con!.restaurant.id);
     setState(() {
       // snack_food.addAll(breakfastFoods);
       issnacksLoadmore = false;
@@ -2897,7 +2768,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       issnacksLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(7, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(7, _con!.restaurant!.id!).then((value) {
       setState(() {
         snack_food.clear();
         snack_food.addAll(value);
@@ -2910,7 +2781,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     dinner_food.clear();
     // print("show dinner called");
     // List<FoodItem> breakfastFoods =
-    //     await getFoodsByCategoryAndKitchenlist(10, _con.restaurant.id);
+    //     await getFoodsByCategoryAndKitchenlist(10, _con!.restaurant.id);
     setState(() {
       // dinner_food.addAll(breakfastFoods);
       isdinnerLoadmore = false;
@@ -2927,7 +2798,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       isdinnerLoad = true;
     });
     // List<FoodItem> breakfastFoods = [];
-    getFoodsByCategoryAndKitchenlist(10, _con.restaurant.id).then((value) {
+    getFoodsByCategoryAndKitchenlist(10, _con!.restaurant!.id!).then((value) {
       setState(() {
         dinner_food.clear();
         dinner_food.addAll(value);
@@ -2937,7 +2808,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   }
   // void showBreakFastView() async {
   //   List<FoodItem> breakfastFoods =
-  //       await getFoodsByCategoryAndKitchenlist(8, _con.restaurant.id);
+  //       await getFoodsByCategoryAndKitchenlist(8, _con!.restaurant.id);
   //   print("show breakfast called");
   //
   //   setState(() {
@@ -2960,7 +2831,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   // void showLunchView() async {
   //   print("show lunch called");
   //   List<FoodItem> breakfastFoods =
-  //       await getFoodsByCategoryAndKitchenlist(9, _con.restaurant.id);
+  //       await getFoodsByCategoryAndKitchenlist(9, _con!.restaurant.id);
   //   setState(() {
   //     lunch_food.clear();
   //     lunch_food.addAll(breakfastFoods);
@@ -2982,7 +2853,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   // void showSnacksView() async {
   //   print("show snacks called");
   //   List<FoodItem> breakfastFoods =
-  //       await getFoodsByCategoryAndKitchenlist(7, _con.restaurant.id);
+  //       await getFoodsByCategoryAndKitchenlist(7, _con!.restaurant.id);
   //   setState(() {
   //     snack_food.clear();
   //     snack_food.addAll(breakfastFoods);
@@ -3003,7 +2874,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
   // void showDinnerView() async {
   //   print("show dinner called");
   //   List<FoodItem> breakfastFoods =
-  //       await getFoodsByCategoryAndKitchenlist(10, _con.restaurant.id);
+  //       await getFoodsByCategoryAndKitchenlist(10, _con!.restaurant.id);
   //   setState(() {
   //     dinner_food.clear();
   //     isdinnerLoadmore = false;
@@ -3034,7 +2905,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
       List<FoodItem> breakfastFoods, int categoryId, String RestaurantId) {
     List<String> updatedQuantities = List.filled(breakfastFoods.length, "0");
     final provider = Provider.of<QuantityProvider>(context, listen: false);
-    provider.initializeQuantities(breakfastFoods.length);
+   // provider.initializeQuantities(breakfastFoods.length);
     final ScrollController _scrollController = ScrollController();
     void _loadMoreData() async {
       List<FoodItem> moreFoods = await getFoodsByCategoryAndKitchenlist(
@@ -3057,8 +2928,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
     if (isbreackfastLoad) {
       return Shimmer.fromColors(
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.grey[100],
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
           child: Card(
@@ -3226,11 +3097,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
+                                                _foodcon!.decrementQuantity();
                                                 setState(() {
                                                   print("hello");
                                                   if (quantity > 0) {
@@ -3240,7 +3111,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .toString()] = quantity;
                                                   }
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   removeFoodFromList(Food.withId(
@@ -3302,17 +3173,17 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
+                                                    _foodcon!.quantity.toString());
+                                                _foodcon!.incrementQuantity();
                                                 setState(() {
-                                                  print(breakfastFoodItem.restaurant.image.url);
+                                                  print(breakfastFoodItem.restaurant!.image!.url);
                                                   //  print("hello");
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   updateFoodList(new Food.withId(
@@ -3327,7 +3198,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                           .comboMedia[0].url,
                                                       name: breakfastFoodItem.name,
                                                       restaurant: breakfastFoodItem
-                                                          .restaurant,
+                                                          !.restaurant!,
                                                       price: double.parse(
                                                           breakfastFoodItem.discountPrice != 0.0 ?breakfastFoodItem.discountPrice.toString() :
                                                           breakfastFoodItem.price
@@ -3402,7 +3273,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                 if (breakfastFoodItem.is_signature_food == "1")
                                   Container(
                                       child: Image.network(
-                                        settingRepo.setting.value.special_food_image,
+                                        settingRepo.setting.value!.specialFoodImage,
                                         height: 50,
                                         width: 80,
                                         fit: BoxFit.fill,
@@ -3482,8 +3353,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
     if(islunchLoad){
       return Shimmer.fromColors(
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.grey[100],
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
           child: Card(
@@ -3661,11 +3532,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
+                                                _foodcon!.decrementQuantity();
                                                 setState(() {
                                                   print("hello");
                                                   if (quantity > 0) {
@@ -3675,7 +3546,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .toString()] = quantity;
                                                   }
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   removeFoodFromList(Food.withId(
@@ -3737,17 +3608,17 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
+                                                    _foodcon!.quantity.toString());
+                                                _foodcon!.incrementQuantity();
                                                 setState(() {
-                                                  print(breakfastFoodItem.restaurant.image.url);
+                                                  print(breakfastFoodItem.restaurant!.image!.url);
                                                   //  print("hello");
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   updateFoodList(new Food.withId(
@@ -3837,7 +3708,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                 if (breakfastFoodItem.is_signature_food == "1")
                                   Container(
                                       child: Image.network(
-                                        settingRepo.setting.value.special_food_image,
+                                        settingRepo.setting.value.specialFoodImage,
                                         height: 50,
                                         width: 80,
                                         fit: BoxFit.fill,
@@ -3896,8 +3767,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     });
     if(issnacksLoad){
       return Shimmer.fromColors(
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.grey[100],
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
           child: Card(
@@ -4075,11 +3946,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
+                                                _foodcon!.decrementQuantity();
                                                 setState(() {
                                                   print("hello");
                                                   if (quantity > 0) {
@@ -4089,7 +3960,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .toString()] = quantity;
                                                   }
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   removeFoodFromList(Food.withId(
@@ -4151,17 +4022,17 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
+                                                    _foodcon!.quantity.toString());
+                                                _foodcon!.incrementQuantity();
                                                 setState(() {
-                                                  print(breakfastFoodItem.restaurant.image.url);
+                                                  print(breakfastFoodItem.restaurant!.image!.url);
                                                   //  print("hello");
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   updateFoodList(new Food.withId(
@@ -4252,7 +4123,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                 if (breakfastFoodItem.is_signature_food == "1")
                                   Container(
                                       child: Image.network(
-                                        settingRepo.setting.value.special_food_image,
+                                        settingRepo.setting.value!.specialFoodImage,
                                         height: 50,
                                         width: 80,
                                         fit: BoxFit.fill,
@@ -4311,8 +4182,8 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
     });
     if(isdinnerLoad){
       return Shimmer.fromColors(
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.grey[100],
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 3),
           child: Card(
@@ -4490,11 +4361,11 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD decrement");
-                                                _foodcon.decrementQuantity();
+                                                _foodcon!.decrementQuantity();
                                                 setState(() {
                                                   print("hello");
                                                   if (quantity > 0) {
@@ -4504,7 +4375,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                                         .toString()] = quantity;
                                                   }
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   removeFoodFromList(Food.withId(
@@ -4566,17 +4437,17 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                         child: InkWell(
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (_con.restaurant.closed == "1") {
+                                              if (_con!.restaurant!.closed == "1") {
                                                 _showClosedDialog(context);
                                               } else {
                                                 print("DS>> GD increment" +
-                                                    _foodcon.quantity.toString());
-                                                _foodcon.incrementQuantity();
+                                                    _foodcon!.quantity.toString());
+                                                _foodcon!.incrementQuantity();
                                                 setState(() {
-                                                  print(breakfastFoodItem.restaurant.image.url);
+                                                 // print(breakfastFoodItem.restaurant.image.url);
                                                   //  print("hello");
                                                   updatedQuantity = _foodcon
-                                                      .quantity
+                                                      !.quantity
                                                       .toInt()
                                                       .toString();
                                                   updateFoodList(new Food.withId(
@@ -4667,7 +4538,7 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
                                 if (breakfastFoodItem.is_signature_food == "1")
                                   Container(
                                       child: Image.network(
-                                        settingRepo.setting.value.special_food_image,
+                                        settingRepo.setting.value.specialFoodImage,
                                         height: 50,
                                         width: 80,
                                         fit: BoxFit.fill,
@@ -4858,9 +4729,9 @@ class _RestaurantWidgetState extends StateMVC<DineInRestaurantWidget> {
 
 }
 class HalfColoredIcon extends StatelessWidget {
-  final IconData icon;
-  final double size;
-  final Color color;
+  final IconData? icon;
+  final double? size;
+  final Color? color;
 
   HalfColoredIcon({
     this.icon,
@@ -4873,7 +4744,7 @@ class HalfColoredIcon extends StatelessWidget {
     return ShaderMask(
       shaderCallback: (Rect bounds) {
         return LinearGradient(
-          colors: [ color.withOpacity(0.0),color],
+          colors: [ color!.withOpacity(0.0),color!],
           stops: [0.5, 0.5],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,

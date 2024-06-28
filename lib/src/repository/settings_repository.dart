@@ -34,7 +34,7 @@ Future<Setting> initSettings() async {
         await prefs.setString('settings', json.encode(json.decode(response.body)['data']));
         _setting = Setting.fromJSON(json.decode(response.body)['data']);
         if (prefs.containsKey('language')) {
-          _setting.mobileLanguage.value = Locale(prefs.get('language'), '');
+          _setting.mobileLanguage.value = Locale(prefs.get('language') as String, '');
         }
         _setting.brightness.value = prefs.getBool('isDark') ?? false ? Brightness.dark : Brightness.light;
         setting.value = _setting;
@@ -58,7 +58,7 @@ Future<dynamic> setCurrentLocation() async {
   Address _address = new Address();
   location.requestService().then((value) async {
     location.getLocation().then((_locationData) async {
-      String _addressName = await mapsUtil.getAddressName(new LatLng(_locationData?.latitude, _locationData?.longitude), setting.value.googleMapsKey);
+      String? _addressName = await mapsUtil.getAddressName(new LatLng(_locationData.latitude!, _locationData.longitude!), setting.value.googleMapsKey);
       _address = Address.fromJSON({'address': _addressName, 'latitude': _locationData?.latitude, 'longitude': _locationData?.longitude});
       await changeCurrentLocation(_address);
       whenDone.complete(_address);
@@ -85,7 +85,7 @@ Future<Address> getCurrentLocation() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //await prefs.clear();
   if (prefs.containsKey('delivery_address')) {
-    deliveryAddress.value = Address.fromJSON(json.decode(prefs.getString('delivery_address')));
+    deliveryAddress.value = Address.fromJSON(json.decode(prefs.getString('delivery_address')!));
     return deliveryAddress.value;
   } else {
     deliveryAddress.value = Address.fromJSON({});
@@ -115,7 +115,7 @@ Future<void> setDefaultLanguage(String language, String englishName) async {
 Future<String> getDefaultLanguage(String defaultLanguage) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.containsKey('language')) {
-    defaultLanguage = await prefs.get('language');
+    defaultLanguage = await prefs.get('language') as String;
   }
   return defaultLanguage;
 }
@@ -124,7 +124,7 @@ Future<String> getDefaultLanguageName() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String defaultLanguage = "English";
   if (prefs.containsKey('languagename')) {
-    defaultLanguage = await prefs.get('languagename');
+    defaultLanguage = await prefs.get('languagename') as String;
   }
   return defaultLanguage;
 }
@@ -138,5 +138,5 @@ Future<void> saveMessageId(String messageId) async {
 
 Future<String> getMessageId() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return await prefs.get('google.message_id');
+  return await prefs.get('google.message_id') as String;
 }

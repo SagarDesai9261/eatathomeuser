@@ -6,9 +6,7 @@ import '../../generated/l10n.dart';
 import '../helpers/app_config.dart' as config;
 
 class EmptyCartWidget extends StatefulWidget {
-  EmptyCartWidget({
-    Key key,
-  }) : super(key: key);
+
 
   @override
   _EmptyCartWidgetState createState() => _EmptyCartWidgetState();
@@ -37,8 +35,8 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
             ? SizedBox(
                 height: 3,
                 child: LinearProgressIndicator(
-                  backgroundColor:
-                      Theme.of(context).accentColor.withOpacity(0.2),
+                  // backgroundColor:
+                  //     Theme.of(context).accentColor.withOpacity(0.2),
                 ),
               )
             : SizedBox(),
@@ -109,7 +107,7 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
                   style: Theme.of(context)
                       .textTheme
                       .headline3
-                      .merge(TextStyle(fontWeight: FontWeight.w300)),
+                      !.merge(TextStyle(fontWeight: FontWeight.w300)),
                 ),
               ),
               SizedBox(height: 50),
@@ -123,11 +121,11 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
                       },
                       padding:
                           EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                      color: Theme.of(context).accentColor.withOpacity(1),
+                      //color: Theme.of(context).accentColor.withOpacity(1),
                       shape: StadiumBorder(),
                       child: Text(
                         S.of(context).start_exploring,
-                        style: Theme.of(context).textTheme.headline6.merge(
+                        style: Theme.of(context).textTheme.headline6!.merge(
                             TextStyle(
                                 color:
                                     Theme.of(context).scaffoldBackgroundColor)),

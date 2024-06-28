@@ -18,22 +18,22 @@ import '../repository/restaurant_repository.dart';
 import '../repository/settings_repository.dart';
 
 class RestaurantController extends ControllerMVC {
-  Restaurant restaurant;
+  Restaurant? restaurant;
   List<Gallery> galleries = <Gallery>[];
   List<Food> foods = <Food>[];
   List<Category> categories = <Category>[];
   List<Food> trendingFoods = <Food>[];
   List<Food> featuredFoods = <Food>[];
   List<Review> reviews = <Review>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   RestaurantController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
-  Future<dynamic> listenForRestaurant({String id, String message}) async {
+  Future<dynamic> listenForRestaurant({String? id, String? message}) async {
     final whenDone = new Completer();
-    final Stream<Restaurant> stream = await getRestaurant(id, deliveryAddress.value);
+    final Stream<Restaurant> stream = await getRestaurant(id!, deliveryAddress.value);
     stream.listen((Restaurant _restaurant) {
       setState(() => restaurant = _restaurant);
       return whenDone.complete(_restaurant);
@@ -69,21 +69,21 @@ class RestaurantController extends ControllerMVC {
     }, onError: (a) {}, onDone: () {});
   }
 
-  void listenForRestaurantReviews({String id, String message}) async {
-    final Stream<Review> stream = await getRestaurantReviews(id);
+  void listenForRestaurantReviews({String? id, String? message}) async {
+    final Stream<Review> stream = await getRestaurantReviews(id!);
     stream.listen((Review _review) {
       setState(() => reviews.add(_review));
     }, onError: (a) {}, onDone: () {});
   }
 
-  void listenForFoods(String idRestaurant, {List<String> categoriesId}) async {
+  void listenForFoods(String idRestaurant, {List<String>? categoriesId}) async {
     final Stream<Food> stream = await getFoodsOfRestaurant(idRestaurant, categories: categoriesId);
     stream.listen((Food _food) {
       setState(() => foods.add(_food));
     }, onError: (a) {
       // print(a);
     }, onDone: () {
-      restaurant..name = foods.elementAt(0).restaurant.name;
+      restaurant!.name = foods.elementAt(0).restaurant!.name;
     });
   }
 
@@ -131,13 +131,13 @@ class RestaurantController extends ControllerMVC {
     }, onError: (a) {
       // print(a);
     }, onDone: () {
-      categories.insert(0, new Category.fromJSON({'id': '0', 'name': S.of(state.context).all}));
+      categories.insert(0, new Category.fromJSON({'id': '0', 'name': S.of(state!.context).all}));
     });
   }
 
   Future<void> selectCategory(List<String> categoriesId) async {
     foods.clear();
-    listenForFoods(restaurant.id, categoriesId: categoriesId);
+    listenForFoods(restaurant!.id!, categoriesId: categoriesId);
   }
 
   Future<AddToFavouriteModel> addRestaurantToFavouriteList(String restaurantId, String userId, String apiToken) async {
@@ -155,14 +155,14 @@ class RestaurantController extends ControllerMVC {
 
 
   Future<void> refreshRestaurant() async {
-    var _id = restaurant.id;
+    var _id = restaurant!.id;
     restaurant = new Restaurant();
     galleries.clear();
     reviews.clear();
     featuredFoods.clear();
-    listenForRestaurant(id: _id, message: S.of(state.context).restaurant_refreshed_successfuly);
+    listenForRestaurant(id: _id, message: S.of(state!.context).restaurant_refreshed_successfuly);
     listenForRestaurantReviews(id: _id);
-    listenForGalleries(_id);
+    listenForGalleries(_id!);
     listenForFeaturedFoods(_id);
     listenForIndividualFoods(_id);
   }

@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'dart:io';
 
@@ -79,7 +80,7 @@ class _MyAppState extends State<MyApp> {
 
   Map eventProperties = {}, unreadCountStatus = {};
   List<String> properties = [], topicTagsList = [];
-   FreshchatUser user;
+   FreshchatUser? user;
    StreamSubscription restoreStreamSubscription,
       fchatEventStreamSubscription,
       unreadCountSubscription,
@@ -1316,4 +1317,4 @@ class _FaqTagAlertState extends State<FaqTagAlert> {
       ],
     );
   }
-}
+}*/

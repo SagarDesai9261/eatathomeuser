@@ -23,13 +23,13 @@ import 'orders.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 
 class SettingsWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  final Function(int) updateCurrentTab;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  final Function(int)? updateCurrentTab;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
   HomeController _con = HomeController();
 
-  SettingsWidget({Key key, this.parentScaffoldKey, this.updateCurrentTab})
+  SettingsWidget({Key? key, this.parentScaffoldKey, this.updateCurrentTab})
       : super(key: key);
 
   @override
@@ -37,11 +37,11 @@ class SettingsWidget extends StatefulWidget {
 }
 
 class _SettingsWidgetState extends StateMVC<SettingsWidget> {
-  SettingsController _con;
-  String defaultLanguage;
+  SettingsController? _con;
+  String defaultLanguage = "";
 
   _SettingsWidgetState() : super(SettingsController()) {
-    _con = controller;
+    _con = controller as SettingsController?;
   }
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       drawer: DrawerWidget(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -78,7 +78,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
           style: Theme.of(context)
               .textTheme
               .headline6
-              .merge(TextStyle(letterSpacing: 1.3)),
+              !.merge(TextStyle(letterSpacing: 1.3)),
         )
         /*TranslationWidget(
           message:  S.of(context).profile,
@@ -176,7 +176,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyText1
-                                              .merge(TextStyle(
+                                              !.merge(TextStyle(
                                                   color: Theme.of(context)
                                                       .primaryColor)),
                                         )
@@ -217,10 +217,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   OrdersWidget(
-                                                parentScaffoldKey:
-                                                    widget.parentScaffoldKey,
-                                                updateCurrentTab:
-                                                    widget.updateCurrentTab,
+
                                               ),
                                             ),
                                           );
@@ -236,7 +233,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyText1
-                                              .merge(TextStyle(
+                                              !.merge(TextStyle(
                                                   color: Theme.of(context)
                                                       .primaryColor)),
                                         )
@@ -310,7 +307,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                             child: ProfileSettingsDialog(
                               user: currentUser.value,
                               onChanged: (){
-                                _con.update(currentUser.value);
+                                _con!.update(currentUser.value);
                               }
                             ),
                           ),
@@ -710,7 +707,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => HomePage(
-                  parentScaffoldKey: widget.parentScaffoldKey,
+                  parentScaffoldKey: widget.parentScaffoldKey!,
                   currentTab: 1,
                   directedFrom: "forHome",
                 )),
@@ -754,7 +751,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                     size: 30,
                   ),
                   onPressed: () {
-                    if (currentUser.value.apiToken != null) {
+                    if (currentUser.value.apiToken != "") {
                       Navigator.of(context).pushNamed('/orderPage', arguments: 0);
                     } else {
                       Navigator.of(context).pushNamed('/Login');
@@ -768,7 +765,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                   size: 30,
                 ),
                 onPressed: () {
-                  if(currentUser.value.apiToken != null){
+                  if(currentUser.value.apiToken != ""){
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -796,7 +793,7 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if (currentUser.value.apiToken != null) {
+          if (currentUser.value.apiToken != "") {
             Navigator.of(context).pushNamed('/orderPage', arguments: 0);
           } else {
             Navigator.of(context).pushNamed('/Login');

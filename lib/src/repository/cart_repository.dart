@@ -37,7 +37,7 @@ Future<Map<String, dynamic>> getCart() async {
 }
 Future<Map<String, dynamic>> getcartfromAddress() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String id = prefs.getString("delivery_address_id");
+  String? id = prefs.getString("delivery_address_id");
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
     return {'success': false, 'message': 'User not authenticated'};
@@ -75,7 +75,7 @@ Future<Stream<int>> getCartCount() async {
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
   return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map(
-        (data) => Helper.getIntData(data),
+        (data) => Helper.getIntData(data as Map<String,dynamic>),
       );
 }
 
@@ -124,6 +124,7 @@ Future<Cart> updateCart(Cart cart) async {
     headers: {HttpHeaders.contentTypeHeader: 'application/json'},
     body: json.encode(cart.toMap()),
   );
+  print(json.decode(response.body)['data']);
   return Cart.fromJSON(json.decode(response.body)['data']);
 }
 

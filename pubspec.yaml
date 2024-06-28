@@ -14,7 +14,7 @@ description: food_delivery_app
 version: 3.0.0+1
 
 environment:
-  sdk: '>=2.10.2 <3.0.0'
+  sdk: '>=2.12.2 <4.0.0'
 module:
   androidX: true
 dependencies:
@@ -31,21 +31,22 @@ dependencies:
     git:
       url: https://github.com/SmarterVision/google_maps_place_picker_mb.git
       ref: 2.0.0-mb.22
-  mvc_pattern:
-  global_configuration: 2.0.0-nullsafety.1
-  html:
-  shared_preferences:
-  flutter_html: ^2.0.0-nullsafety.1
+  mvc_pattern: ^8.12.0
+  global_configuration: ^2.0.0
+  #html: ^0.15.4
+  shared_preferences: ^2.2.3
+  #flutter_html: ^2.2.1
   flutter_svg:
-  webview_flutter:
-  url_launcher:
+  webview_flutter: ^4.8.0
+  url_launcher: ^6.3.0
   cached_network_image:
-  fluttertoast:
+  fluttertoast: ^8.0.5
   intl_utils:
   carousel_slider:
-  firebase_messaging:
-  firebase_auth:
-  firebase_core:
+  firebase_core: ^2.7.0
+  firebase_messaging: ^14.4.1
+  firebase_analytics: ^10.1.0
+  firebase_auth: ^4.2.0
   #flutter_local_notifications: ^5.0.0
   flutter_otp_text_field:
   tab_indicator_styler:
@@ -54,43 +55,35 @@ dependencies:
   table_calendar:
   share:
   marquee:
-  geolocator:
-  geocoding:
+  geolocator: ^9.0.1
+  geocoding: ^2.0.2
   flutter_launcher_icons:
-  sweetalertv2:
-  cashfree_pg: ^2.0.12+32
-
-  #  flutter_web: any
-#  flutter_web_ui: any
-#  translator: ^0.1.7
-
-  flutter_facebook_auth:
-#  google_translator: ^1.0.0
-  # Allows Google Translate without billing
   translator:
-
-  # Unescape html characters
   html_unescape:
   restart_app:
   file_picker:
   coupon_uikit:
-  flutter_stripe:
+  flutter_stripe: ^7.0.0
   flutter_dotenv:
   intl_phone_field: ^3.2.0
   connectivity:
-  google_maps_flutter:
+  google_maps_flutter: ^2.6.1
   intl:
   shimmer:
   flutter_local_notifications:
-  uuid:
-  image_picker:
+ # uuid:
+  image_picker: ^1.1.2
   dotted_border:
   flutter_phoenix:
   flutter_image_slideshow:
   permission_handler:
-  google_fonts: ^1.1.2
+  google_fonts: ^6.2.1
   freshchat_sdk:
   clipboard:
+  location:
+  flutter_inappwebview: ^5.3.2
+  html: ^0.15.0
+  change_app_package_name: ^1.2.0
 
 
 

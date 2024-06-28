@@ -18,9 +18,9 @@ import '../helpers/helper.dart';
 import '../models/route_argument.dart';
 import '../../src/helpers/app_config.dart' as config;
 class TrackingWidgetForDinein extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  TrackingWidgetForDinein({Key key, this.routeArgument}) : super(key: key);
+  TrackingWidgetForDinein({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _TrackingWidgetForDineinState createState() => _TrackingWidgetForDineinState();
@@ -28,35 +28,35 @@ class TrackingWidgetForDinein extends StatefulWidget {
 
 class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
     with SingleTickerProviderStateMixin {
-  TrackingController _con;
-  TabController _tabController;
+  TrackingController? _con;
+  TabController? _tabController;
   int _tabIndex = 0;
   Map<String, dynamic> driverDetails = {} ;
 
   _TrackingWidgetForDineinState() : super(TrackingController()) {
-    _con = controller;
+    _con = controller as TrackingController?;
   }
 
   @override
   void initState() {
-    _con.listenForOrder(orderId: widget.routeArgument.id);
+    _con!.listenForOrder(orderId: widget.routeArgument!.id);
     _tabController = TabController(
-        length: widget.routeArgument.heroTag == "2" ? 2 : 1,
+        length: widget.routeArgument!.heroTag == "2" ? 2 : 1,
         initialIndex: _tabIndex,
         vsync: this);
-    _tabController.addListener(_handleTabSelection);
+    _tabController!.addListener(_handleTabSelection);
     super.initState();
   }
 
   void dispose() {
-    _tabController.dispose();
+    _tabController!.dispose();
     super.dispose();
   }
 
   _handleTabSelection() {
-    if (_tabController.indexIsChanging) {
+    if (_tabController!.indexIsChanging) {
       setState(() {
-        _tabIndex = _tabController.index;
+        _tabIndex = _tabController!.index;
       });
     }
   }
@@ -68,7 +68,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
     return <Marker>[
       Marker(
         markerId: MarkerId('Your Marker ID'), // A unique ID for the marker
-        position: LatLng(double.parse( _con.order.foodOrders[0].food.restaurant.latitude), double.parse(_con.order.foodOrders[0].food.restaurant.longitude)), // Marker position
+        position: LatLng(double.parse( _con!.order!.foodOrders![0].food!.restaurant!.latitude!), double.parse(_con!.order!.foodOrders![0].food!.restaurant!.longitude!)), // Marker position
         infoWindow: InfoWindow(
           title: 'Your Marker Title',
           snippet: 'Your Marker Description',
@@ -80,7 +80,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
   }
   Future<void> _openGoogleMaps(BuildContext context) async {
 
-    final String url = 'http://maps.google.com/maps?daddr=${_con.order.foodOrders[0].food.restaurant.latitude},${_con.order.foodOrders[0].food.restaurant.longitude}';
+    final String url = 'http://maps.google.com/maps?daddr=${_con!.order!.foodOrders![0].food!.restaurant!.latitude},${_con!.order!.foodOrders![0].food!.restaurant!.longitude}';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -100,18 +100,18 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
 
   @override
   Widget build(BuildContext context) {
-   // driverDetails = json.decode(_con.order.driver_details);
+   // driverDetails = json.decode(_con!.order.driver_details);
   //  String driverName = driverDetails['driver_name'];
     //String vehicleNumber = driverDetails['vehicle_number'];
    // String mobile =  driverDetails['mobile'];
     //final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent, accentColor: Theme.of(context).accentColor);
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
-    //print(_con.order.res_longitude.toString() + "====> asfafafassasasa");
+    //print(_con!.order.res_longitude.toString() + "====> asfafafassasasa");
     // print("dineindelivery type: " + widget.routeArgument.heroTag);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-          key: _con.scaffoldKey,
+          key: _con!.scaffoldKey,
           bottomNavigationBar: Container(
             width: MediaQuery.of(context).size.width,
             height: 135,
@@ -126,7 +126,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                       offset: Offset(0, -2),
                       blurRadius: 5.0)
                 ]),
-            child: _con.order == null || _con.orderStatus.isEmpty
+            child: _con!.order == null || _con!.orderStatus.isEmpty
                 ? CircularLoadingWidget(height: 120)
                 : Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,7 +147,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                   onPressed: () {
                     Navigator.of(context).pushNamed('/Reviews',
                         arguments: RouteArgument(
-                            id: _con.order.id,
+                            id: _con!.order!.id,
                             heroTag: "restaurant_reviews"));
                   },
                   padding: EdgeInsets.symmetric(vertical: 5),
@@ -156,19 +156,19 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: Helper.getStarsList(
                         double.parse(
-                            _con.order.foodOrders[0].food.restaurant.rate),
+                            _con!.order!.foodOrders![0].food!.restaurant!.rate!),
                         size: 35),
                   ),
                 ),
               ],
             ),
           ),
-          body: _con.order == null || _con.orderStatus.isEmpty
+          body: _con!.order == null || _con!.orderStatus.isEmpty
               ? CircularLoadingWidget(height: 400)
               : RefreshIndicator(
             onRefresh: ()async{
-              _con.listenForOrder(orderId: widget.routeArgument.id,message: "refresh");
-              _con.isRefresh = true;
+              _con!.listenForOrder(orderId: widget.routeArgument!.id,message: "refresh");
+              _con!.isRefresh = true;
             },
                 child: CustomScrollView(slivers: <Widget>[
             SliverAppBar(
@@ -180,7 +180,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                   style: Theme.of(context)
                       .textTheme
                       .headline6
-                      .merge(TextStyle(letterSpacing: 1.3)),
+                      !.merge(TextStyle(letterSpacing: 1.3)),
                 ),
                 /*actions: <Widget>[
                         new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
@@ -208,7 +208,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                         end: Alignment.bottomRight,
                       ),
                     ),
-                    tabs: widget.routeArgument.heroTag == "2"
+                    tabs: widget.routeArgument!.heroTag == "2"
                         ? [
                       Tab(
                         child: Container(
@@ -260,7 +260,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                         alignment: AlignmentDirectional.topCenter,
                         children: <Widget>[
                           Opacity(
-                            opacity: _con.order.active ? 1 : 0.4,
+                            opacity: _con!.order!.active! ? 1 : 0.4,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
@@ -288,14 +288,14 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                       title: Column(
                                         children: <Widget>[
                                           Text(
-                                            '${S.of(context).order_id}: #${_con.order.id}',
+                                            '${S.of(context).order_id}: #${_con!.order!.id}',
                                             style: TextStyle(
                                                 foreground: Paint()
                                                   ..shader = linearGradient),
                                           ),
                                           Text(
                                             DateFormat('dd-MM-yyyy | HH:mm')
-                                                .format(_con.order.dateTime),
+                                                .format(_con!.order!.dateTime!),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .caption,
@@ -314,14 +314,14 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                         children: <Widget>[
                                           Helper.getPrice(
                                               Helper.getTotalOrdersPrice(
-                                                  _con.order),
+                                                  _con!.order!),
                                               context,
                                               style:TextStyle(fontSize: 18.0,
                                                   fontWeight: FontWeight.w600,
                                                   color: config.Colors().secondColor(1),
                                                   height: 1.35)),
                                           Text(
-                                            '${_con.order.payment.method}',
+                                            '${_con!.order!.payment!.method}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .caption,
@@ -346,7 +346,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                     ),
                                                   ),
                                                   Text(
-                                                    "${_con.order.foodOrders.first.number_of_persons}",
+                                                    "${_con!.order!.foodOrders!.first.numberOfPersons}",
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyText1,
@@ -365,7 +365,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                   ),
                                                   Text(
                                                     DateFormat('dd-MM-yyyy')
-                                                        .format(_con.order.foodOrders.first.dateTime),
+                                                        .format(_con!.order!.foodOrders!.first.dateTime!),
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .bodyText1,
@@ -378,14 +378,14 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                         ),
                                         Column(
                                             children: List.generate(
-                                              _con.order.foodOrders.length,
+                                              _con!.order!.foodOrders!.length,
                                                   (indexFood) {
                                                 return FoodOrderItemWidget(
                                                     heroTag: 'my_order',
-                                                    order: _con.order,
-                                                    foodOrder: _con
-                                                        .order.foodOrders
-                                                        .elementAt(indexFood));
+                                                    order: _con!.order!,
+                                                    foodOrder: _con!
+                                                        .order!.foodOrders
+                                                        !.elementAt(indexFood));
                                               },
                                             )),
 
@@ -394,12 +394,12 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                               vertical: 0, horizontal: 20),
                                           child: Column(
                                             children: <Widget>[
-                                              if(_con.order.coupon_code != "")
+                                              if(_con!.order!.coupon_code != "")
                                                 Row(
                                                   children: <Widget>[
                                                     Expanded(
                                                       child: Text(
-                                                        "Applied Coupon(${_con.order.coupon_code})",
+                                                        "Applied Coupon(${_con!.order!.coupon_code})",
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyText2,
@@ -415,7 +415,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                           TextStyle(fontWeight: FontWeight.w400, fontSize:12,color: kFBBlue),
 
                                                           children: <TextSpan>[
-                                                            TextSpan(text: _con.order.coupon_amount ?? '', style:  Theme.of(context).textTheme.bodyText2),
+                                                            TextSpan(text: _con!.order!.coupon_amount ?? '', style:  Theme.of(context).textTheme.bodyText2),
                                                           ],
                                                         )
 
@@ -433,15 +433,15 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                           .bodyText2,
                                                     ),
                                                   ),
-                                                  if(_con.order.deliveryFee !=0)
+                                                  if(_con!.order!.deliveryFee !=0)
                                                   Helper.getPrice(
-                                                      _con.order.deliveryFee,
+                                                      _con!.order!.deliveryFee!,
                                                       context,
                                                       style:  TextStyle(fontSize: 12.0,
                                                       //    fontWeight: FontWeight.w600,
                                                           color: config.Colors().secondColor(1),
                                                           height: 1.35)),
-                                                  if(_con.order.deliveryFee ==0)
+                                                  if(_con!.order!.deliveryFee ==0)
                                                     Text(
                                                       "0",
                                                       style: Theme.of(context)
@@ -461,7 +461,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                   ),
                                                   Helper.getPriceforcart(
                                                       Helper.getTaxOrder(
-                                                          _con.order),
+                                                          _con!.order!),
                                                       context,
                                                       style: TextStyle(fontSize: 18.0,
                                                           fontWeight: FontWeight.w600,
@@ -482,7 +482,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                   Helper.getPriceforcart(
                                                       Helper
                                                           .getTotalOrdersPrice(
-                                                          _con.order),
+                                                          _con!.order!),
                                                       context,
                                                       style: TextStyle(fontSize: 14.0,
                                                           fontWeight: FontWeight.w600,
@@ -501,7 +501,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                   child: Wrap(
                                     alignment: WrapAlignment.end,
                                     children: <Widget>[
-                                      if (_con.order.canCancelOrder() && _con.order.orderStatus.status == "" )
+                                      if (_con!.order!.canCancelOrder() && _con!.order!.orderStatus!.status == "" )
                                         MaterialButton(
                                           elevation: 0,
                                           focusElevation: 0,
@@ -549,7 +549,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                                                 .hintColor),
                                                       ),
                                                       onPressed: () {
-                                                        _con.doCancelOrder();
+                                                        _con!.doCancelOrder();
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
@@ -613,11 +613,11 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                 end: Alignment.bottomRight,
                               ),
                             ),
-                            //color: _con.order.active ? Theme.of(context).accentColor : Colors.redAccent),
+                            //color: _con!.order.active ? Theme.of(context).accentColor : Colors.redAccent),
                             alignment: AlignmentDirectional.center,
                             child: Text(
-                              _con.order.active
-                                  ? '${_con.order.orderStatus.status}'
+                              _con!.order!.active!
+                                  ? '${_con!.order!.orderStatus!.status}'
                                   : S.of(context).canceled,
                               maxLines: 1,
                               overflow: TextOverflow.fade,
@@ -625,7 +625,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .merge(TextStyle(
+                                  !.merge(TextStyle(
                                   height: 1,
                                   color: Theme.of(context).primaryColor)),
                             ),
@@ -645,7 +645,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                             height: 150,
                             child: GoogleMap(
                               initialCameraPosition: CameraPosition(
-                                target: LatLng(double.parse(_con.order.foodOrders[0].food.restaurant.latitude), double.parse(_con.order.foodOrders[0].food.restaurant.longitude)), // Initial position (San Francisco)
+                                target: LatLng(double.parse(_con!.order!.foodOrders![0].food!.restaurant!.latitude!), double.parse(_con!.order!.foodOrders![0].food!.restaurant!.longitude!)), // Initial position (San Francisco)
                                 zoom: 12.0, // Zoom level
                               ),
                               onTap: _onMapTap,
@@ -661,7 +661,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                             padding: const EdgeInsets.all(12),
                             child: Theme(
                               data: ThemeData(
-                                primaryColor: Theme.of(context).accentColor,
+                                primaryColor: mainColor(1),
                               ),
                               child: Stepper(
                                 physics: ClampingScrollPhysics(),
@@ -669,12 +669,12 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                     ControlsDetails details) {
                                   return SizedBox(height: 0);
                                 },
-                                steps: _con.getTrackingSteps(context),
-                                currentStep:_con.getCurrentStepIndex(_con.orderStatus),
+                                steps: _con!.getTrackingSteps(context),
+                                currentStep:_con!.getCurrentStepIndex(_con!.orderStatus),
                               ),
                             ),
                           ),
-                        _con.order.deliveryAddress?.address != null
+                        /*_con!.order!.deliveryAddress?.address != null
                             ? Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 20, vertical: 15),
@@ -709,8 +709,8 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                   CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      _con.order.deliveryAddress
-                                          ?.description ??
+                                      _con!.order!.deliveryAddress
+                                          !.description ??
                                           "",
                                       overflow: TextOverflow.fade,
                                       softWrap: false,
@@ -719,7 +719,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                                           .subtitle1,
                                     ),
                                     Text(
-                                      _con.order.deliveryAddress
+                                      _con!.order!.deliveryAddress
                                           ?.address ??
                                           S.of(context).unknown,
                                       overflow: TextOverflow.ellipsis,
@@ -734,7 +734,7 @@ class _TrackingWidgetForDineinState extends StateMVC<TrackingWidgetForDinein>
                             ],
                           ),
                         )
-                            : SizedBox(height: 0),
+                            : SizedBox(height: 0),*/
                         SizedBox(height: 30)
                       ],
                     ),

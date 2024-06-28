@@ -27,7 +27,7 @@ Future<Stream<Category>> getCategories() async {
     return streamedRest.stream
         .transform(utf8.decoder)
         .transform(json.decoder)
-        .map((data) => Helper.getData(data))
+        .map((data) => Helper.getData(data as Map<String,dynamic>))
         .expand((data) => (data as List))
         .map((data) => Category.fromJSON(data));
   } catch (e) {
@@ -48,7 +48,7 @@ Future<Stream<Category>> getCategoriesOfRestaurant(String restaurantId) async {
     return streamedRest.stream
         .transform(utf8.decoder)
         .transform(json.decoder)
-        .map((data) => Helper.getData(data))
+        .map((data) => Helper.getData(data as Map<String,dynamic>))
         .expand((data) => (data as List))
         .map((data) => Category.fromJSON(data));
   } catch (e) {
@@ -63,7 +63,7 @@ Future<Stream<Category>> getCategory(String id) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) => Category.fromJSON(data));
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).map((data) => Category.fromJSON(data));
   } catch (e) {
     // // print(CustomTrace(StackTrace.current, message: url).toString());
     return new Stream.value(new Category.fromJSON({}));

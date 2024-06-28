@@ -42,7 +42,7 @@ Future<Stream<Restaurant>> getNearRestaurants(Address myLocation, Address areaLo
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Restaurant.fromJSON(data);
     });
   } catch (e) {
@@ -75,7 +75,7 @@ Future<Stream<Restaurant>> getNearRestaurantsforDelivery(Address myLocation, Add
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Restaurant.fromJSON(data);
     });
   } catch (e) {
@@ -84,7 +84,7 @@ Future<Stream<Restaurant>> getNearRestaurantsforDelivery(Address myLocation, Add
   }
 }
 
-Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDate, String numberOfPerson, String category, {int limit = 8, int offset = 0,int enjoy_now = 1,int category_id }) async {
+Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDate, String numberOfPerson, String category, {int limit = 8, int offset = 0,int enjoy_now = 1,int? category_id  }) async {
   Uri uri = Helper.getUri('api/restaurants');
   Map<String, dynamic> _queryParams = {};
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -92,7 +92,7 @@ Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDat
 
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
-  String permission = prefs.getString("permission");
+  String permission = prefs.getString("permission").toString();
   // print("current permission  + ${permission} ");
   //_queryParams['limit'] = '6';
   _queryParams['kitchenList'] = 'true';
@@ -121,7 +121,7 @@ Future<Stream<Restaurant>> getAllRestaurants(String kitchenType, String todayDat
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
     print("DS>>> Request delivery: "+uri.toString());
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Restaurant.fromJSON(data);
     });
   } catch (e) {
@@ -152,7 +152,7 @@ Future<Stream<Restaurant>> getPopularRestaurants(Address myLocation) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Restaurant.fromJSON(data);
     });
   } catch (e) {
@@ -182,7 +182,7 @@ Future<Stream<Restaurant>> getPopularRestaurantsforDelivery(Address myLocation) 
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Restaurant.fromJSON(data);
     });
   } catch (e) {
@@ -211,7 +211,7 @@ Future<Stream<Map<String, dynamic>>> searchKitchen(String search) async {
     final streamedResponse = await client.send(http.Request('get', Uri.parse( Uri.decodeComponent( uri.toString()))));
 
     return streamedResponse.stream.transform(utf8.decoder).transform(json.decoder).map((data) {
-      return Helper.getData(data);
+      return Helper.getData(data as Map<String,dynamic>);
     });
   } catch (e) {
     // print(CustomTrace(StackTrace.current, message: uri.toString()).toString());
@@ -236,7 +236,7 @@ Future<Stream<RestaurantModel>> searchRestaurants(String search, Address address
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return RestaurantModel.fromJson(data);
     });
   } catch (e) {
@@ -249,22 +249,22 @@ Future<Stream<Restaurant>> getRestaurant(String id, Address address) async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
-  String permission = prefs.getString("permission");
+  String permission = prefs.getString("permission").toString();
   Uri uri = Helper.getUri('api/restaurants/$id');
   Map<String, dynamic> _queryParams = {};
-  if (!address.isUnknown()) {
+/*  if (!address.isUnknown()) {
     _queryParams['myLon'] = address.longitude.toString();
     _queryParams['myLat'] = address.latitude.toString();
     _queryParams['areaLon'] = address.longitude.toString();
     _queryParams['areaLat'] = address.latitude.toString();
-  }
-  if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
+  }*/
+ // if(permission == "LocationPermission.always" || permission == "LocationPermission.whileInUse"){
     // print("$latitude ----- $longitude");
     _queryParams['myLat'] = latitude;
     _queryParams['myLong'] = longitude;
     _queryParams['areaLat'] = latitude;
     _queryParams['areaLong'] = longitude;
-  }
+//  }
   _queryParams['with'] = 'users';
   uri = uri.replace(queryParameters: _queryParams);
   print(uri);
@@ -272,7 +272,7 @@ Future<Stream<Restaurant>> getRestaurant(String id, Address address) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) => Restaurant.fromJSON(data));
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).map((data) => Restaurant.fromJSON(data));
   //} catch (e) {
     // print(CustomTrace(StackTrace.current, message: uri.toString()).toString());
     return new Stream.value(new Restaurant.fromJSON({}));
@@ -286,7 +286,7 @@ Future<Stream<Review>> getRestaurantReviews(String id) async {
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
     // print("DONNE"+url);
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Review.fromJSON(data);
     });
   } catch (e) {
@@ -300,7 +300,7 @@ Future<Stream<Review>> getRecentReviews() async {
   try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Review.fromJSON(data);
     });
   } catch (e) {
@@ -357,6 +357,7 @@ Future<AddToFavouriteModel> addRestaurantToFavourite(String restaurantId, String
     final message = apiResponse.message;
     return apiResponse;
   } else {
+    throw Exception("failed to add");
     // print('Request failed with status: ${response.statusCode}');
   }
 }
@@ -383,6 +384,7 @@ Future<DeleteFromFavouriteModel> removeRestaurantFromFavourite(String favouriteI
     final message = apiResponse.message;
     return apiResponse;
   } else {
+    throw Exception("failed to remove");
     // print('Request failed with status: ${response.statusCode}');
   }
 }
@@ -395,7 +397,7 @@ Future<Map<String, dynamic>> fetchAllKitchens() async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
-  String permission = prefs.getString("permission");
+  String permission = prefs.getString("permission").toString();
  print( prefs.getDouble("selected_lat"));
   // print("current permission  + ${permission} ");
 /*  var location = new Location();
@@ -447,7 +449,7 @@ Future<Map<String, dynamic>> fetchAllKitchens() async {
     throw Exception('Failed to fetch kitchens');
   }
 }
-Future<Map<String, dynamic>> fetchAllKitchensfromcategory({String category_id}) async {
+Future<Map<String, dynamic>> fetchAllKitchensfromcategory({String? category_id}) async {
 
 
   // print("Fetch Kitchen is called ");
@@ -455,7 +457,7 @@ Future<Map<String, dynamic>> fetchAllKitchensfromcategory({String category_id}) 
   SharedPreferences prefs =await  SharedPreferences.getInstance();
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
-  String permission = prefs.getString("permission");
+  String permission = prefs.getString("permission").toString();
   print( prefs.getDouble("selected_lat"));
   // print("current permission  + ${permission} ");
 /*  var location = new Location();
@@ -516,7 +518,7 @@ Future<Map<String, dynamic>> fetchAllKitchensDelivery({int enjoy = 1}) async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
   String latitude = prefs.getDouble("selected_lat").toString();
   String longitude = prefs.getDouble("selected_lng").toString();
-  String permission = prefs.getString("permission");
+  String permission = prefs.getString("permission").toString();
   // print("current permission  + ${permission} ");
   Uri uri = Helper.getUri('api/kitchens');
   Map<String, dynamic> _queryParams = {};
@@ -552,9 +554,9 @@ Future<Map<String, dynamic>> fetchAllKitchensDelivery({int enjoy = 1}) async {
 Future<Map<String, dynamic>> fetchAllKitchensWithCuisine(String cuisinesQueryParam,
     String fromDineInorDelivery) async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
-  String latitude = prefs.getString("latitude");
-  String longitude = prefs.getString("longitude");
-  String permission = prefs.getString("permission");
+  String latitude = prefs.getString("latitude").toString();
+  String longitude = prefs.getString("longitude").toString();
+  String permission = prefs.getString("permission").toString();
   Uri uri = Helper.getUri('api/kitchens');
   Map<String, dynamic> _queryParams = {};
   _queryParams['with'] = 'active,popular';
@@ -616,9 +618,9 @@ Future<Map<String, dynamic>> fetchAllKitchensWithCuisine(String cuisinesQueryPar
 Future<Map<String, dynamic>> fetchAllKitchensWithLocation(String locationQueryParam,
     String fromDineInorDelivery) async {
   SharedPreferences prefs =await  SharedPreferences.getInstance();
-  String latitude = prefs.getString("latitude");
-  String longitude = prefs.getString("longitude");
-  String permission = prefs.getString("permission");
+  String latitude = prefs.getString("latitude").toString();
+  String longitude = prefs.getString("longitude").toString();
+  String permission = prefs.getString("permission").toString();
   Uri uri = Helper.getUri('api/kitchens');
   Map<String, dynamic> _queryParams = {};
   _queryParams['with'] = 'active,popular';

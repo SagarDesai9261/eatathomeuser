@@ -17,15 +17,19 @@ class FirebaseApi {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin  = FlutterLocalNotificationsPlugin();
   //function to initialise flutter local notification plugin to show notifications for android when app is active
   void initLocalNotifications(BuildContext context, RemoteMessage message)async{
+    var iosInitializationSettings = const DarwinInitializationSettings();
 
 
     var androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iosInitializationSettings = const DarwinInitializationSettings();
-
     var initializationSetting = InitializationSettings(
-        android: androidInitializationSettings ,
-        iOS: iosInitializationSettings
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings,
     );
+
+    // var initializationSetting = InitializationSettings(
+    //     android: androidInitializationSettings ,
+    //     iOS: iosInitializationSettings
+    // );
 
     await _flutterLocalNotificationsPlugin.initialize(
         initializationSetting,
@@ -42,13 +46,13 @@ class FirebaseApi {
 
     FirebaseMessaging.onMessage.listen((message) {
 
-      RemoteNotification notification = message.notification ;
-      AndroidNotification android = message.notification.android ;
+      RemoteNotification? notification = message.notification ;
+      AndroidNotification? android = message.notification!.android ;
 
       if (kDebugMode) {
         print(notification);
-        print("notifications title:${notification.title}");
-        print("notifications body:${notification.body}");
+        print("notifications title:${notification!.title}");
+        print("notifications body:${notification!.body}");
         //   print('count:${android!.count}');
         print('data:${message.data.toString()}');
       }
@@ -67,7 +71,7 @@ class FirebaseApi {
   }
   Future<void> setupInteractMessage(BuildContext context) async
   {
-    RemoteMessage initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if(initialMessage != null){
       handlemessage(context, initialMessage);
     }
@@ -111,8 +115,8 @@ class FirebaseApi {
   Future<void> showNotification(RemoteMessage message)async{
 
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      message.notification.android.channelId.toString(),
-      message.notification.android.channelId.toString() ,
+      message.notification!.android!.channelId.toString(),
+      message.notification!.android!.channelId.toString() ,
       importance: Importance.max  ,
       showBadge: true ,
       playSound: true,
@@ -135,7 +139,6 @@ class FirebaseApi {
         presentBadge: true ,
         presentSound: true
     ) ;
-
     NotificationDetails notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
         iOS: darwinNotificationDetails
@@ -144,27 +147,27 @@ class FirebaseApi {
     Future.delayed(Duration.zero , (){
       _flutterLocalNotificationsPlugin.show(
         0,
-        message.notification.title.toString(),
-        message.notification.body.toString(),
+        message.notification!.title.toString(),
+        message.notification!.body.toString(),
         notificationDetails ,
       );
     });
    // print("hello");
   //  print(message.notification.body.split("is ").last=="Preparing" || message.notification.body.split("is ").last=="Ready" || message.notification.body.split("is ").last=="Pickup" || message.notification.body.split("is ").last=="On the Way" || message.notification.body.split("is ").last=="Delivered");
-    if(message.notification.body.split("is ").last=="Preparing" || message.notification.body.split("is ").last=="Ready" || message.notification.body.split("is ").last=="Pickup" || message.notification.body.split("is ").last=="On the Way" || message.notification.body.split("is ").last=="Delivered" )
+    if(message.notification!.body!.split("is ").last=="Preparing" || message.notification!.body!.split("is ").last=="Ready" || message.notification!.body!.split("is ").last=="Pickup" || message.notification!.body!.split("is ").last=="On the Way" || message.notification!.body!.split("is ").last=="Delivered" )
     {
      // print("hello111");
       await Provider.of<OrderProvider>(
-          settingRepo.navigatorKey.currentState.context, listen: false)
+          settingRepo.navigatorKey.currentState!.context, listen: false)
           .fetchOrders();
     }
   }
 
   //function to get device token on which we will send the notifications
   Future<String> getDeviceToken() async {
-    String token = await messaging.getToken();
+    String? token = await messaging.getToken();
     print(token);
-    return token;
+    return token!;
   }
 
   void isTokenRefresh()async{
@@ -193,13 +196,13 @@ class FirebaseApi {
 
 
     if(json.decode(jsonString)["delivery_dinein"] == 1)
-   await settingRepo.navigatorKey.currentState.pushNamed('/Tracking',
+   await settingRepo.navigatorKey.currentState!.pushNamed('/Tracking',
        arguments: RouteArgument(
            id:orderid,
            heroTag:
            "1"));
     else if(json.decode(jsonString)["delivery_dinein"] == 2){
-      await settingRepo.navigatorKey.currentState.pushNamed('/TrackingForDinein',
+      await settingRepo.navigatorKey.currentState!.pushNamed('/TrackingForDinein',
           arguments: RouteArgument(
               id: orderid,
              // latitude:widget.order.res_latitude,

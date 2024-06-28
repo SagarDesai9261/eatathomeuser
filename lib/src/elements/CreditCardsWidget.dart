@@ -7,14 +7,14 @@ import '../models/credit_card.dart';
 
 // ignore: must_be_immutable
 class CreditCardsWidget extends StatelessWidget {
-  CreditCard creditCard;
+  CreditCard? creditCard;
   ValueChanged<CreditCard> onChanged;
 
   CreditCardsWidget({
     this.creditCard,
-    this.onChanged,
-    Key key,
-  }) : super(key: key);
+    required this.onChanged,
+
+  }) ;
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +82,9 @@ class CreditCardsWidget extends StatelessWidget {
                       minWidth: 50.0,
                       height: 10.0,
                       child: PaymentSettingsDialog(
-                        creditCard: creditCard,
+                        creditCard: creditCard!,
                         onChanged: () {
-                          onChanged(creditCard);
+                          onChanged(creditCard!);
                           //setState(() {});
                         },
                       ),
@@ -96,11 +96,11 @@ class CreditCardsWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption,
                 ),
                 Text(
-                  Helper.getCreditCardNumber(creditCard.number),
+                  Helper.getCreditCardNumber(creditCard!.number),
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1
-                      .merge(TextStyle(letterSpacing: 1.4)),
+                      !.merge(TextStyle(letterSpacing: 1.4)),
                 ),
                 SizedBox(height: 15),
                 Row(
@@ -120,18 +120,18 @@ class CreditCardsWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      '${creditCard.expMonth}/${creditCard.expYear}',
+                      '${creditCard!.expMonth}/${creditCard!.expYear}',
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1
-                          .merge(TextStyle(letterSpacing: 1.4)),
+                          !.merge(TextStyle(letterSpacing: 1.4)),
                     ),
                     Text(
-                      creditCard.cvc,
+                      creditCard!.cvc,
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1
-                          .merge(TextStyle(letterSpacing: 1.4)),
+                          !.merge(TextStyle(letterSpacing: 1.4)),
                     ),
                   ],
                 )

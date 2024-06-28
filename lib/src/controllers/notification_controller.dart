@@ -8,14 +8,14 @@ import '../repository/notification_repository.dart';
 class NotificationController extends ControllerMVC {
   List<model.Notification> notifications = <model.Notification>[];
   int unReadNotificationsCount = 0;
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
 
   NotificationController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
     listenForNotifications();
   }
 
-  void listenForNotifications({String message}) async {
+  void listenForNotifications({String? message}) async {
     final Stream<model.Notification> stream = await getNotifications();
     stream.listen((model.Notification _notification) {
       setState(() {
@@ -23,12 +23,12 @@ class NotificationController extends ControllerMVC {
       });
     }, onError: (a) {
      print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
@@ -37,7 +37,7 @@ class NotificationController extends ControllerMVC {
 
   Future<void> refreshNotifications() async {
     notifications.clear();
-    listenForNotifications(message: S.of(state.context).notifications_refreshed_successfuly);
+    listenForNotifications(message: S.of(state!.context).notifications_refreshed_successfuly);
   }
 
   void doMarkAsReadNotifications(model.Notification _notification) async {
@@ -46,8 +46,8 @@ class NotificationController extends ControllerMVC {
         --unReadNotificationsCount;
         _notification.read = !_notification.read;
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).thisNotificationHasMarkedAsRead),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).thisNotificationHasMarkedAsRead),
       ));
     });
   }
@@ -58,8 +58,8 @@ class NotificationController extends ControllerMVC {
         ++unReadNotificationsCount;
         _notification.read = !_notification.read;
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).thisNotificationHasMarkedAsUnread),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).thisNotificationHasMarkedAsUnread),
       ));
     });
   }
@@ -72,8 +72,8 @@ class NotificationController extends ControllerMVC {
         }
         this.notifications.remove(_notification);
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).notificationWasRemoved),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).notificationWasRemoved),
       ));
     });
   }

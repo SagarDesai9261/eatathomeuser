@@ -34,32 +34,32 @@ import 'package:food_delivery_app/src/repository/translation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class DeliveryPickupWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
-  dynamic currentTab;
+  final RouteArgument? routeArgument;
+  dynamic? currentTab;
   Widget currentPage = HomePage();
   bool isCurrentKitchen = true;
 
- // final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
+//  final GlobalKey<ScaffoldState> parentScaffoldKey = new GlobalKey<ScaffoldState>();
 
 
-  DeliveryPickupWidget({Key key, this.routeArgument, GlobalKey<ScaffoldState> parentScaffoldKey}) : super(key: key);
+  DeliveryPickupWidget({Key? key, this.routeArgument, GlobalKey<ScaffoldState>? parentScaffoldKey}) : super(key: key);
 
   @override
   _DeliveryPickupWidgetState createState() => _DeliveryPickupWidgetState();
 }
 
 class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
-  DeliveryPickupController _con;
-  HomeController _homeCon;
-  String param;
-  String defaultLanguage;
+  DeliveryPickupController? _con;
+  HomeController? _homeCon;
+  String? param;
+  String defaultLanguage = "";
 
   _DeliveryPickupWidgetState() : super(DeliveryPickupController()) {
-    _con = controller;
+    _con = controller as DeliveryPickupController?;
     _homeCon = HomeController();
   }
 
-  Map<String, dynamic> paymentIntent;
+  Map<String, dynamic>? paymentIntent;
 
   @override
   void initState() {
@@ -92,8 +92,8 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
   Widget build(BuildContext context) {
 
 
-    if (_con.list == null) {
-      _con.list = new PaymentMethodList(context);
+    if (_con!.list == null) {
+      _con!.list = new PaymentMethodList(context);
     }
     return Scaffold(
 
@@ -111,7 +111,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
           toLanguage: defaultLanguage,
           builder: (translatedMessage) => Text(
             translatedMessage,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
         actions: <Widget>[
@@ -170,9 +170,9 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
               ),
             ),
             PickUpMethodItem(
-                paymentMethod: _con.getPickUpMethod(),
+                paymentMethod: _con!.getPickUpMethod(),
                 onPressed: (paymentMethod) {
-                  _con.togglePickUp();
+                  _con!.togglePickUp();
                 }),
             Column(
               children: <Widget>[
@@ -202,9 +202,9 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                         style: Theme.of(context).textTheme.headline4,
                       ),
                     ),
-                    subtitle: _con.carts.isNotEmpty && Helper.canDelivery(_con.carts[0].food.restaurant, carts: _con.carts)
+                    subtitle: _con!.carts.isNotEmpty && Helper.canDelivery(_con!.carts[0].food!.restaurant!, carts: _con!.carts)
                         ? /*Text(
-                            S.of(context).click_to_confirm_your_address_and_pay_or_long_press,
+                            S.of(context).click_to_con!firm_your_address_and_pay_or_long_press,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.caption,
@@ -239,21 +239,21 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                     ),
                   ),
                 ),
-                _con.carts.isNotEmpty && Helper.canDelivery(_con.carts[0].food.restaurant, carts: _con.carts)
-                    ? DeliveryAddressesItemWidget(
-                        paymentMethod: _con.getDeliveryMethod(),
-                        address: _con.deliveryAddress,
+                _con!.carts.isNotEmpty && Helper.canDelivery(_con!.carts[0].food!.restaurant!, carts: _con!.carts)
+                    ? /*DeliveryAddressesItemWidget(
+                        paymentMethod: _con!.getDeliveryMethod(),
+                        address: _con!.deliveryAddress,
                         onPressed: (addressRepo.Address _address) {
-                          if (_con.deliveryAddress.id == null || _con.deliveryAddress.id == 'null') {
+                          if (_con!.deliveryAddress.id == null || _con!.deliveryAddress.id == 'null') {
                             DeliveryAddressDialog(
                               context: context,
                               address: _address,
                               onChanged: (addressRepo.Address _address) {
-                                _con.addAddress(_address);
+                                _con!.addAddress(_address);
                               },
                             );
                           } else {
-                            _con.toggleDelivery();
+                            _con!.toggleDelivery();
                           }
                         },
                         onLongPress: (addressRepo.Address _address) {
@@ -261,11 +261,12 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                             context: context,
                             address: _address,
                             onChanged: (addressRepo.Address _address) {
-                              _con.updateAddress(_address);
+                              _con!.updateAddress(_address);
                             },
                           );
                         },
-                      )
+                      )*/
+                Container()
                     : NotDeliverableAddressesItemWidget()
               ],
             ),
@@ -293,7 +294,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                     disabledColor:
                     Theme.of(context).focusColor.withOpacity(0.5),
                     padding: EdgeInsets.symmetric(vertical: 14),
-                    // color: !_con.carts[0].food.restaurant.closed
+                    // color: !_con!.carts[0].food.restaurant.closed
                     //     ? Theme.of(context).accentColor
                     //     : Theme.of(context).focusColor.withOpacity(0.5),
                     //shape: StadiumBorder(),
@@ -311,7 +312,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
                       builder: (translatedMessage) => Text(
                         translatedMessage,
                         textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.bodyText1.merge(
+                        style: Theme.of(context).textTheme.bodyText1!.merge(
                             TextStyle(
                                 color: Theme.of(context).primaryColor)),
                       ),
@@ -337,7 +338,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
           .initPaymentSheet(
 
           paymentSheetParameters: SetupPaymentSheetParameters(
-              paymentIntentClientSecret: paymentIntent[
+              paymentIntentClientSecret: paymentIntent![
               'client_secret'],
               //Gotten from payment intent
               style: ThemeMode.light,
@@ -484,7 +485,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HomePage(parentScaffoldKey: widget.routeArgument.parentScaffoldKey,
+                builder: (context) => HomePage(parentScaffoldKey: widget.routeArgument!.parentScaffoldKey!,
                   currentTab: tabItem, directedFrom: "forHome",)
             ),
           );
@@ -494,7 +495,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => KitchenListDeliveryWidget(restaurantsList: _homeCon.AllRestaurantsDelivery,
+                builder: (context) => KitchenListDeliveryWidget(restaurantsList: _homeCon!.AllRestaurantsDelivery,
                   heroTag: "KitchenListDelivery",)
             ),
           );
@@ -505,7 +506,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
             context,
             MaterialPageRoute(
               builder: (context) => CartWidget(
-                parentScaffoldKey: widget.routeArgument.parentScaffoldKey,
+                parentScaffoldKey: widget.routeArgument!.parentScaffoldKey,
               ),
             ),
           );

@@ -10,22 +10,22 @@ import 'package:food_delivery_app/src/repository/translation_widget.dart';
 import '../../src/helpers/app_config.dart' as config;
 // ignore: must_be_immutable
 class CartItemWidget extends StatefulWidget {
-  String heroTag;
-  Cart cart;
-  VoidCallback increment;
-  VoidCallback decrement;
-  VoidCallback onDismissed;
-  final Function onCartChanged;
+  String? heroTag;
+  Cart? cart;
+  VoidCallback? increment;
+  VoidCallback? decrement;
+  VoidCallback? onDismissed;
+  final Function? onCartChanged;
 
   CartItemWidget(
-      {Key key,
+      {
       this.cart,
       this.heroTag,
       this.increment,
       this.decrement,
         this.onCartChanged, // Add this callback
       this.onDismissed})
-      : super(key: key);
+      ;
 
   @override
   _CartItemWidgetState createState() => _CartItemWidgetState();
@@ -33,7 +33,7 @@ class CartItemWidget extends StatefulWidget {
 
 class _CartItemWidgetState extends State<CartItemWidget> {
 
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -54,10 +54,10 @@ class _CartItemWidgetState extends State<CartItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: Key(widget.cart.id),
+      key: Key(widget.cart!.id!),
       onDismissed: (direction) {
         setState(() {
-          widget.onDismissed();
+          widget.onDismissed!();
          // Call the callback when item is dismissed
         });
       },
@@ -86,7 +86,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                   height: 70,
                   width: 70,
                   fit: BoxFit.cover,
-                  imageUrl: widget.cart.food.image.thumb,
+                  imageUrl: widget.cart!.food!.image!.thumb,
                   placeholder: (context, url) => Image.asset(
                     'assets/img/loading.gif',
                     fit: BoxFit.cover,
@@ -122,7 +122,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                         )*/
 
                       Text(
-                            widget.cart.food.name??"",
+                            widget.cart!.food!.name??"",
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: Theme.of(context).textTheme.subtitle1,
@@ -133,11 +133,8 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           spacing: 5,
                           children: <Widget>[
-                            /*Helper.getPrice(widget.cart.food.price, context,
-                                style: Theme.of(context).textTheme.headline6,
-                                zeroPlaceholder: 'Free'),*/
-                           /* Text(widget.cart.food.price.toString()+" AED", style: TextStyle(fontSize: 15),),*/
-                            RichText(
+                            widget.cart!.food!.discountPrice > 0
+                                ? RichText(
                               text: TextSpan(
                                   text: "₹",
                                   style: TextStyle(
@@ -147,24 +144,57 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                                   ),
                                   children: [
                                     TextSpan(
-                                      text:  (widget.cart.food.price).toString(),
+                                      text: (widget.cart!.food!.discountPrice).toString(),
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        // color: Theme.of(context).accentColor, // Highlight the discount price
+                                      ),
+                                    ),
+                                  ]),
+                            )
+                                : SizedBox.shrink(),
+                            // Display the original price with a strikethrough if there's a discount
+                            widget.cart!.food!.discountPrice > 0
+                                ? RichText(
+                              text: TextSpan(
+                                  text: "₹",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).hintColor,
+                                    fontSize: 15,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: (widget.cart!.food!.price).toString(),
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ]),
+                            )
+                                : RichText(
+                              text: TextSpan(
+                                  text: "₹",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).hintColor,
+                                    fontSize: 15,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: (widget.cart!.food!.price).toString(),
                                       style: TextStyle(
                                         fontSize: 15,
                                       ),
                                     ),
                                   ]),
                             ),
-                            widget.cart.food.discountPrice > 0
-                                ? Helper.getPrice(
-                                    widget.cart.food.discountPrice, context,
-                                    style: TextStyle(fontSize: 12.0, color: config
-                                        .Colors().secondColor(1), height: 1.35)
-                                        .merge(TextStyle(
-                                            decoration:
-                                                TextDecoration.lineThrough)))
-                                : SizedBox(height: 0),
+                            // Display the discounted price if it exists
+                           // No widget if there's no discount
                           ],
                         ),
+
                       ],
                     ),
                   ),
@@ -183,7 +213,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                widget.decrement();
+                                widget.decrement!();
                               //    widget.onCartChanged(); // Call the callback when item is increased
                               });
                             },
@@ -195,7 +225,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                         ),
                         SizedBox(
                           height: 20,
-                          child: Text(widget.cart.quantity.toInt().toString(),
+                          child: Text(widget.cart!.quantity!.toInt().toString(),
                               style: Theme.of(context).textTheme.subtitle1),
                         ),
                         SizedBox(
@@ -203,7 +233,7 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                           child: IconButton(
                             onPressed: () {
                               setState(() {
-                                widget.increment();
+                                widget.increment!();
                                 //  widget.onCartChanged(); // Call the callback when item is increased
                               });
                             },

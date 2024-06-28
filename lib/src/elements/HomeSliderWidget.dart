@@ -16,12 +16,12 @@ class HomeSliderWidget extends StatefulWidget {
   @override
   _HomeSliderWidgetState createState() => _HomeSliderWidgetState();
 
-  HomeSliderWidget({Key key, this.slides}) : super(key: key);
+  HomeSliderWidget({Key? key, required this.slides}) : super(key: key);
 }
 
 class _HomeSliderWidgetState extends State<HomeSliderWidget> {
   int _current = 0;
-  AlignmentDirectional _alignmentDirectional;
+  AlignmentDirectional? _alignmentDirectional;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class _HomeSliderWidgetState extends State<HomeSliderWidget> {
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline6
-                                            .merge(
+                                            !.merge(
                                               TextStyle(
                                                 fontSize: 14,
                                                 height: 1,

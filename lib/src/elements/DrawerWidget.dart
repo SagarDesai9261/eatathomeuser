@@ -13,7 +13,10 @@ import 'package:freshchat_sdk/freshchat_sdk.dart';
 import 'package:freshchat_sdk/freshchat_user.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../my_widget/Pricing_Checkout_Policy.dart';
+import '../../my_widget/RefundCancellationPolicyScreen.dart';
+import '../../my_widget/privacy_policy.dart';
+import '../../src/helpers/app_config.dart' as config;
 import '../../generated/l10n.dart';
 import '../controllers/homr_test.dart';
 import '../controllers/profile_controller.dart';
@@ -57,7 +60,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
   final APPID = "ccd5820a-d45f-4698-8c06-81be62a9b153";
   final APPKEY = "32d74b1d-29ff-40ed-9355-2b97c0b20670";
   final DOMAIN = "msdk.in.freshchat.com";
-  FreshchatUser user;
+  FreshchatUser? user;
   String firstName = "",
       lastName = "",
       email = "",
@@ -82,7 +85,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
       parallelConversationTopicName1 = "",
       parallelConversationReferenceID2 = "",
       parallelConversationTopicName2 = "";
-  StreamSubscription restoreStreamSubscription,
+  StreamSubscription? restoreStreamSubscription,
       fchatEventStreamSubscription,
       unreadCountSubscription,
       linkOpenerSubscription,
@@ -91,9 +94,9 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
   Map eventProperties = {}, unreadCountStatus = {};
   void registerFcmToken() async {
     if (Platform.isAndroid) {
-      String token = await FirebaseMessaging.instance.getToken();
+      String? token = await FirebaseMessaging.instance.getToken();
       print("FCM Token is generated $token");
-      Freshchat.setPushRegistrationToken(token);
+      Freshchat.setPushRegistrationToken(token!);
     }
   }
   @override
@@ -130,7 +133,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
     restoreStreamSubscription = restoreStream.listen((event) async {
       print("Inside Restore stream: Restore Id generated");
       FreshchatUser user = await Freshchat.getUser;
-      String restoreId = user.getRestoreId();
+      String? restoreId = user.getRestoreId();
       if (restoreId != null) {
         print("Restore Id: $restoreId");
         Clipboard.setData(new ClipboardData(text: restoreId));
@@ -212,11 +215,11 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              currentUser.value.apiToken != null
+              currentUser.value.apiToken != ""
                   ? Navigator.of(context).pushNamed('/Settings')
                   : Navigator.of(context).pushNamed('/Login');
             },
-            child: currentUser.value.apiToken != null
+            child: currentUser.value.apiToken != ""
                 ? Container(
                   height: 100,
                   child: UserAccountsDrawerHeader(
@@ -279,7 +282,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                         Icon(
                           Icons.person,
                           size: 32,
-                          color: Theme.of(context).accentColor.withOpacity(1),
+                          color:config.Colors().mainColor(1),
                         ),
                         SizedBox(width: 30),
                         Text(
@@ -339,7 +342,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
           ),*/
           ListTile(
             onTap: () {
-              if (currentUser.value.apiToken != null) {
+              if (currentUser.value.apiToken != "") {
                 Navigator.of(context).pushNamed('/orderPage', arguments: 0);
               } else {
                 Navigator.of(context).pushNamed('/Login');
@@ -407,7 +410,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
           ListTile(
             onTap: () async{
               //Navigator.of(context).pushNamed('/Help');
-              if (currentUser.value.apiToken != null) {
+              if (currentUser.value.apiToken != "") {
                 print("supportTicketId   ::"+supportTicketId.toString());
                /* if(supportTicketId.toString() == "null")
                   {
@@ -421,7 +424,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
 
                // Freshchat.getFreshchatUserId;
                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                String restoreId = currentUser.value.restoreid;
+                String? restoreId = currentUser.value.restoreid;
 
               if (restoreId == null) {
                   // Generate a new restore ID
@@ -432,10 +435,10 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                 }
                 print("restoreId :- ${currentUser.value.restoreid}");
                // restoreId = await Freshchat.getFreshchatUserId;
-                String value = restoreId;
-                user.setFirstName(currentUser.value.name);
-                user.setEmail(currentUser.value.email);
-                user.setPhone("+91", currentUser.value.phone);
+                String? value = restoreId;
+                user!.setFirstName(currentUser.value.name);
+                user!.setEmail(currentUser.value.email);
+                user!.setPhone("+91", currentUser.value.phone);
                 if (restoreId == ""){
                   Freshchat.identifyUser(externalId: currentUser.value.email);
                 }
@@ -446,7 +449,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
 
 
                 print("object ==> $value");
-                Freshchat.setUser(user);
+                Freshchat.setUser(user!);
 
 
                 Freshchat.showConversations(filteredViewTitle:"Premium Support",tags:["premium"]);
@@ -457,8 +460,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                   FreshchatUser user = await Freshchat.getUser;
                      restoreId = user.getRestoreId();
                  // restoreId = await Freshchat.getFreshchatUserId;
-                  await prefs.setString('restoreId', restoreId);
-                  await saveRestoreId(restoreId);
+                  await prefs.setString('restoreId', restoreId!);
+                  await saveRestoreId(restoreId!);
                 }
 
                 /*  //  String value = await Freshchat.getFreshchatUserId;
@@ -486,7 +489,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
           ),
           ListTile(
             onTap: () {
-              if (currentUser.value.apiToken != null) {
+              if (currentUser.value.apiToken != "") {
                 Navigator.of(context).pushNamed('/Settings');
               } else {
                 Navigator.of(context).pushNamed('/Login');
@@ -501,6 +504,64 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PrivacyPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Privacy and Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PricingCheckoutPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security_outlined,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Pricing & Checkout Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+          ListTile(
+            onTap: () {
+              /*Navigator.of(context).pushNamed('/Favorites');*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RefundCancellationPolicyScreen()
+                ),
+              );
+            },
+            leading: Icon(
+              Icons.security_rounded,
+              color: Theme.of(context).focusColor.withOpacity(1),
+            ),
+            title: Text(
+              "Refund & Cancellation Policy",
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ),
+
           // ListTile(
           //   onTap: () {
           //     Navigator.of(context).pushNamed('/Languages');
@@ -538,8 +599,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
           // ),
           ListTile(
             onTap: () {
-
-              if (currentUser.value.apiToken != null) {
+              print("currentUser.value.apiToken = ${currentUser.value.apiToken}");
+              if (currentUser.value.apiToken != "") {
                 showDialog(context: context, builder: (context) {
                   return AlertDialog(
                     title: const Text("Are you sure you want to logout?"),
@@ -550,7 +611,9 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                         Provider.of<OrderProvider>(context,listen: false).closeorder();
                         Provider.of<CartProvider>(context,listen: false).clear_cart();
               //          Freshchat.resetUser();
+                        print("calling");
                         logout().then((value) {
+                          print("clear");
                           prefs.clear();
 
                           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -576,13 +639,13 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
             title: Text(
-              currentUser.value.apiToken != null
+              currentUser.value.apiToken != ""
                   ? S.of(context).log_out
                   : S.of(context).login,
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
-          currentUser.value.apiToken == null
+          currentUser.value.apiToken == ""
               ? ListTile(
                   onTap: () {
                     Navigator.of(context).pushNamed('/SignUp');

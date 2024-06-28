@@ -6,16 +6,16 @@ import '../models/route_argument.dart';
 import '../repository/user_repository.dart';
 
 class ShoppingCartFloatButtonWidget extends StatefulWidget {
-  const ShoppingCartFloatButtonWidget({
+   ShoppingCartFloatButtonWidget({
     this.iconColor,
     this.labelColor,
     this.routeArgument,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
-  final Color iconColor;
-  final Color labelColor;
-  final RouteArgument routeArgument;
+  Color? iconColor;
+  Color? labelColor;
+  RouteArgument? routeArgument;
 
   @override
   _ShoppingCartFloatButtonWidgetState createState() =>
@@ -24,15 +24,15 @@ class ShoppingCartFloatButtonWidget extends StatefulWidget {
 
 class _ShoppingCartFloatButtonWidgetState
     extends StateMVC<ShoppingCartFloatButtonWidget> {
-  CartController _con;
+  CartController? _con;
 
   _ShoppingCartFloatButtonWidgetState() : super(CartController()) {
-    _con = controller;
+    _con = controller as CartController?;
   }
 
   @override
   void initState() {
-    _con.listenForCartsCount();
+    _con!.listenForCartsCount();
     super.initState();
   }
 
@@ -43,10 +43,10 @@ class _ShoppingCartFloatButtonWidgetState
       height: 60,
       child: MaterialButton(
         padding: EdgeInsets.all(0),
-        color: Theme.of(context).accentColor,
+       // color: Theme.of(context).accentColor,
         shape: StadiumBorder(),
         onPressed: () {
-          if (currentUser.value.apiToken != null) {
+          if (currentUser.value.apiToken != "") {
             Navigator.of(context)
                 .pushNamed('/Cart', arguments: widget.routeArgument);
           } else {
@@ -63,9 +63,9 @@ class _ShoppingCartFloatButtonWidgetState
             ),
             Container(
               child: Text(
-                _con.cartCount.toString(),
+                _con!.cartCount.toString(),
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption.merge(
+                style: Theme.of(context).textTheme.caption!.merge(
                       TextStyle(
                           color: Theme.of(context).primaryColor, fontSize: 9),
                     ),

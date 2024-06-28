@@ -6,47 +6,48 @@ class Extra {
   String extraGroupId;
   String name;
   double price;
-  Media image;
+  Media? image;
   String description;
   bool checked;
 
-  Extra();
+  Extra({
+    this.id = '',
+    this.extraGroupId = '0',
+    this.name = '',
+    this.price = 0.0,
+    this.description = '',
+    this.checked = false,
+    this.image ,
+  });
 
-  Extra.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      extraGroupId = jsonMap['extra_group_id'] != null ? jsonMap['extra_group_id'].toString() : '0';
-      name = jsonMap['name'].toString();
-      price = jsonMap['price'] != null ? jsonMap['price'].toDouble() : 0;
-      description = jsonMap['description'];
-      checked = false;
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
-    } catch (e) {
-      id = '';
-      extraGroupId = '0';
-      name = '';
-      price = 0.0;
-      description = '';
-      checked = false;
-      image = new Media();
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Extra.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        extraGroupId = jsonMap['extra_group_id']?.toString() ?? '0',
+        name = jsonMap['name'].toString(),
+        price = jsonMap['price']?.toDouble() ?? 0.0,
+        description = jsonMap['description'] ?? '',
+        checked = false,
+        image = jsonMap['media'] != null && (jsonMap['media'] as List).isNotEmpty
+            ? Media.fromJSON(jsonMap['media'][0])
+            : Media();
 
-  Map toMap() {
-    var map = new Map<String, dynamic>();
-    map["id"] = id;
-    map["name"] = name;
-    map["price"] = price;
-    map["description"] = description;
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{
+      'id': id,
+      'extra_group_id': extraGroupId,
+      'name': name,
+      'price': price,
+      'description': description,
+    };
     return map;
   }
 
   @override
   bool operator ==(dynamic other) {
-    return other.id == this.id;
+    if (identical(this, other)) return true;
+    return other is Extra && other.id == id;
   }
 
   @override
-  int get hashCode => this.id.hashCode;
+  int get hashCode => id.hashCode;
 }

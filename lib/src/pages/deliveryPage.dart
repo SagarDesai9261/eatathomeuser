@@ -11,24 +11,24 @@ import '../models/route_argument.dart';
 import '../repository/settings_repository.dart';
 
 class DeliveryPage extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  DeliveryPage({Key key, this.routeArgument}) : super(key: key);
+  DeliveryPage({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _DeliveryPageState createState() => _DeliveryPageState();
 }
 
 class _DeliveryPageState extends StateMVC<DeliveryPage> {
-  CartController _con;
+  CartController? _con;
 
   _DeliveryPageState() : super(CartController()) {
-    _con = controller;
+    _con = controller as CartController?;
   }
 
   @override
   void initState() {
-    _con.listenForCarts();
+    _con!.listenForCarts();
     super.initState();
   }
 
@@ -37,8 +37,8 @@ class _DeliveryPageState extends StateMVC<DeliveryPage> {
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
-        key: _con.scaffoldKey,
-        //bottomNavigationBar: CartBottomDetailsWidget(con: _con),
+        key: _con!.scaffoldKey,
+        //bottomNavigationBar: CartBottomDetailsWidget(con: _con!),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -59,12 +59,12 @@ class _DeliveryPageState extends StateMVC<DeliveryPage> {
           centerTitle: true,
           title: Text(
             S.of(context).delivery,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
         body: RefreshIndicator(
-          onRefresh: _con.refreshCarts,
-          child: _con.carts.isEmpty
+          onRefresh: _con!.refreshCarts,
+          child: _con!.carts.isEmpty
               ? EmptyCartWidget()
               : Stack(
                   alignment: AlignmentDirectional.bottomCenter,
@@ -101,26 +101,26 @@ class _DeliveryPageState extends StateMVC<DeliveryPage> {
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             primary: false,
-                            itemCount: _con.carts.length,
+                            itemCount: _con!.carts.length,
                             separatorBuilder: (context, index) {
                               return SizedBox(height: 15);
                             },
                             itemBuilder: (context, index) {
                               return CartItemWidget(
-                                cart: _con.carts.elementAt(index),
+                                cart: _con!.carts.elementAt(index),
                                 heroTag: 'cart',
                                 increment: () {
-                                  _con.incrementQuantity(_con.carts.elementAt(index));
+                                  _con!.incrementQuantity(_con!.carts.elementAt(index));
                                 },
                                 decrement: () {
-                                  _con.decrementQuantity(_con.carts.elementAt(index));
+                                  _con!.decrementQuantity(_con!.carts.elementAt(index));
                                 },
                                 onDismissed: () {
-                                  _con.removeFromCart(_con.carts.elementAt(index));
-                                  //_con.refreshCarts();
+                                  _con!.removeFromCart(_con!.carts.elementAt(index));
+                                  //_con!.refreshCarts();
                                 },
                                 onCartChanged: () {
-                                  _con.refreshCarts();
+                                  _con!.refreshCarts();
                                 },
                               );
                             },
@@ -138,7 +138,7 @@ class _DeliveryPageState extends StateMVC<DeliveryPage> {
                     //   child: TextField(
                     //     keyboardType: TextInputType.text,
                     //     onSubmitted: (String value) {
-                    //       _con.doApplyCoupon(value);
+                    //       _con!.doApplyCoupon(value);
                     //     },
                     //     cursorColor: Theme.of(context).accentColor,
                     //     controller: TextEditingController()..text = coupon?.code ?? '',
@@ -147,12 +147,12 @@ class _DeliveryPageState extends StateMVC<DeliveryPage> {
                     //       floatingLabelBehavior: FloatingLabelBehavior.always,
                     //       hintStyle: Theme.of(context).textTheme.bodyText1,
                     //       suffixText: coupon?.valid == null ? '' : (coupon.valid ? S.of(context).validCouponCode : S.of(context).invalidCouponCode),
-                    //       suffixStyle: Theme.of(context).textTheme.caption.merge(TextStyle(color: _con.getCouponIconColor())),
+                    //       suffixStyle: Theme.of(context).textTheme.caption.merge(TextStyle(color: _con!.getCouponIconColor())),
                     //       suffixIcon: Padding(
                     //         padding: const EdgeInsets.symmetric(horizontal: 15),
                     //         child: Icon(
                     //           Icons.confirmation_number,
-                    //           color: _con.getCouponIconColor(),
+                    //           color: _con!.getCouponIconColor(),
                     //           size: 28,
                     //         ),
                     //       ),

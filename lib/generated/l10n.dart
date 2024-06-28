@@ -15,9 +15,9 @@ import 'intl/messages_all.dart';
 class S {
   S();
 
-  static S _current;
+  static S? _current;
 
-  static S get current {
+  static S? get current {
     assert(_current != null,
         'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.');
     return _current;
@@ -47,7 +47,7 @@ class S {
   }
 
   static S maybeOf(BuildContext context) {
-    return Localizations.of<S>(context, S);
+    return Localizations.of<S>(context, S)!;
   }
 
   /// `Search for restaurants or foods`

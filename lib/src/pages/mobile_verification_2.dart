@@ -1,22 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../elements/BlockButtonWidget.dart';
 import '../helpers/app_config.dart' as config;
 import '../repository/user_repository.dart';
 
 class MobileVerification2 extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-  final ValueChanged<void> onVerified;
+  final ValueChanged<void>? onVerified;
 
-  MobileVerification2({Key key, this.onVerified}) : super(key: key);
+  MobileVerification2({Key? key, this.onVerified}) : super(key: key);
 
   @override
   _MobileVerification2State createState() => _MobileVerification2State();
 }
 
 class _MobileVerification2State extends State<MobileVerification2> {
-  String smsSent;
+  String? smsSent;
 
   @override
   Widget build(BuildContext context) {
@@ -73,28 +74,28 @@ class _MobileVerification2State extends State<MobileVerification2> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 80),
-            new BlockButtonWidget(
+           /* new BlockButtonWidget(
               onPressed: () async {
-                User user = FirebaseAuth.instance.currentUser;
+                User user = FirebaseAuth.instance.currentUser!;
                 // print(user.toString());
                 if (user != null) {
                   widget.onVerified;
                 } else {
-                  final AuthCredential credential = PhoneAuthProvider.credential(verificationId: currentUser.value.verificationId, smsCode: smsSent);
+                  final AuthCredential credential = PhoneAuthProvider.credential(verificationId: currentUser.value.verificationId!, smsCode: smsSent!);
 
                   await FirebaseAuth.instance.signInWithCredential(credential).then((user) {
                     widget.onVerified;
                   }).catchError((e) {
-                    ScaffoldMessenger.of(widget.scaffoldKey?.currentContext).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(widget.scaffoldKey.currentContext!).showSnackBar(SnackBar(
                       content: Text(e.toString()),
                     ));
                     // print(e);
                   });
                 }
               },
-              color: Theme.of(context).accentColor,
-              text: Text(S.of(context).verify.toUpperCase(), style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).primaryColor))),
-            ),
+              color: mainColor(1),
+              text: Text(S.of(context).verify.toUpperCase(), style: Theme.of(context).textTheme.headline6!.merge(TextStyle(color: Theme.of(context).primaryColor))),
+            ),*/
           ],
         ),
       ),

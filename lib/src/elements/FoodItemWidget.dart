@@ -11,13 +11,12 @@ class FoodItemWidget extends StatelessWidget {
   final VoidCallback onTap;
   final bool fieldenable;
 
-  const FoodItemWidget({Key key, this.food, this.heroTag,this.onTap,this.fieldenable}) : super(key: key);
+  const FoodItemWidget({required this.food,required this.heroTag,required this.onTap,required this.fieldenable}) ;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
+
       highlightColor: Theme.of(context).primaryColor,
       /*onTap: () {
         Navigator.of(context).pushNamed('/Food',
@@ -61,7 +60,7 @@ class FoodItemWidget extends StatelessWidget {
                       height: 120,
                       width: 100,
                       fit: BoxFit.cover,
-                      imageUrl: food.image.thumb,
+                      imageUrl: food.image!.thumb,
                       placeholder: (context, url) => Image.asset(
                         'assets/img/loading.gif',
                         fit: BoxFit.cover,
@@ -80,7 +79,7 @@ class FoodItemWidget extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text("${food.restaurant.name}",style: TextStyle(
+                              Text("${food.restaurant!.name}",style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold
                               ),
@@ -104,7 +103,7 @@ class FoodItemWidget extends StatelessWidget {
                               ),*/
                               SizedBox(height: 10,),
                             if(fieldenable)
-                            food.restaurant.closed == "1"?  Text(
+                            food.restaurant!.closed == "1"?  Text(
                               "Currently not accepting order",
                               style: TextStyle(color: Colors.redAccent),
                             ) :  Row(
@@ -271,7 +270,7 @@ class FoodItemWidget extends StatelessWidget {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyText2
-                                        .merge(TextStyle(
+                                        !.merge(TextStyle(
                                             decoration: TextDecoration.lineThrough)))
                                 : SizedBox(height: 0),
                           ],

@@ -18,7 +18,7 @@ import '../repository/user_repository.dart' as userRepo;
 
 ValueNotifier<userModel.User> currentUser = new ValueNotifier(userModel.User());
 
-Future<userModel.User> login(userModel.User user, BuildContext context) async {
+Future<userModel.User?> login(userModel.User user, BuildContext context) async {
   print("sdsdsdsf ====>   " + user.deviceToken);
   final String url = '${GlobalConfiguration().getValue('api_base_url')}login';
   final client = new http.Client();
@@ -32,7 +32,7 @@ Future<userModel.User> login(userModel.User user, BuildContext context) async {
   print(json.encode(user.toMap()));
   if (response.statusCode == 200 ||
       json.decode(response.body)["success"] == true) {
-    print(json.decode(response.body));
+    print(json.decode(response.body)["data"]["media"]);
     print(json.decode(response.body)["data"]["email_verified"]);
     print(json.decode(response.body)["data"]["email_verified"].runtimeType);
     print(json.decode(response.body)["data"]["email_verified"] == "0");
@@ -244,12 +244,12 @@ Future<void> setCreditCard(CreditCard creditCard) async {
 Future<userModel.User> getCurrentUser() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //prefs.clear();
-  if (currentUser.value.auth == null && prefs.containsKey('current_user')) {
+  if ( prefs.containsKey('current_user')) {
     currentUser.value =
-        userModel.User.fromJSON(json.decode(await prefs.get('current_user')));
-    currentUser.value.auth = true;
+        userModel.User.fromJSON(json.decode(await prefs.get('current_user') as String));
+   // currentUser.value.auth = true;
   } else {
-    currentUser.value.auth = false;
+    //currentUser.value.auth = false;
   }
   // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
   currentUser.notifyListeners();
@@ -261,7 +261,7 @@ Future<CreditCard> getCreditCard() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if (prefs.containsKey('credit_card')) {
     _creditCard =
-        CreditCard.fromJSON(json.decode(await prefs.get('credit_card')));
+        CreditCard.fromJSON(json.decode(await prefs.get('credit_card') as String));
   }
   return _creditCard;
 }
@@ -305,7 +305,7 @@ Future<userModel.User> update(userModel.User user, File identityFile) async {
     setCurrentUser(response.body);
     currentUser.value =
         userModel.User.fromJSON(json.decode(response.body)['data']);
-    print(currentUser.value.image.url);
+    print(currentUser.value.image!.url);
     return currentUser.value;
   } else {
     throw Exception('Failed to update user: ${response.reasonPhrase}');
@@ -324,7 +324,7 @@ Future<Stream<Address>> getAddresses() async {
   return streamedRest.stream
       .transform(utf8.decoder)
       .transform(json.decoder)
-      .map((data) => Helper.getData(data))
+      .map((data) => Helper.getData(data as Map<String,dynamic>))
       .expand((data) => (data as List))
       .map((data) {
     return Address.fromJSON(data);

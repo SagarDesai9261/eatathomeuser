@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:mvc_pattern/mvc_pattern.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../../generated/l10n.dart';
 import '../../utils/color.dart';
 import '../controllers/tracking_controller.dart';
@@ -18,9 +18,9 @@ import '../models/route_argument.dart';
 import '../../src/helpers/app_config.dart' as config;
 
 class TrackingWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  TrackingWidget({Key key, this.routeArgument}) : super(key: key);
+  TrackingWidget({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _TrackingWidgetState createState() => _TrackingWidgetState();
@@ -28,37 +28,37 @@ class TrackingWidget extends StatefulWidget {
 
 class _TrackingWidgetState extends StateMVC<TrackingWidget>
     with SingleTickerProviderStateMixin {
-  TrackingController _con;
-  TabController _tabController;
+  TrackingController? _con;
+  TabController? _tabController;
   int _tabIndex = 0;
   Map<String, dynamic> driverDetails = {} ;
   String driverName = "";
   String vehicleNumber = "";
   String mobile = "";
   _TrackingWidgetState() : super(TrackingController()) {
-    _con = controller;
+    _con = controller as TrackingController?;
   }
 
   @override
   void initState() {
-    _con.listenForOrder(orderId: widget.routeArgument.id);
+    _con!.listenForOrder(orderId: widget.routeArgument!.id);
     _tabController = TabController(
-        length: widget.routeArgument.heroTag == "1" ? 2 : 1,
+        length: widget.routeArgument!.heroTag == "1" ? 2 : 1,
         initialIndex: _tabIndex,
         vsync: this);
-    _tabController.addListener(_handleTabSelection);
+    _tabController!.addListener(_handleTabSelection);
     super.initState();
   }
 
   void dispose() {
-    _tabController.dispose();
+    _tabController!.dispose();
     super.dispose();
   }
 
   _handleTabSelection() {
-    if (_tabController.indexIsChanging) {
+    if (_tabController!.indexIsChanging) {
       setState(() {
-        _tabIndex = _tabController.index;
+        _tabIndex = _tabController!.index;
       });
     }
   }
@@ -69,7 +69,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
 
   @override
   Widget build(BuildContext context) {
-  /*  driverDetails = json.decode(_con.order.driver_details);
+  /*  driverDetails = json.decode(_con!.order.driver_details);
     if (driverDetails != null && driverDetails.isNotEmpty) {
       driverName = driverDetails['driver_name'];
       vehicleNumber = driverDetails['vehicle_number'];
@@ -82,9 +82,9 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
     final theme = Theme.of(context).copyWith(dividerColor: Colors.transparent);
     // print("dineindelivery type: " + widget.routeArgument.heroTag);
     return DefaultTabController(
-      length: widget.routeArgument.heroTag == "1" ? 2 : 1,
+      length: widget.routeArgument!.heroTag == "1" ? 2 : 1,
       child: Scaffold(
-          key: _con.scaffoldKey,
+          key: _con!.scaffoldKey,
           bottomNavigationBar: Container(
             width: MediaQuery.of(context).size.width,
             height: 135,
@@ -99,7 +99,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                       offset: Offset(0, -2),
                       blurRadius: 5.0)
                 ]),
-            child: _con.order == null || _con.orderStatus.isEmpty
+            child: _con!.order == null || _con!.orderStatus.isEmpty
                 ? CircularLoadingWidget(height: 120)
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,7 +120,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                         onPressed: () {
                           Navigator.of(context).pushNamed('/Reviews',
                               arguments: RouteArgument(
-                                  id: _con.order.id,
+                                  id: _con!.order!.id,
                                   heroTag: "restaurant_reviews"));
                         },
                         padding: EdgeInsets.symmetric(vertical: 5),
@@ -129,19 +129,19 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: Helper.getStarsList(
                               double.parse(
-                                  _con.order.foodOrders[0].food.restaurant.rate),
+                                  _con!.order!.foodOrders![0].food!.restaurant!.rate!),
                               size: 35),
                         ),
                       ),
                     ],
                   ),
           ),
-          body: _con.order == null || _con.orderStatus.isEmpty
+          body: _con!.order == null || _con!.orderStatus.isEmpty
               ? CircularLoadingWidget(height: 400)
               : RefreshIndicator(
             onRefresh: ()async{
-              _con.listenForOrder(orderId: widget.routeArgument.id,message: "refresh");
-              _con.isRefresh = true;
+              _con!.listenForOrder(orderId: widget.routeArgument!.id,message: "refresh");
+              _con!.isRefresh = true;
             },
                 child: CustomScrollView(slivers: <Widget>[
                     SliverAppBar(
@@ -153,7 +153,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                         style: Theme.of(context)
                             .textTheme
                             .headline6
-                            .merge(TextStyle(letterSpacing: 1.3)),
+                            !.merge(TextStyle(letterSpacing: 1.3)),
                       ),
                       /*actions: <Widget>[
                         new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
@@ -181,7 +181,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                               end: Alignment.bottomRight,
                             ),
                           ),
-                          tabs: widget.routeArgument.heroTag == "1"
+                          tabs: widget.routeArgument!.heroTag == "1"
                               ? [
                                   Tab(
                                     child: Container(
@@ -233,7 +233,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                               alignment: AlignmentDirectional.topCenter,
                               children: <Widget>[
                                 Opacity(
-                                  opacity: _con.order.active ? 1 : 0.4,
+                                  opacity: _con!.order!.active! ? 1 : 0.4,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
@@ -261,14 +261,14 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                             title: Column(
                                               children: <Widget>[
                                                 Text(
-                                                  '${S.of(context).order_id}: #${_con.order.id}',
+                                                  '${S.of(context).order_id}: #${_con!.order!.id}',
                                                   style: TextStyle(
                                                       foreground: Paint()
                                                         ..shader = linearGradient),
                                                 ),
                                                 Text(
                                                   DateFormat('dd-MM-yyyy | HH:mm')
-                                                      .format(_con.order.dateTime),
+                                                      .format(_con!.order!.dateTime!),
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .caption,
@@ -287,14 +287,14 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                               children: <Widget>[
                                                 Helper.getPrice(
                                                     Helper.getTotalOrdersPrice(
-                                                        _con.order),
+                                                        _con!.order!),
                                                     context,
                                                     style:  TextStyle(fontSize: 18.0,
                                                         fontWeight: FontWeight.w600,
                                                         color: config.Colors().secondColor(1),
                                                         height: 1.35)),
                                                 Text(
-                                                  '${_con.order.payment.method}',
+                                                  '${_con!.order!.payment!.method}',
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .caption,
@@ -304,14 +304,14 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                             children: <Widget>[
                                               Column(
                                                   children: List.generate(
-                                                _con.order.foodOrders.length,
+                                                _con!.order!.foodOrders!.length,
                                                 (indexFood) {
                                                   return FoodOrderItemWidget(
                                                       heroTag: 'my_order',
-                                                      order: _con.order,
-                                                      foodOrder: _con
-                                                          .order.foodOrders
-                                                          .elementAt(indexFood));
+                                                      order: _con!.order!,
+                                                      foodOrder: _con!
+                                                          .order!.foodOrders
+                                                          !.elementAt(indexFood));
                                                 },
                                               )),
                                               Padding(
@@ -330,7 +330,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                           ),
                                                         ),
                                                         Helper.getPrice(
-                                                            _con.order.deliveryFee,
+                                                            _con!.order!.deliveryFee!,
                                                             context,
                                                             style: TextStyle(fontSize: 15.0,
                                                                 fontWeight: FontWeight.w500,
@@ -338,12 +338,12 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                                 height: 1.35))
                                                       ],
                                                     ),
-                                                    if(_con.order.coupon_code != "")
+                                                    if(_con!.order!.coupon_code != "")
                                                     Row(
                                                       children: <Widget>[
                                                         Expanded(
                                                           child: Text(
-                                                            "Applied Coupon(${_con.order.coupon_code})",
+                                                            "Applied Coupon(${_con!.order!.coupon_code})",
                                                             style: Theme.of(context)
                                                                 .textTheme
                                                                 .bodyText1,
@@ -356,10 +356,10 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                             text: TextSpan(
                                                               text: "-₹",
                                                               style:
-                                                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize,color: kFBBlue),
+                                                              TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1!.fontSize,color: kFBBlue),
 
                                                               children: <TextSpan>[
-                                                                TextSpan(text: _con.order.coupon_amount ?? '', style:  Theme.of(context).textTheme.subtitle1),
+                                                                TextSpan(text: _con!.order!.coupon_amount ?? '', style:  Theme.of(context).textTheme.subtitle1),
                                                               ],
                                                             )
 
@@ -379,7 +379,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                         ),
                                                         Helper.getPrice(
                                                             Helper.getTaxOrder(
-                                                                _con.order),
+                                                                _con!.order!),
                                                             context,
                                                             style: TextStyle(fontSize: 15.0,
                                                                 fontWeight: FontWeight.w500,
@@ -400,7 +400,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                         Helper.getPrice(
                                                             Helper
                                                                 .getTotalOrdersPrice(
-                                                                    _con.order),
+                                                                    _con!.order!),
                                                             context,
                                                             style: TextStyle(fontSize: 18.0,
                                                                 fontWeight: FontWeight.w600,
@@ -419,7 +419,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                         child: Wrap(
                                           alignment: WrapAlignment.end,
                                           children: <Widget>[
-                                            if (_con.order.canCancelOrder() && _con.order.orderStatus.status == "")
+                                            if (_con!.order!.canCancelOrder() && _con!.order!.orderStatus!.status == "")
                                               MaterialButton(
                                                 elevation: 0,
                                                 focusElevation: 0,
@@ -467,7 +467,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                                                       .hintColor),
                                                             ),
                                                             onPressed: () {
-                                                              _con.doCancelOrder();
+                                                              _con!.doCancelOrder();
                                                               Navigator.of(context)
                                                                   .pop();
                                                             },
@@ -531,11 +531,11 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                       end: Alignment.bottomRight,
                                     ),
                                   ),
-                                  //color: _con.order.active ? Theme.of(context).accentColor : Colors.redAccent),
+                                  //color: _con!.order.active ? Theme.of(context).accentColor : Colors.redAccent),
                                   alignment: AlignmentDirectional.center,
                                   child: Text(
-                                    _con.order.active
-                                        ? '${_con.order.orderStatus.status}'
+                                    _con!.order!.active!
+                                        ? '${_con!.order!.orderStatus!.status}'
                                         : S.of(context).canceled,
                                     maxLines: 1,
                                     overflow: TextOverflow.fade,
@@ -543,7 +543,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                     style: Theme.of(context)
                                         .textTheme
                                         .caption
-                                        .merge(TextStyle(
+                                        !.merge(TextStyle(
                                             height: 1,
                                             color: Theme.of(context).primaryColor)),
                                   ),
@@ -559,16 +559,16 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
 
                               children: <Widget>[
                                 SizedBox(height: 20,),
-                              _con.order.orderStatus.status == "Pickup" ? InkWell(
+                              _con!.order!.orderStatus!.status == "Pickup" ? InkWell(
 
                                   onTap: (){
 
-                                    if(_con.order.driver_details != "null"){
-                                      Map<String,dynamic> driver_details = json.decode(_con.order.driver_details);
+                                    if(_con!.order!.driver_details != "null"){
+                                      Map<String,dynamic> driver_details = json.decode(_con!.order!.driver_details!);
                                       showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          return FullScreenDialog(driver_details: driver_details,traking_path: _con.order.tracking_url,);
+                                          return FullScreenDialog(driver_details: driver_details,traking_path: _con!.order!.tracking_url!,);
                                         },
                                       );
 
@@ -584,10 +584,10 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                     // showDialog(
                                     //   context: context,
                                     //   builder: (BuildContext context) {
-                                    //     return FullScreenDialog(con: _con,);
+                                    //     return FullScreenDialog(con: _con!,);
                                     //   },
                                     // );
-                                  // Navigator.push(context, MaterialPageRoute(builder: (context)=>TrackingOrderDelivery(con: _con,)));
+                                  // Navigator.push(context, MaterialPageRoute(builder: (context)=>TrackingOrderDelivery(con: _con!,)));
                                   },
                                   child: Container(
                                     alignment: Alignment.topRight,
@@ -597,13 +597,13 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                           .textTheme
                                           .bodyText1,)),
                                 ):Container(),
-                                if(_con.order.orderStatus.status == "Order Declined")
+                                if(_con!.order!.orderStatus!.status == "Order Declined")
                                   Container(
                                     //   color: Colors.lightGreen,
                                     padding: EdgeInsets.zero,
                                     child: Theme(
                                       data: ThemeData(
-                                        primaryColor: Theme.of(context).accentColor,
+                                        primaryColor: mainColor(1),
                                       ),
                                       child: Stepper(
                                         margin: EdgeInsets.zero,
@@ -612,12 +612,12 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                         controlsBuilder: (BuildContext context, ControlsDetails details) {
                                           return SizedBox(height: 0);
                                         },
-                                        steps: _con.getTrackingDeclinedSteps(context),
+                                        steps: _con!.getTrackingDeclinedSteps(context),
                                         currentStep: 1,
                                       ),
                                     ),
                                   ),
-                                  if(_con.order.orderStatus.status != "Order Declined")
+                                  if(_con!.order!.orderStatus!.status != "Order Declined")
                                 Container(
                                //   color: Colors.lightGreen,
                                   padding: EdgeInsets.zero,
@@ -628,8 +628,8 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                     controlsBuilder: (BuildContext context, ControlsDetails details) {
                                       return SizedBox(height: 0);
                                     },
-                                    steps: _con.getTrackingSteps(context),
-                                    currentStep: _con.getCurrentStepIndex(_con.orderStatus),
+                                    steps: _con!.getTrackingSteps(context),
+                                    currentStep: _con!.getCurrentStepIndex(_con!.orderStatus),
                                   ),
                                 ),
 
@@ -665,7 +665,7 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: WebView(
-                                      initialUrl: '${_con.order.tracking_url}',  // Replace with your desired URL
+                                      initialUrl: '${_con!.order.tracking_url}',  // Replace with your desired URL
                                       javascriptMode: JavascriptMode.unrestricted,
                                       onWebViewCreated: (WebViewController controller) {
                                         // You can interact with the WebView here
@@ -696,18 +696,16 @@ class _TrackingWidgetState extends StateMVC<TrackingWidget>
   }
 
 }
-class FullScreenDialog extends StatefulWidget {
-  Map<String,dynamic> driver_details;
-  String traking_path;
+class FullScreenDialog extends StatelessWidget {
+  Map<String,dynamic>? driver_details;
+  String? traking_path;
   FullScreenDialog({this.driver_details,this.traking_path});
-  @override
-  State<FullScreenDialog> createState() => _FullScreenDialogState();
-}
-
-class _FullScreenDialogState extends State<FullScreenDialog> {
   Map<String, dynamic> driverDetails = {} ;
+
   String driverName = "";
+
   String vehicleNumber = "";
+
   String mobile = "";
 
   @override
@@ -723,7 +721,7 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
         width: double.infinity,
         height: double.infinity,
         color: Colors.white, // You can customize the color here
-        child: widget.driver_details.isEmpty ? Center(
+        child: driver_details!.isEmpty ? Center(
           child: Container(
             child: Text(
                 "Delivery Api is not Connected",style: Theme.of(context)
@@ -750,14 +748,40 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      Text('Driver Name: ${widget.driver_details["driver_name"]}'),
-                      Text('Vehicle Number: ${widget.driver_details["vehicle_number"]}'),
-                      Text('Mobile: ${widget.driver_details["mobile"]}'),
+                      Text('Driver Name: ${driver_details!["driver_name"]}'),
+                      Text('Vehicle Number: ${driver_details!["vehicle_number"]}'),
+                      Text('Mobile: ${driver_details!["mobile"]}'),
                     ],
                   ),
                 ),
               ),
               Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: InAppWebView(
+                    initialUrlRequest: URLRequest(url: Uri.parse(traking_path!)),
+                    initialOptions: InAppWebViewGroupOptions(
+                      crossPlatform: InAppWebViewOptions(
+                        // Set your desired options here
+                        javaScriptEnabled: true,
+                        transparentBackground: true,
+                      ),
+                    ),
+                    onWebViewCreated: (InAppWebViewController controller) {
+                      // You can interact with the WebView here
+                      // For example, evaluate JavaScript to hide specific elements
+                      controller.evaluateJavascript(source: """
+              document.getElementById('header').style.display = 'none';
+              document.getElementById('menu').style.display = 'none';
+              document.getElementById('footer').style.display = 'none';
+            """);
+                    },
+                  ),
+                ),
+              ),
+            /*  Container(
                 height: MediaQuery.of(context).size.height * .7,
                 width: MediaQuery.of(context).size.width,
                 child: Padding(
@@ -777,7 +801,7 @@ class _FullScreenDialogState extends State<FullScreenDialog> {
                   ),
                 ),
               ),
-
+*/
               SizedBox(height: 30)
             ],
           ),

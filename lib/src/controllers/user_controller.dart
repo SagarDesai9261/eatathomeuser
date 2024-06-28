@@ -16,11 +16,11 @@ class UserController extends ControllerMVC {
   bool hidePassword = true;
   bool hidePassword1 = true;
   bool loading = false;
-  GlobalKey<FormState> loginFormKey;
-  GlobalKey<FormState> registerFormKey;
-  GlobalKey<ScaffoldState> scaffoldKey;
-  FirebaseMessaging _firebaseMessaging;
-  OverlayEntry loader;
+  GlobalKey<FormState> loginFormKey  = GlobalKey<FormState>();
+  GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseMessaging? _firebaseMessaging;
+  OverlayEntry? loader;
 
   UserController() {
     loginFormKey = new GlobalKey<FormState>();
@@ -38,22 +38,22 @@ class UserController extends ControllerMVC {
       repository.currentUser.value.verificationId = verId;
     };
 
-    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResent]) {
+    final PhoneCodeSent smsCodeSent = (String verId, [int? forceCodeResent]) {
       repository.currentUser.value.verificationId = verId;
       Navigator.push(
-        scaffoldKey.currentContext,
+        scaffoldKey.currentContext!,
         MaterialPageRoute(
             builder: (context) => MobileVerification2(
                   onVerified: (v) {
-                    Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 1);
+                    Navigator.of(scaffoldKey.currentContext!).pushReplacementNamed('/Pages', arguments: 1);
                   },
                 )),
       );
-    };
+    } as PhoneCodeSent;
     final PhoneVerificationCompleted _verifiedSuccess = (AuthCredential auth) {};
     final PhoneVerificationFailed _verifyFailed = (FirebaseAuthException e) {
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(e.message),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(e.message!),
       ));
       // print(e.toString());
     };
@@ -67,13 +67,13 @@ class UserController extends ControllerMVC {
     );
   }
   void login(BuildContext context) async {
-    loader = Helper.overlayLoader(state.context);
-    FocusScope.of(state.context).unfocus();
-    if (loginFormKey.currentState.validate()) {
-      loginFormKey.currentState.save();
-      Overlay.of(state.context).insert(loader);
+    loader = Helper.overlayLoader(state!.context);
+    FocusScope.of(state!.context).unfocus();
+    if (loginFormKey.currentState!.validate()) {
+      loginFormKey.currentState!.save();
+      Overlay.of(state!.context).insert(loader!);
       repository.login(user,context).then((value) {
-        print(value.deviceToken);
+        print(value!.deviceToken);
         // print("DS>>>"+value.apiToken+" "+scaffoldKey.currentContext.toString());
 
         if (value != null ) {
@@ -82,26 +82,26 @@ class UserController extends ControllerMVC {
           Navigator.of(context).pushReplacementNamed('/Pages', arguments: 1);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(S.of(state.context).wrong_email_or_password),
+            content: Text(S.of(state!.context).wrong_email_or_password),
           ));
         }
       }).catchError((e) {
         print(e);
-        loader.remove();
+        loader!.remove();
 
       }).whenComplete(() {
-        Helper.hideLoader(loader);
+        Helper.hideLoader(loader!);
       });
     }
   }
 
   void register(context, registeruser,email) async {
     print(registeruser);
-    loader = Helper.overlayLoader(state.context);
-    FocusScope.of(state.context).unfocus();
-    if (registerFormKey.currentState.validate()){
-      registerFormKey.currentState.save();
-      Overlay.of(state.context).insert(loader);
+    loader = Helper.overlayLoader(state!.context);
+    FocusScope.of(state!.context).unfocus();
+    if (registerFormKey.currentState!.validate()){
+      registerFormKey.currentState!.save();
+      Overlay.of(state!.context).insert(loader!);
       repository.register(registeruser).then((value) {
        //  print("DS>>>" + value.apiToken);
         if (value =="Register") {
@@ -112,13 +112,13 @@ class UserController extends ControllerMVC {
         }
       }).catchError((e) {
      //   print(e);
-        ScaffoldMessenger.of(scaffoldKey?.currentContext)
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!)
             .showSnackBar(SnackBar(
           content: Text("Email is already register.."),
         ));
-        loader.remove();
+        loader!.remove();
       }).whenComplete(() {
-        Helper.hideLoader(loader);
+        Helper.hideLoader(loader!);
       });
     }
   }
@@ -130,7 +130,7 @@ class UserController extends ControllerMVC {
         //  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VerificationScreen2(email: email,)));
         Navigator.of(context).pushReplacementNamed('/Pages', arguments: 1);
       } else {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext)
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!)
             .showSnackBar(SnackBar(
           content: Text("Invalid OTP"),
         ));
@@ -141,40 +141,40 @@ class UserController extends ControllerMVC {
             .showSnackBar(SnackBar(
           content: Text("Email is already register.."),
         ));*/
-      loader.remove();
+      loader!.remove();
     }).whenComplete(() {
-      Helper.hideLoader(loader);
+      Helper.hideLoader(loader!);
     });
     // loader = Helper.overlayLoader(state.context);
     //FocusScope.of(state.context).unfocus();
 
   }
   void resetPassword() {
-    loader = Helper.overlayLoader(state.context);
-    FocusScope.of(state.context).unfocus();
-    if (loginFormKey.currentState.validate()) {
-      loginFormKey.currentState.save();
-      Overlay.of(state.context).insert(loader);
+    loader = Helper.overlayLoader(state!.context);
+    FocusScope.of(state!.context).unfocus();
+    if (loginFormKey.currentState!.validate()) {
+      loginFormKey.currentState!.save();
+      Overlay.of(state!.context).insert(loader!);
       repository.resetPassword(user).then((value) {
         if (value != null && value == true) {
-          ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-            content: Text(S.of(state.context).your_reset_link_has_been_sent_to_your_email),
+          ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+            content: Text(S.of(state!.context).your_reset_link_has_been_sent_to_your_email),
             action: SnackBarAction(
-              label: S.of(state.context).login,
+              label: S.of(state!.context).login,
               onPressed: () {
-                Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Login');
+                Navigator.of(scaffoldKey.currentContext!).pushReplacementNamed('/Login');
               },
             ),
             duration: Duration(seconds: 10),
           ));
         } else {
-          loader.remove();
-          ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-            content: Text(S.of(state.context).error_verify_email_settings),
+          loader!.remove();
+          ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(SnackBar(
+            content: Text(S.of(state!.context).error_verify_email_settings),
           ));
         }
       }).whenComplete(() {
-        Helper.hideLoader(loader);
+        Helper.hideLoader(loader!);
       });
     }
   }

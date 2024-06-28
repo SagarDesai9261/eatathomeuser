@@ -10,8 +10,8 @@ import '../repository/user_repository.dart' as userRepo;
 
 class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
   List<model.Address> addresses = <model.Address>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
-  Cart cart;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  Cart? cart;
 
   DeliveryAddressesController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -19,7 +19,7 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
     listenForCart();
   }
 
-  void listenForAddresses({String message}) async {
+  void listenForAddresses() async {
     final Stream<model.Address> stream = await userRepo.getAddresses();
     stream.listen((model.Address _address) {
       setState(() {
@@ -27,15 +27,11 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
       });
     }, onError: (a) {
    //   // print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
-      if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-          content: Text(message),
-        ));
-      }
+
     });
   }
 
@@ -48,7 +44,7 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
 
   Future<void> refreshAddresses() async {
     addresses.clear();
-    listenForAddresses(message: S.of(state.context).addresses_refreshed_successfuly);
+    listenForAddresses();
   }
 
   Future<void> changeDeliveryAddress(model.Address address) async {
@@ -72,8 +68,8 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
       setState(() {
         this.addresses.insert(0, value);
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).new_address_added_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).new_address_added_successfully),
       ));
     });
   }
@@ -89,7 +85,7 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
     userRepo.updateAddress(address).then((value) {
       setState(() {});
       addresses.clear();
-      listenForAddresses(message: S.of(state.context).the_address_updated_successfully);
+      listenForAddresses();
     });
   }
 
@@ -98,8 +94,8 @@ class DeliveryAddressesController extends ControllerMVC with ChangeNotifier {
       setState(() {
         this.addresses.remove(address);
       });
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).delivery_address_removed_successfully),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).delivery_address_removed_successfully),
       ));
     });
   }

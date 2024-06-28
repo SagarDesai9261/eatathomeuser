@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class CollectedData extends ChangeNotifier {
-  String _selectedDate;
-  String _selectedSession;
-  String _selectedPeople;
+  String? _selectedDate;
+  String? _selectedSession;
+  String? _selectedPeople;
 
-  String get date => _selectedDate;
-  String get session => _selectedSession;
-  String get people => _selectedPeople;
+  String get date => _selectedDate!;
+  String get session => _selectedSession!;
+  String get people => _selectedPeople!;
 
-  String category_id = null;
+  String? category_id = null;
 
   set_category(cat_id){
     category_id = cat_id;

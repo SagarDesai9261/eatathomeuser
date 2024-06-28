@@ -20,7 +20,7 @@ class Change_calender extends StatefulWidget {
   String default_tax;
   int total;
   List<Map<String,dynamic>>  fooditems;
-  Coupon selectedCoupon;
+  Coupon? selectedCoupon;
  /* String restaurantId;
   bool isDelivery;*/
   Change_calender(  this.total,
@@ -46,9 +46,9 @@ class _Change_calenderState extends State<Change_calender> {
   DateTime _firstDay = DateTime(2024, 1, 1);
   DateTime _lastDay = DateTime(2030, 12, 31);
   DateTime _focusedDay = DateTime.now();
-  List<Restaurant> restaurantsList;
-  String heroTag;
-  String defaultLanguage;
+  List<Restaurant>? restaurantsList;
+  String? heroTag;
+  String? defaultLanguage;
 
   @override
   void initState() {
@@ -89,12 +89,12 @@ class _Change_calenderState extends State<Change_calender> {
         TranslationWidget(
           message:  "Schedule Dine-in",
           fromLanguage: "English",
-          toLanguage: defaultLanguage,
+          toLanguage: defaultLanguage!,
           builder: (translatedMessage) => Text(
             translatedMessage,
             overflow: TextOverflow.fade,
             softWrap: false,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -107,13 +107,13 @@ class _Change_calenderState extends State<Change_calender> {
             children: [
               IconButton(
                 icon: new Icon(Icons.calendar_month,
-                    color: Theme.of(context).hintColor),
+                    color: Theme.of(context).hintColor), onPressed: () {  },
               ),
               /*Text("Select Dates", style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)))*/
               TranslationWidget(
                 message:  "Select Dates",
                 fromLanguage: "English",
-                toLanguage: defaultLanguage,
+                toLanguage: defaultLanguage!,
                 builder: (translatedMessage) => Text(
                   translatedMessage,
                   overflow: TextOverflow.fade,
@@ -231,7 +231,7 @@ class _Change_calenderState extends State<Change_calender> {
                 TranslationWidget(
                   message:  "Add",
                   fromLanguage: "English",
-                  toLanguage: defaultLanguage,
+                  toLanguage: defaultLanguage!,
                   builder: (translatedMessage) => Text(
                     translatedMessage,
                     overflow: TextOverflow.fade,

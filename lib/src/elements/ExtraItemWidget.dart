@@ -4,14 +4,14 @@ import '../helpers/helper.dart';
 import '../models/extra.dart';
 import '../../src/helpers/app_config.dart' as config;
 class ExtraItemWidget extends StatefulWidget {
-  final Extra extra;
-  final VoidCallback onChanged;
+  final Extra? extra;
+  final VoidCallback? onChanged;
 
   ExtraItemWidget({
-    Key key,
+
     this.extra,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   _ExtraItemWidgetState createState() => _ExtraItemWidgetState();
@@ -19,12 +19,12 @@ class ExtraItemWidget extends StatefulWidget {
 
 class _ExtraItemWidgetState extends State<ExtraItemWidget>
     with SingleTickerProviderStateMixin {
-  Animation animation;
-  AnimationController animationController;
-  Animation<double> sizeCheckAnimation;
-  Animation<double> rotateCheckAnimation;
-  Animation<double> opacityAnimation;
-  Animation opacityCheckAnimation;
+  Animation? animation;
+  AnimationController? animationController;
+  Animation<double>? sizeCheckAnimation;
+  Animation<double>? rotateCheckAnimation;
+  Animation<double>? opacityAnimation;
+  Animation? opacityCheckAnimation;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget>
     animationController =
         AnimationController(duration: Duration(milliseconds: 350), vsync: this);
     CurvedAnimation curve =
-        CurvedAnimation(parent: animationController, curve: Curves.easeOut);
+        CurvedAnimation(parent: animationController!.view, curve: Curves.easeOut);
     animation = Tween(begin: 0.0, end: 60.0).animate(curve)
       ..addListener(() {
         setState(() {});
@@ -58,20 +58,20 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget>
   @override
   void dispose() {
     super.dispose();
-    animationController.dispose();
+    animationController!.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (widget.extra.checked) {
-          animationController.reverse();
+        if (widget.extra!.checked) {
+          animationController!.reverse();
         } else {
-          animationController.forward();
+          animationController!.forward();
         }
-        widget.extra.checked = !widget.extra.checked;
-        widget.onChanged();
+        widget.extra!.checked = !widget.extra!.checked;
+        widget.onChanged!();
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -85,27 +85,27 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(60)),
                   image: DecorationImage(
-                      image: NetworkImage(widget.extra.image?.thumb),
+                      image: NetworkImage(widget.extra!.image!.thumb),
                       fit: BoxFit.cover),
                 ),
               ),
               Container(
-                height: animation.value,
-                width: animation.value,
+                height: animation!.value,
+                width: animation!.value,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(60)),
-                  color: Theme.of(context)
-                      .accentColor
-                      .withOpacity(opacityAnimation.value),
+                  // color: Theme.of(context)
+                  //     .accentColor
+                  //     .withOpacity(opacityAnimation.value),
                 ),
                 child: Transform.rotate(
-                  angle: rotateCheckAnimation.value,
+                  angle: rotateCheckAnimation!.value,
                   child: Icon(
                     Icons.check,
-                    size: sizeCheckAnimation.value,
+                    size: sizeCheckAnimation!.value,
                     color: Theme.of(context)
                         .primaryColor
-                        .withOpacity(opacityCheckAnimation.value),
+                        .withOpacity(opacityCheckAnimation!.value),
                   ),
                 ),
               ),
@@ -121,13 +121,13 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        widget.extra?.name,
+                        widget.extra!.name,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                       Text(
-                        Helper.skipHtml(widget.extra.description),
+                        Helper.skipHtml(widget.extra!.description),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: Theme.of(context).textTheme.caption,
@@ -136,7 +136,7 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget>
                   ),
                 ),
                 SizedBox(width: 8),
-                Helper.getPrice(widget.extra.price, context,
+                Helper.getPrice(widget.extra!.price, context,
                     style: TextStyle(fontSize: 18.0,
                         fontWeight: FontWeight.w600,
                         color: config.Colors().secondColor(1),

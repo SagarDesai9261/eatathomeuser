@@ -10,7 +10,7 @@ import '../models/review.dart';
 class ReviewItemWidget extends StatelessWidget {
   Review review;
 
-  ReviewItemWidget({Key key, this.review}) : super(key: key);
+  ReviewItemWidget({Key? key,required this.review}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class ReviewItemWidget extends StatelessWidget {
                             overflow: TextOverflow.fade,
                             softWrap: false,
                             maxLines: 2,
-                            style: Theme.of(context).textTheme.headline6.merge(
+                            style: Theme.of(context).textTheme.headline6!.merge(
                                 TextStyle(color: Theme.of(context).hintColor)),
                           ),
                         ),
@@ -68,7 +68,7 @@ class ReviewItemWidget extends StatelessWidget {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyText1
-                                        .merge(TextStyle(
+                                        !.merge(TextStyle(
                                             color: Theme.of(context)
                                                 .primaryColor))),
                                 Icon(
@@ -78,8 +78,8 @@ class ReviewItemWidget extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            backgroundColor:
-                                Theme.of(context).accentColor.withOpacity(0.9),
+                            // backgroundColor:
+                            //     Theme.of(context).accentColor.withOpacity(0.9),
                             shape: StadiumBorder(),
                           ),
                         ),

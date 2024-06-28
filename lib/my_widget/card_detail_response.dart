@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CartDetailResponse {
-  int code;
-  String msg;
-  CartDetailData data;
+  int? code;
+  String? msg;
+  CartDetailData? data;
 
   CartDetailResponse({
     this.code,
@@ -22,11 +22,11 @@ class CartDetailResponse {
 }
 
 class CartDetailData {
-  String status;
-  String message;
-  String sessionData;
-  int totalCartItems;
-  int totalCartCount;
+  String? status;
+  String? message;
+  String? sessionData;
+  int? totalCartItems;
+  int? totalCartCount;
 
   CartDetailData({
     this.status,

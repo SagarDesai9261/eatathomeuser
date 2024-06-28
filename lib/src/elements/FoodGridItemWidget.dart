@@ -11,7 +11,7 @@ class FoodGridItemWidget extends StatefulWidget {
   final Food food;
   final VoidCallback onPressed;
 
-  FoodGridItemWidget({Key key, this.heroTag, this.food, this.onPressed,this.catid})
+  FoodGridItemWidget({Key? key, required this.heroTag,required  this.food, required this.onPressed,required this.catid})
       : super(key: key);
 
   @override
@@ -19,7 +19,7 @@ class FoodGridItemWidget extends StatefulWidget {
 }
 
 class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
-  String defaultLanguage;
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
   Widget build(BuildContext context) {
     return InkWell(
       highlightColor: Colors.transparent,
-      splashColor: Theme.of(context).accentColor.withOpacity(0.08),
+      //splashColor: Theme.of(context).accentColor.withOpacity(0.08),
       onTap: () {
         /*Navigator.of(context).pushNamed('/Food',
             arguments: new RouteArgument(
@@ -49,7 +49,7 @@ class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
         Navigator.of(context).pushNamed('/Details',
             arguments: RouteArgument(
               id: '0',
-              param: widget.food.restaurant.id,
+              param: widget.food.restaurant!.id,
               heroTag: widget.heroTag,
               isDelivery: true,
               selectedDate: "",
@@ -68,7 +68,7 @@ class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage(this.widget.food.image.thumb),
+                          image: NetworkImage(this.widget.food.image!.thumb),
                           fit: BoxFit.cover),
                       borderRadius: BorderRadius.circular(5),
                     ),
@@ -99,7 +99,7 @@ class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
                 overflow: TextOverflow.ellipsis,
               )*/
               TranslationWidget(
-                message: widget.food.restaurant.name,
+                message: widget.food.restaurant!.name!,
                 fromLanguage: "English",
                 toLanguage: defaultLanguage,
                 builder: (translatedMessage) => Text(
@@ -128,7 +128,7 @@ class _FoodGridItemWidgetState extends State<FoodGridItemWidget> {
                 color: Theme.of(context).primaryColor,
                 size: 24,
               ),
-              color: Theme.of(context).accentColor.withOpacity(0.9),
+              //color: Theme.of(context).accentColor.withOpacity(0.9),
               shape: StadiumBorder(),
             ),
           ),

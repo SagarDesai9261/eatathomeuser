@@ -19,10 +19,10 @@ class IndividualFoodItemWidget extends StatefulWidget {
   Function(Food) updateFoodList;
 
   IndividualFoodItemWidget({
-    Key key,
-    this.heroTag,
-    this.food,
-    this.updateFoodList,
+    Key? key,
+    required this.heroTag,
+    required this.food,
+    required this.updateFoodList,
   }) : super(key: key);
 
   @override
@@ -33,8 +33,8 @@ class IndividualFoodItemWidget extends StatefulWidget {
 class _IndividualFoodItemWidgetState extends State<IndividualFoodItemWidget> {
   FoodController _foodcon = FoodController();
   String updatedQuantity = "0.0";
-  List<Food> foodList = List<Food>();
-  String defaultLanguage;
+  List<Food> foodList = [];
+  String defaultLanguage = "";
 
   @override
   void initState() {
@@ -55,8 +55,8 @@ class _IndividualFoodItemWidgetState extends State<IndividualFoodItemWidget> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        splashColor: Theme.of(context).accentColor,
-        focusColor: Theme.of(context).accentColor,
+        //splashColor: Theme.of(context).accentColor,
+        //focusColor: Theme.of(context).accentColor,
         highlightColor: Theme.of(context).primaryColor,
         onTap: () {
          /* Navigator.of(context).pushNamed('/Food',
@@ -189,7 +189,7 @@ class _IndividualFoodItemWidgetState extends State<IndividualFoodItemWidget> {
                                     //widget.updateFoodList(widget.food);
                                     widget.updateFoodList(new Food.withId(name: widget.food.name,
                                         price: double.parse(widget.food.price.toString()),
-                                        foodImg:widget.food.image ));
+                                        foodImg:widget.food.image, id: '' ));
                                   },
                                   child: Icon(
                                     Icons.add,

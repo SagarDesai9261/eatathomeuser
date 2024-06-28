@@ -1,12 +1,12 @@
 class DeleteFromFavouriteModel {
-  bool success;
-  Data data;
-  String message;
+  final bool success;
+  final Data data;
+  final String message;
 
   DeleteFromFavouriteModel({
-     this.success,
-     this.data,
-     this.message,
+    required this.success,
+    required this.data,
+    required this.message,
   });
 
   factory DeleteFromFavouriteModel.fromJson(Map<String, dynamic> json) {
@@ -19,24 +19,24 @@ class DeleteFromFavouriteModel {
 }
 
 class Data {
-  int id;
-  int restaurantId;
-  //int foodId;
-  int userId;
-  String createdAt;
-  String updatedAt;
-  //List<dynamic> customFields;
-  //List<dynamic> extras;
+  final int id;
+  final int restaurantId;
+  //final int foodId;
+  final int userId;
+  final String createdAt;
+  final String updatedAt;
+  //final List<dynamic> customFields;
+  //final List<dynamic> extras;
 
   Data({
-     this.id,
-     this.restaurantId,
-     //this.foodId,
-     this.userId,
-     this.createdAt,
-     this.updatedAt,
-     //this.customFields,
-     //this.extras,
+    required this.id,
+    required this.restaurantId,
+    //required this.foodId,
+    required this.userId,
+    required this.createdAt,
+    required this.updatedAt,
+    //required this.customFields,
+    //required this.extras,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) {

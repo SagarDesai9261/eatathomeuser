@@ -14,10 +14,10 @@ class ForgetPasswordWidget extends StatefulWidget {
 }
 
 class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
-  UserController _con;
+  UserController? _con;
 
   _ForgetPasswordWidgetState() : super(UserController()) {
-    _con = controller;
+    _con = controller as UserController?;
   }
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       //resizeToAvoidBottomPadding: false,
       resizeToAvoidBottomInset: true,
       body: Stack(
@@ -83,7 +83,7 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
                 width: config.App(context).appWidth(88),
 //              height: config.App(context).appHeight(55),
                 child: Form(
-                  key: _con.loginFormKey,
+                  key: _con!.loginFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -96,15 +96,15 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
                             style: Theme.of(context)
                                 .textTheme
                                 .headline2
-                                .merge(TextStyle(color: Theme.of(context).primaryColor)),
+                                !.merge(TextStyle(color: Theme.of(context).primaryColor)),
                           ),
                         ),
                       ),
                       SizedBox(height: 20),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        onSaved: (input) => _con.user.email = input,
-                        validator: (input) => !input.contains('@')
+                        onSaved: (input) => _con!.user.email = input!,
+                        validator: (input) => !input!.contains('@')
                             ? S.of(context).should_be_a_valid_email
                             : null,
                         decoration: InputDecoration(
@@ -152,7 +152,7 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
                             )),
                         child: ElevatedButton(
                           onPressed: () {
-                            _con.resetPassword();
+                            _con!.resetPassword();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -175,7 +175,7 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
                         ),
                         color: Theme.of(context).accentColor,
                         onPressed: () {
-                          _con.resetPassword();
+                          _con!.resetPassword();
                         },
                       ),*/
                       Column(

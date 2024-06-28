@@ -33,7 +33,7 @@ class HomeController extends ControllerMVC {
   List<FoodItem> trendingFoodItemsFake = [];
   List<RestaurantModel> topKitchensFake = [];
   List<RestaurantModel> popularKitchensFake = [];
-  Add_the_address addressProvider;
+  Add_the_address? addressProvider;
   List<FoodItem> trendingFoodItemsDelivery = [];
   List<RestaurantModel> topKitchensDelivery = [];
   List<RestaurantModel> popularKitchensDelivery = [];
@@ -44,7 +44,7 @@ class HomeController extends ControllerMVC {
     DateTime now = DateTime.now();
     String todayDate = "${now.day}-${now.month}-${now.year}";
     addressProvider = Add_the_address(); // Instantiate the Add_the_address provider
-    addressProvider.initialize();
+    addressProvider!.initialize();
   }
 
   Future<void> listenForCuisine() async {

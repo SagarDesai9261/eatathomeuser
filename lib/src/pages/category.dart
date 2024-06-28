@@ -16,9 +16,9 @@ import '../repository/user_repository.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 
 class CategoryWidget extends StatefulWidget {
-  final RouteArgument routeArgument;
+  final RouteArgument? routeArgument;
 
-  CategoryWidget({Key key, this.routeArgument}) : super(key: key);
+  CategoryWidget({Key? key, this.routeArgument}) : super(key: key);
 
   @override
   _CategoryWidgetState createState() => _CategoryWidgetState();
@@ -28,19 +28,19 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
   // TODO add layout in configuration file
   String layout = 'grid';
 
-  CategoryController _con;
-  String defaultLanguage;
+  CategoryController? _con;
+  String defaultLanguage ="";
 
   _CategoryWidgetState() : super(CategoryController()) {
-    _con = controller;
+    _con = controller as CategoryController?;
   }
 
   @override
   void initState() {
     getCurrentDefaultLanguage();
-    _con.listenForFoodsByCategory(id: widget.routeArgument.id);
-    _con.listenForCategory(id: widget.routeArgument.id);
-    _con.listenForCart();
+    _con!.listenForFoodsByCategory(id: widget.routeArgument!.id);
+    _con!.listenForCategory(id: widget.routeArgument!.id);
+    _con!.listenForCart();
     super.initState();
   }
 
@@ -55,17 +55,17 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("DS>>> what is wrong "+_con.foods.length.toString());
+    print("DS>>> what is wrong "+_con!.foods.length.toString());
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       drawer: DrawerWidget(),
       endDrawer: FilterWidget(onFilter: (filter) {
-        Navigator.of(context).pushReplacementNamed('/Category', arguments: RouteArgument(id: widget.routeArgument.id));
+        Navigator.of(context).pushReplacementNamed('/Category', arguments: RouteArgument(id: widget.routeArgument!.id));
       }),
       appBar: AppBar(
         leading: new IconButton(
           icon: new Icon(Icons.sort, color: Theme.of(context).hintColor),
-          onPressed: () => _con.scaffoldKey?.currentState?.openDrawer(),
+          onPressed: () => _con!.scaffoldKey?.currentState?.openDrawer(),
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
@@ -81,13 +81,13 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
           toLanguage: defaultLanguage,
           builder: (translatedMessage) => Text(
             translatedMessage,
-            style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 0)),
+            style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 0)),
           ),
         ),
 
       ),
       body: RefreshIndicator(
-        onRefresh: _con.refreshCategory,
+        onRefresh: _con!.refreshCategory,
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(vertical: 10),
           child: Column(
@@ -98,8 +98,12 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SearchBarWidget(onClickFilter: (filter) {
-                  _con.scaffoldKey?.currentState?.openEndDrawer();
-                }),
+
+                  _con!.scaffoldKey?.currentState?.openEndDrawer();
+
+                },
+                  enjoy: 1,
+                  isDinein: false, parentScaffoldKey: _con!.scaffoldKey!,),
               ),
               SizedBox(height: 10),
 
@@ -112,13 +116,13 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
                     color: Theme.of(context).hintColor,
                   ),
                   title: /*Text(
-                    _con.category?.name ?? '',
+                    _con!.category?.name ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headline4,
                   )*/
                   TranslationWidget(
-                    message: _con.category?.name ?? '',
+                    message: _con!.category?.name ?? '',
                     fromLanguage: "English",
                     toLanguage: defaultLanguage,
                     builder: (translatedMessage) => Text(
@@ -136,7 +140,7 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
                 ),
               ),
 
-              _con.foods.isEmpty
+              _con!.foods.isEmpty
                   ? CircularLoadingWidget(height: 500)
              /* Center(child: Text("No data Available"))*/
                   : GridView.count(
@@ -150,33 +154,33 @@ class _CategoryWidgetState extends StateMVC<CategoryWidget> {
                     // horizontal, this produces 2 rows.
                     crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
                     // Generate 100 widgets that display their index in the List.
-                    children: List.generate(_con.foods.length, (index) {
-                      print("--->"+_con.foods.length.toString());
+                    children: List.generate(_con!.foods.length, (index) {
+                      print("--->"+_con!.foods.length.toString());
                       return FoodGridItemWidget(
                           heroTag: 'category_grid',
-                          food: _con.foods.elementAt(index),
+                          food: _con!.foods.elementAt(index),
                           onPressed: () {
                             if (currentUser.value.apiToken == null) {
                               Navigator.of(context).pushNamed('/Login');
                             } else {
-                              if (_con.isSameRestaurants(_con.foods.elementAt(index))) {
-                                _con.addToCart(_con.foods.elementAt(index));
+                              if (_con!.isSameRestaurants(_con!.foods.elementAt(index))) {
+                                _con!.addToCart(_con!.foods.elementAt(index));
                               } else {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     // return object of type Dialog
                                     return AddToCartAlertDialogWidget(
-                                        oldFood: _con.carts.elementAt(0)?.food,
-                                        newFood: _con.foods.elementAt(index),
+                                        oldFood: _con!.carts.elementAt(0)!.food!,
+                                        newFood: _con!.foods.elementAt(index),
                                         onPressed: (food, {reset: true}) {
-                                          return _con.addToCart(_con.foods.elementAt(index), reset: true);
+                                          return _con!.addToCart(_con!.foods.elementAt(index), reset: true);
                                         });
                                   },
                                 );
                               }
                             }
-                          });
+                          }, catid: '',);
                     }),
                   )
             ],

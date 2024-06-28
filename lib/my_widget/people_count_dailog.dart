@@ -28,9 +28,9 @@ class _People_count_DailogState extends State<People_count_Dailog> {
         name: 'Pets', subtitle: 'Bringing a service animal?', quantity: 0),
   ];
 
-  String selectedPeople;
-  String defaultLanguage;
-  String heroTag;
+  String? selectedPeople;
+  String? defaultLanguage;
+  String? heroTag;
 
   void _incrementQuantity(int index) {
     // Debounce the increment action by adding a small delay
@@ -83,7 +83,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
         title: TranslationWidget(
           message: "Schedule Dine-in",
           fromLanguage: "English",
-          toLanguage: defaultLanguage,
+          toLanguage: defaultLanguage!,
           builder: (translatedMessage) => Text(
             translatedMessage,
             overflow: TextOverflow.fade,
@@ -91,7 +91,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
             style: Theme.of(context)
                 .textTheme
                 .headline6
-                .merge(TextStyle(letterSpacing: 1.3)),
+                !.merge(TextStyle(letterSpacing: 1.3)),
           ),
         ),
       ),
@@ -115,7 +115,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
                   TranslationWidget(
                     message: 'Who’s coming?',
                     fromLanguage: "English",
-                    toLanguage: defaultLanguage,
+                    toLanguage: defaultLanguage!,
                     builder: (translatedMessage) => Text(
                       translatedMessage,
                       textAlign: TextAlign.center,
@@ -155,13 +155,13 @@ class _People_count_DailogState extends State<People_count_Dailog> {
                     title: TranslationWidget(
                       message: _products[index].name,
                       fromLanguage: "English",
-                      toLanguage: defaultLanguage,
+                      toLanguage: defaultLanguage!,
                       builder: (translatedMessage) => Text(translatedMessage),
                     ),
                     subtitle: TranslationWidget(
                       message: _products[index].subtitle,
                       fromLanguage: "English",
-                      toLanguage: defaultLanguage,
+                      toLanguage: defaultLanguage!,
                       builder: (translatedMessage) => Text(translatedMessage),
                     ),
                     trailing: Row(
@@ -181,7 +181,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
                               child: TranslationWidget(
                                 message: _products[index].quantity.toString(),
                                 fromLanguage: "English",
-                                toLanguage: defaultLanguage,
+                                toLanguage: defaultLanguage!,
                                 builder: (translatedMessage) => Text(
                                   translatedMessage,
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -234,7 +234,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
                     selectedPeople = stringBuffer.toString();
                //     print(selectedPeople);
 
-                    if (selectedPeople.isNotEmpty) {
+                    if (selectedPeople!.isNotEmpty) {
                       Navigator.of(context).pushNamed(
                         '/Details',
                         arguments: RouteArgument(
@@ -257,7 +257,7 @@ class _People_count_DailogState extends State<People_count_Dailog> {
                   child: TranslationWidget(
                     message: "Next",
                     fromLanguage: "English",
-                    toLanguage: defaultLanguage,
+                    toLanguage: defaultLanguage!,
                     builder: (translatedMessage) => Text(
                       translatedMessage,
                       style: TextStyle(
@@ -292,8 +292,8 @@ class _People_count_DailogState extends State<People_count_Dailog> {
 }
 
 class QuantityButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
+  final IconData? icon;
+  final VoidCallback? onPressed;
 
   const QuantityButton({ this.icon, this.onPressed});
 
@@ -323,7 +323,7 @@ class ProductItem {
   final String subtitle;
   int quantity;
 
-  ProductItem({ this.name,  this.subtitle,  this.quantity});
+  ProductItem({ required this.name, required this.subtitle, required this.quantity});
 }
 
 

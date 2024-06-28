@@ -9,11 +9,11 @@ class TranslationWidget extends StatefulWidget {
   final Widget Function(String translation) builder;
 
   const TranslationWidget({
-    @required this.message,
-    @required this.fromLanguage,
-    @required this.toLanguage,
-    @required this.builder,
-    Key key,
+    required this.message,
+    required this.fromLanguage,
+    required this.toLanguage,
+    required this.builder,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -21,7 +21,7 @@ class TranslationWidget extends StatefulWidget {
 }
 
 class _TranslationWidgetState extends State<TranslationWidget> {
-  String translation;
+  String translation = "";
 
   @override
   Widget build(BuildContext context) {

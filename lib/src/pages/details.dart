@@ -17,13 +17,13 @@ import 'menu_list.dart';
 import 'restaurant.dart';
 
 class DetailsWidget extends StatefulWidget {
-  RouteArgument routeArgument;
+  RouteArgument? routeArgument;
   dynamic currentTab;
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  Widget currentPage;
+   GlobalKey<ScaffoldState>? scaffoldKey = GlobalKey<ScaffoldState>();
+  Widget? currentPage;
 
   DetailsWidget({
-    Key key,
+    Key? key,
     this.currentTab,
     this.scaffoldKey
   }) {
@@ -45,15 +45,15 @@ class DetailsWidget extends StatefulWidget {
 }
 
 class _DetailsWidgetState extends StateMVC<DetailsWidget> {
-  RestaurantController _con;
+  RestaurantController? _con;
 
   _DetailsWidgetState() : super(RestaurantController()) {
-    _con = controller;
+    _con = controller as RestaurantController?;
   }
 
   initState() {
-    print(widget.routeArgument.heroTag);
-    print(widget.routeArgument.selectedDate);
+    print(widget.routeArgument!.heroTag);
+    print(widget.routeArgument!.selectedDate);
     _selectTab(widget.currentTab);
     super.initState();
   }
@@ -70,27 +70,27 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
       switch (tabItem) {
         case 0:
         //  // print("DS>>> isDelivery"+widget.routeArgument.isDelivery.toString()+ " "+widget.routeArgument.heroTag);
-          _con.listenForRestaurant(id: widget.routeArgument.param).then((value) {
+          _con!.listenForRestaurant(id: widget.routeArgument!.param).then((value) {
 
             setState(() {
-              _con.restaurant = value as Restaurant;
-              // print(_con.restaurant.toMap());
+              _con!.restaurant = value as Restaurant;
+              // print(_con!.restaurant.toMap());
 
-              //widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
-              if(widget.routeArgument.isDelivery)
+              //widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con!.restaurant));
+              if(widget.routeArgument!.isDelivery!)
                 {
-                  widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,selectedDate: widget.routeArgument.selectedDate
+                  widget.currentPage = RestaurantWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: '0',param: _con!.restaurant,   heroTag: widget.routeArgument!.heroTag,selectedDate: widget.routeArgument!.selectedDate!
                   ),);
                 }
               else{
                 // print("time:"+widget.routeArgument.selectedTime);
                 widget.currentPage = DineInRestaurantWidget(parentScaffoldKey: widget.scaffoldKey,
-                    routeArgument: RouteArgument(id: '0',param: _con.restaurant,   heroTag: widget.routeArgument.heroTag,
-                      products: widget.routeArgument.products
+                    routeArgument: RouteArgument(id: '0',param: _con!.restaurant,   heroTag: widget.routeArgument!.heroTag,
+                      products: widget.routeArgument!.products
                     ),
-                    SelectedDate: widget.routeArgument.selectedDate,
-                  selectedPeople: widget.routeArgument.selectedPeople,
-                  SelectedTime: widget.routeArgument.selectedTime,
+                    SelectedDate: widget.routeArgument!.selectedDate!,
+                  selectedPeople: widget.routeArgument!.selectedPeople!,
+                  SelectedTime: widget.routeArgument!.selectedTime!,
                 );
               }
             });
@@ -100,20 +100,20 @@ class _DetailsWidgetState extends StateMVC<DetailsWidget> {
           if (currentUser.value.apiToken == null) {
             widget.currentPage = PermissionDeniedWidget();
           } else {
-            Conversation _conversation = new Conversation(
-                _con.restaurant.users.map((e) {
-                  e.image = _con.restaurant.image;
-                  return e;
-                }).toList(),
-                name: _con.restaurant.name);
-            widget.currentPage = ChatWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: _con.restaurant.id, param: _conversation));
+            // Conversation _conversation = new Conversation(
+            //     _con.restaurant.users.map((e) {
+            //       e.image = _con.restaurant.image;
+            //       return e;
+            //     }).toList(),
+            //     name: _con.restaurant.name, users: []);
+            // widget.currentPage = ChatWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(id: _con.restaurant.id, param: _conversation));
           }
           break;
         case 2:
-          widget.currentPage = MapWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
+          widget.currentPage = MapWidget(parentScaffoldKey: widget.scaffoldKey!, routeArgument: RouteArgument(param: _con!.restaurant));
           break;
         case 3:
-          widget.currentPage = MenuWidget(parentScaffoldKey: widget.scaffoldKey, routeArgument: RouteArgument(param: _con.restaurant));
+          widget.currentPage = MenuWidget(parentScaffoldKey: widget.scaffoldKey!, routeArgument: RouteArgument(param: _con!.restaurant));
           break;
       }
     });

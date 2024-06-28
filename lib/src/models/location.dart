@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 
-class LocationModel with ChangeNotifier  {
+class LocationModel with ChangeNotifier {
   final String address;
   final String latitude;
   final String longitude;
-  final List<dynamic> customFields;
-  final bool hasMedia;
+  final List<dynamic>? customFields;
+  final bool? hasMedia;
   final dynamic rate;
-  final List<dynamic> media;
+  final List<dynamic>? media;
   bool selected;
 
   LocationModel({
-    this.address,
-    this.latitude,
-    this.longitude,
+    required this.address,
+    required this.latitude,
+    required this.longitude,
     this.customFields,
     this.hasMedia,
-    this.rate,
+    required this.rate,
     this.media,
-    this.selected
+    this.selected = false,
   });
 
   factory LocationModel.fromJson(Map<String, dynamic> json) {
@@ -30,7 +30,7 @@ class LocationModel with ChangeNotifier  {
       hasMedia: json['has_media'],
       rate: json['rate'],
       media: json['media'],
-        selected :json['selected'] ?? false,
+      selected: json['selected'] ?? false,
     );
   }
 }

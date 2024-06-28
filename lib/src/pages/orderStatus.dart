@@ -9,8 +9,7 @@ import '../repository/user_repository.dart';
 
 class orderStatus extends StatefulWidget {
 
-  final RouteArgument routeArgument;
-  orderStatus({Key key, this.routeArgument}) : super(key: key);
+  orderStatus({Key? key}) : super(key: key);
 
   @override
   State<orderStatus> createState() => _orderStatusState();
@@ -54,7 +53,7 @@ class _orderStatusState extends State<orderStatus> {
         backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text( "Order confirmed",
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
       ),
       body: Center(
@@ -86,7 +85,7 @@ class _orderStatusState extends State<orderStatus> {
                 Image.asset('assets/img/order_confirmed.png',height: 70,
                   color: Colors.grey,
                 ),
-                Text(currentUser.value.name,style: Theme.of(context).textTheme.titleSmall.merge(
+                Text(currentUser.value.name,style: Theme.of(context).textTheme.titleSmall!.merge(
                     TextStyle(
                         color: Colors.grey
                     )
@@ -109,12 +108,12 @@ class _orderStatusState extends State<orderStatus> {
                         borderRadius: BorderRadius.circular(25)
                     ),
                     child: Center(child: Text('Order is Confirmed!',
-                      style: Theme.of(context).textTheme.titleLarge.merge(
+                      style: Theme.of(context).textTheme.titleLarge!.merge(
                           TextStyle(color: Colors.white)
                       ),)),
                   ),
                 ),
-                Text('Check Status',style: Theme.of(context).textTheme.titleSmall.merge(
+                Text('Check Status',style: Theme.of(context).textTheme.titleSmall!.merge(
                     TextStyle(
                         color: Colors.grey
                     )
@@ -129,10 +128,10 @@ class _orderStatusState extends State<orderStatus> {
   }
 
 
-  openCheckoutPopup({  BuildContext context})
+  openCheckoutPopup({  BuildContext? context})
   {
     return showDialog(
-      context: context,
+      context: context!,
       builder: (context) {
         return AlertDialog(
           content:Container(
@@ -146,7 +145,7 @@ class _orderStatusState extends State<orderStatus> {
               children: [
                Image.asset('assets/img/order_confirmed.png',height: 100,
                ),
-                Text('Hey Michel E. Quinn',style: Theme.of(context).textTheme.titleSmall.merge(
+                Text('Hey Michel E. Quinn',style: Theme.of(context).textTheme.titleSmall!.merge(
                   TextStyle(
                     color: Colors.grey
                   )
@@ -168,12 +167,12 @@ class _orderStatusState extends State<orderStatus> {
                           borderRadius: BorderRadius.circular(25)
                     ),
                     child: Center(child: Text('Order Confirmed !',
-                    style: Theme.of(context).textTheme.titleLarge.merge(
+                    style: Theme.of(context).textTheme.titleLarge!.merge(
                       TextStyle(color: Colors.white)
                     ),)),
                   ),
                 ),
-                Text('Check Status !!',style: Theme.of(context).textTheme.titleSmall.merge(
+                Text('Check Status !!',style: Theme.of(context).textTheme.titleSmall!.merge(
                   TextStyle(
                     color: Colors.grey
                   )

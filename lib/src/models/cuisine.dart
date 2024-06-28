@@ -7,44 +7,44 @@ class Cuisine with ChangeNotifier {
   String id;
   String name;
   String description;
-  Media image;
+  Media? image;
   bool selected;
 
-  Cuisine();
+  Cuisine({
+    this.id = '',
+    this.name = '',
+    this.description = '',
+    this.image , // Assuming Media has a default constructor
+    this.selected = false,
+  });
 
-  Cuisine.fromJSON(Map<String, dynamic> jsonMap) {
-    try {
-      id = jsonMap['id'].toString();
-      name = jsonMap['name'];
-      description = jsonMap['description'];
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
-      selected = jsonMap['selected'] ?? false;
-    } catch (e) {
-      id = '';
-      name = '';
-      description = '';
-      image = new Media();
-      selected = false;
-      // print(CustomTrace(StackTrace.current, message: e));
-    }
-  }
+  Cuisine.fromJSON(Map<String, dynamic> jsonMap)
+      : id = jsonMap['id'].toString(),
+        name = jsonMap['name'] ?? '',
+        description = jsonMap['description'] ?? '',
+        image = (jsonMap['media'] != null && jsonMap['media'].isNotEmpty)
+            ? Media.fromJSON(jsonMap['media'][0])
+            : Media(),
+        selected = jsonMap['selected'] ?? false;
 
   Map<String, dynamic> toMap() {
-    var map = new Map<String, dynamic>();
+    var map = <String, dynamic>{};
     map['id'] = id;
+    // Add other fields if needed
     return map;
   }
 
   @override
   bool operator ==(dynamic other) {
-    return other.id == this.id;
+    if (identical(this, other)) return true;
+    return other is Cuisine && other.id == id;
   }
+
+  @override
+  int get hashCode => id.hashCode;
 
   void setSelected(bool value) {
     selected = value;
     notifyListeners();
   }
-
-  @override
-  int get hashCode => super.hashCode;
 }

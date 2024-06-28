@@ -13,15 +13,15 @@ class MessageBubble extends StatelessWidget {
   final bool hasFile;
 
   MessageBubble(
-      {Key key,
-      @required this.message,
-      @required this.isMe,
-      @required this.sendTime,
-      @required this.senderName,
-      @required this.fileMessage,
-        @required  this.fileName,
-      @required this.hasFile})
-      : super(key: key);
+      {
+      required this.message,
+      required this.isMe,
+      required this.sendTime,
+      required this.senderName,
+      required this.fileMessage,
+        required  this.fileName,
+      required this.hasFile})
+      ;
 
   @override
   Widget build(BuildContext context) {

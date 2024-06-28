@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CardsCarouselLoaderWidget extends StatelessWidget {
-  const CardsCarouselLoaderWidget({
-    Key key,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

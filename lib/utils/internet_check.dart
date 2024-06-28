@@ -28,7 +28,7 @@ class InternetConnectionService {
   }
 }
 class InternetConnectionChecker extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
 
   InternetConnectionChecker({ this.child});
   @override
@@ -46,7 +46,7 @@ class _InternetConnectionCheckerState extends State<InternetConnectionChecker> {
             final connectivityResult = snapshot.data;
             if (connectivityResult == ConnectivityResult.none || connectivityResult == null) return showNoInternetDialog(context);
 
-            return widget.child;
+            return widget.child!;
           },
         ),
       ),

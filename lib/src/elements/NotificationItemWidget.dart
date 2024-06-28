@@ -12,16 +12,16 @@ class NotificationItemWidget extends StatelessWidget {
   final VoidCallback onRemoved;
 
   NotificationItemWidget(
-      {Key key,
-      this.notification,
-      this.onMarkAsRead,
-      this.onMarkAsUnRead,
-      this.onRemoved})
+      {Key? key,
+      required this.notification,
+      required this.onMarkAsRead,
+      required this.onMarkAsUnRead,
+      required this.onRemoved})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return OnSlide(
+     /*OnSlide(
       backgroundColor: notification.read
           ? Theme.of(context).scaffoldBackgroundColor
           : Theme.of(context).primaryColor,
@@ -30,11 +30,11 @@ class NotificationItemWidget extends StatelessWidget {
             icon: notification.read
                 ? new Icon(
                     Icons.panorama_fish_eye,
-                    color: Theme.of(context).accentColor,
+                   // color: Theme.of(context).accentColor,
                   )
                 : new Icon(
                     Icons.brightness_1,
-                    color: Theme.of(context).accentColor,
+                    //color: Theme.of(context).accentColor,
                   ),
             onPress: () {
               if (notification.read) {
@@ -48,7 +48,7 @@ class NotificationItemWidget extends StatelessWidget {
             icon: Padding(
               padding: const EdgeInsets.only(right: 10),
               child:
-                  new Icon(Icons.delete, color: Theme.of(context).accentColor),
+                  new Icon(Icons.delete,*//* color: Theme.of(context).accentColor*//*),
             ),
             onPress: () {
               onRemoved();
@@ -140,6 +140,7 @@ class NotificationItemWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
+    );*/
+    return Container();
   }
 }

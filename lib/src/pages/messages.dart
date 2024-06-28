@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 import '../../generated/l10n.dart';
+import '../../utils/color.dart';
 import '../controllers/chat_controller.dart';
 import '../elements/EmptyMessagesWidget.dart';
 import '../elements/MessageItemWidget.dart';
@@ -11,33 +12,33 @@ import '../models/conversation.dart';
 import '../repository/user_repository.dart';
 
 class MessagesWidget extends StatefulWidget {
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
 
-  MessagesWidget({Key key, this.parentScaffoldKey}) : super(key: key);
+  MessagesWidget({Key? key, this.parentScaffoldKey}) : super(key: key);
 
   @override
   _MessagesWidgetState createState() => _MessagesWidgetState();
 }
 
 class _MessagesWidgetState extends StateMVC<MessagesWidget> {
-  ChatController _con;
+  ChatController? _con;
 
   _MessagesWidgetState() : super(ChatController()) {
-    _con = controller;
+    _con = controller as ChatController?;
   }
 
   @override
   void initState() {
-    _con.listenForConversations();
+    _con!.listenForConversations();
     super.initState();
   }
 
   Widget conversationsList() {
     return StreamBuilder(
-      stream: _con.conversations,
+      stream: _con!.conversations,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          var _docs = _con.orderSnapshotByTime(snapshot);
+          var _docs = _con!.orderSnapshotByTime(snapshot);
           return ListView.separated(
               itemCount: _docs.length,
               separatorBuilder: (context, index) {
@@ -66,11 +67,11 @@ class _MessagesWidgetState extends StateMVC<MessagesWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _con.scaffoldKey,
+      key: _con!.scaffoldKey,
       appBar: AppBar(
         leading: new IconButton(
           icon: new Icon(Icons.sort, color: Theme.of(context).hintColor),
-          onPressed: () => widget.parentScaffoldKey.currentState.openDrawer(),
+          onPressed: () => widget.parentScaffoldKey!.currentState!.openDrawer(),
         ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
@@ -80,10 +81,10 @@ class _MessagesWidgetState extends StateMVC<MessagesWidget> {
           S.of(context).messages,
           overflow: TextOverflow.fade,
           maxLines: 1,
-          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: mainColor(1)),
         ],
       ),
       body: currentUser.value.apiToken == null

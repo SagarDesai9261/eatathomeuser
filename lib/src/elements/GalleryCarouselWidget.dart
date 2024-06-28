@@ -6,7 +6,7 @@ import '../models/gallery.dart';
 class ImageThumbCarouselWidget extends StatefulWidget {
   final List<Gallery> galleriesList;
 
-  ImageThumbCarouselWidget({Key key, this.galleriesList}) : super(key: key);
+  ImageThumbCarouselWidget({Key? key,required this.galleriesList}) : super(key: key);
 
   @override
   _ImageThumbCarouselWidgetState createState() =>
@@ -25,7 +25,7 @@ class _ImageThumbCarouselWidgetState extends State<ImageThumbCarouselWidget> {
               itemCount: widget.galleriesList.length,
               itemBuilder: (context, index) {
                 return InkWell(
-                  splashColor: Theme.of(context).accentColor.withOpacity(0.8),
+                //  splashColor: Theme.of(context).accentColor.withOpacity(0.8),
                   highlightColor: Colors.transparent,
                   onTap: () {},
                   child: GalleryItemWidget(

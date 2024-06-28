@@ -51,7 +51,7 @@ class _ProfileUpdateDialogState extends State<ProfileUpdateDialog> {
   String name = '';
   String email = '';
   String address = '';
-  LatLng selectedLocation;
+  LatLng selectedLocation = LatLng(0,0);
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +148,7 @@ class _ProfileUpdateDialogState extends State<ProfileUpdateDialog> {
   }
 
   Future<LatLng> _openAddressSelectionMap() async {
-    LatLng resultLocation;
+    LatLng? resultLocation;
     String resultAddress;
     await showDialog(
       context: context,
@@ -163,7 +163,7 @@ class _ProfileUpdateDialogState extends State<ProfileUpdateDialog> {
       },
     );
 
-    return resultLocation;
+    return resultLocation!;
   }
 
   Future<String> _getAddressFromLocation(LatLng location) async {
@@ -185,8 +185,8 @@ class _ProfileUpdateDialogState extends State<ProfileUpdateDialog> {
 }
 
 class MapScreen extends StatefulWidget {
-  final LatLng initialLocation;
-  final Function(LatLng, String) onLocationSelected;
+  final LatLng? initialLocation;
+  final Function(LatLng, String)? onLocationSelected;
 
   MapScreen({ this.onLocationSelected, this.initialLocation});
 
@@ -195,10 +195,10 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  GoogleMapController mapController;
-  LatLng selectedLocation;
-  Marker selectedMarker;
-  String address;
+  GoogleMapController? mapController;
+  LatLng? selectedLocation;
+  Marker? selectedMarker;
+  String? address;
   bool isLoading = true;
 
   @override
@@ -210,7 +210,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    geolocator.Position position;
+    geolocator.Position? position;
 
     try {
       position = await geolocator.Geolocator.getCurrentPosition(
@@ -222,7 +222,7 @@ class _MapScreenState extends State<MapScreen> {
 
     if (position != null) {
       setState(() {
-        selectedLocation = LatLng(position.latitude, position.longitude);
+        selectedLocation = LatLng(position!.latitude, position!.longitude);
       });
     }
 
@@ -249,7 +249,7 @@ class _MapScreenState extends State<MapScreen> {
                 } else {
                   return GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: widget.initialLocation ?? selectedLocation,
+                      target: widget.initialLocation ?? selectedLocation!,
                       zoom: 15.0,
                     ),
                     onMapCreated: (controller) {
@@ -269,7 +269,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           SizedBox(
             width:
-            MediaQuery.of(context).size.width / 2.5,
+            MediaQuery.of(context).size.width / 2,
             height: 50,
             child: Container(
               decoration: BoxDecoration(
@@ -312,8 +312,8 @@ class _MapScreenState extends State<MapScreen> {
 
       selectedLocation = latLng;
       selectedMarker = marker;
-      widget.onLocationSelected(selectedLocation, "selectedAddress");
-      print(selectedLocation.latitude);
+      widget.onLocationSelected!(selectedLocation!, "selectedAddress");
+      print(selectedLocation!.latitude);
     });
   }
 
@@ -324,8 +324,8 @@ class _MapScreenState extends State<MapScreen> {
 
     try {
       List<geocoding.Placemark> placemarks = await geocoding.placemarkFromCoordinates(
-        selectedLocation.latitude,
-        selectedLocation.longitude,
+        selectedLocation!.latitude,
+        selectedLocation!.longitude,
       );
 
       if (placemarks.isNotEmpty) {

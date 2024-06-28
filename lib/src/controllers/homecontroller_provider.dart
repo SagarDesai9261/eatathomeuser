@@ -8,6 +8,7 @@ import '../models/location.dart';
 import '../models/restaurant.dart';
 import '../models/review.dart';
 import '../models/slide.dart';
+import '../provider.dart';
 import '../repository/category_repository.dart';
 import '../repository/food_repository.dart';
 import '../repository/restaurant_repository.dart';
@@ -27,7 +28,7 @@ class HomeProvider with ChangeNotifier {
   List<FoodItem> trendingFoodItems = [];
   List<RestaurantModel> topKitchens = [];
   List<RestaurantModel> popularKitchens = [];
-  Add_the_address addressProvider;
+  Add_the_address? addressProvider;
   List<FoodItem> trendingFoodItemsDelivery = [];
   List<RestaurantModel> topKitchensDelivery = [];
   List<RestaurantModel> popularKitchensDelivery = [];
@@ -38,7 +39,7 @@ class HomeProvider with ChangeNotifier {
     DateTime now = DateTime.now();
     String todayDate = "${now.day}-${now.month}-${now.year}";
     addressProvider = Add_the_address(); // Instantiate the Add_the_address provider
-    addressProvider.initialize();
+    addressProvider!.initialize();
     listenForCategories();
     fetchKitchensDelivery();
     fetchKitchens();

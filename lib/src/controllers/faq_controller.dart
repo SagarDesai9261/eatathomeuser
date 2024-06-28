@@ -7,14 +7,14 @@ import '../repository/faq_repository.dart';
 
 class FaqController extends ControllerMVC {
   List<FaqCategory> faqs = <FaqCategory>[];
-  GlobalKey<ScaffoldState> scaffoldKey;
+  GlobalKey<ScaffoldState>? scaffoldKey;
 
   FaqController() {
     scaffoldKey = new GlobalKey<ScaffoldState>();
     listenForFaqs();
   }
 
-  void listenForFaqs({String message}) async {
+  void listenForFaqs({String? message}) async {
     final Stream<FaqCategory> stream = await getFaqCategories();
     stream.listen((FaqCategory _faq) {
       setState(() {
@@ -22,12 +22,12 @@ class FaqController extends ControllerMVC {
       });
     }, onError: (a) {
     //  // print(a);
-      ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
-        content: Text(S.of(state.context).verify_your_internet_connection),
+      ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
+        content: Text(S.of(state!.context).verify_your_internet_connection),
       ));
     }, onDone: () {
       if (message != null) {
-        ScaffoldMessenger.of(scaffoldKey?.currentContext).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(scaffoldKey!.currentContext!).showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
@@ -36,6 +36,6 @@ class FaqController extends ControllerMVC {
 
   Future<void> refreshFaqs() async {
     faqs.clear();
-    listenForFaqs(message: S.of(state.context).faqsRefreshedSuccessfuly);
+    listenForFaqs(message: S.of(state!.context).faqsRefreshedSuccessfuly);
   }
 }

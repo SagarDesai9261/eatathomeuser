@@ -8,11 +8,11 @@ import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/user_repository.dart' as userRepo;
 
 class RazorPayController extends ControllerMVC {
-  GlobalKey<ScaffoldState> scaffoldKey;
-  WebViewController webView;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  WebViewController? webView;
   String url = "";
   double progress = 0;
-  Address deliveryAddress;
+  Address? deliveryAddress;
 
   RazorPayController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();

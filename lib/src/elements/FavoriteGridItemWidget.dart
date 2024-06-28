@@ -15,8 +15,8 @@ class FavoriteGridItemWidget extends StatefulWidget {
   final FavouriteModel favorite;
   final Function(String) onRemoveFavorite;
 
-  FavoriteGridItemWidget({Key key, this.heroTag, this.favorite, this.onRemoveFavorite,})
-      : super(key: key);
+  FavoriteGridItemWidget({ required this.heroTag,required this.favorite,required this.onRemoveFavorite,})
+      ;
 
 
   @override
@@ -27,16 +27,16 @@ class FavoriteGridItemWidget extends StatefulWidget {
 
 class _FavoriteGridItemWidgetState extends StateMVC<FavoriteGridItemWidget> {
 
-  RestaurantController _con;
+  RestaurantController? _con;
 
   _FavoriteGridItemWidgetState() : super(RestaurantController()) {
-    _con = controller;
+    _con = controller as RestaurantController? ;
   }
   @override
   Widget build(BuildContext context) {
     return InkWell(
       highlightColor: Colors.transparent,
-      splashColor: Theme.of(context).accentColor.withOpacity(0.08),
+     // splashColor: Theme.of(context).accentColor.withOpacity(0.08),
       onTap: () {
        /* Navigator.of(context).pushNamed('/Food',
             arguments: new RouteArgument(
@@ -115,7 +115,7 @@ class _FavoriteGridItemWidgetState extends StateMVC<FavoriteGridItemWidget> {
                   } else {
                     DeleteFromFavouriteModel apiResponse =
                         await _con
-                        .removeRestaurantFromFavouriteList(
+                        !.removeRestaurantFromFavouriteList(
                         widget.favorite.favourite_id.toString(),
                         currentUser
                             .value

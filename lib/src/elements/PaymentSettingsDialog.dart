@@ -8,7 +8,7 @@ class PaymentSettingsDialog extends StatefulWidget {
   CreditCard creditCard;
   VoidCallback onChanged;
 
-  PaymentSettingsDialog({Key key, this.creditCard, this.onChanged})
+  PaymentSettingsDialog({Key? key,required this.creditCard,required this.onChanged})
       : super(key: key);
 
   @override
@@ -57,10 +57,10 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                           //     ? widget.creditCard.number
                           //     : null,
                           initialValue: "1234567891234567",
-                          validator: (input) => input.trim().length != 16
+                          validator: (input) => input!.trim().length != 16
                               ? S.of(context).not_a_valid_number
                               : null,
-                          onSaved: (input) => widget.creditCard.number = input,
+                          onSaved: (input) => widget.creditCard.number = input!,
                         ),
                         new TextFormField(
                             style:
@@ -77,12 +77,12 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                             //     : null,
                             // TODO validate date
                             validator: (input) =>
-                                !input.contains('/') || input.length != 5
+                                !input!.contains('/') || input.length != 5
                                     ? S.of(context).not_a_valid_date
                                     : null,
                             onSaved: (input) {
                               widget.creditCard.expMonth =
-                                  input.split('/').elementAt(0);
+                                  input!.split('/').elementAt(0);
                               widget.creditCard.expYear =
                                   input.split('/').elementAt(1);
                             }),
@@ -95,10 +95,10 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                           //     ? widget.creditCard.cvc
                           //     : null,
 
-                          validator: (input) => input.trim().length != 3
+                          validator: (input) => input!.trim().length != 3
                               ? S.of(context).not_a_valid_cvc
                               : null,
-                          onSaved: (input) => widget.creditCard.cvc = input,
+                          onSaved: (input) => widget.creditCard.cvc = input!,
                         ),
                       ],
                     ),
@@ -116,8 +116,8 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                         onPressed: _submit,
                         child: Text(
                           S.of(context).save,
-                          style:
-                              TextStyle(color: Theme.of(context).accentColor),
+                          // style:
+                          //     TextStyle(color: Theme.of(context).accentColor),
                         ),
                       ),
                     ],
@@ -135,11 +135,11 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
     );
   }
 
-  InputDecoration getInputDecoration({String hintText, String labelText}) {
+  InputDecoration getInputDecoration({String? hintText, String? labelText}) {
     return new InputDecoration(
       hintText: hintText,
       labelText: labelText,
-      hintStyle: Theme.of(context).textTheme.bodyText2.merge(
+      hintStyle: Theme.of(context).textTheme.bodyText2!.merge(
             TextStyle(color: Theme.of(context).focusColor),
           ),
       enabledBorder: UnderlineInputBorder(
@@ -148,15 +148,15 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
       focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Theme.of(context).hintColor)),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
-      labelStyle: Theme.of(context).textTheme.bodyText2.merge(
+      labelStyle: Theme.of(context).textTheme.bodyText2!.merge(
             TextStyle(color: Theme.of(context).hintColor),
           ),
     );
   }
 
   void _submit() {
-    if (_paymentSettingsFormKey.currentState.validate()) {
-      _paymentSettingsFormKey.currentState.save();
+    if (_paymentSettingsFormKey.currentState!.validate()) {
+      _paymentSettingsFormKey.currentState!.save();
       widget.onChanged();
       Navigator.pop(context);
     }

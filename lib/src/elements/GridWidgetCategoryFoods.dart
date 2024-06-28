@@ -15,7 +15,7 @@ class GridWidgetCategoryFoods extends StatefulWidget {
   // final String heroTag;
   // bool delivery;
 
-  GridWidgetCategoryFoods({Key key,this.id});
+  GridWidgetCategoryFoods({Key? key, required this.id});
 
   @override
   State<GridWidgetCategoryFoods> createState() => _GridWidgetCategoryFoodsState();
@@ -24,7 +24,7 @@ class GridWidgetCategoryFoods extends StatefulWidget {
 class _GridWidgetCategoryFoodsState extends State<GridWidgetCategoryFoods> {
 
   CategoryController _con = CategoryController();
-  String defaultLanguage;
+  String defaultLanguage = "";
   //final categoryFoodProvider = Provider.of<CollectedData>(context);
 
 
@@ -69,7 +69,7 @@ class _GridWidgetCategoryFoodsState extends State<GridWidgetCategoryFoods> {
 
              child: InkWell(
               highlightColor: Colors.transparent,
-              splashColor: Theme.of(context).accentColor.withOpacity(0.08),
+             // splashColor: Theme.of(context).accentColor.withOpacity(0.08),
               onTap: () {
 
 
@@ -104,7 +104,7 @@ class _GridWidgetCategoryFoodsState extends State<GridWidgetCategoryFoods> {
                       //     ),
                       //   ),
                       // ),
-                      Container(child: Image.network(_con.foodList[index].image.thumb,
+                      Container(child: Image.network(_con.foodList[index].image!.thumb,
                       fit: BoxFit.cover,height: 120,)),
                       SizedBox(height: 5),
                      // Text(
@@ -130,7 +130,7 @@ class _GridWidgetCategoryFoodsState extends State<GridWidgetCategoryFoods> {
                         overflow: TextOverflow.ellipsis,
                       )*/
                       TranslationWidget(
-                        message: _con.foodList[index].restaurant.name.toString(),
+                        message: _con.foodList[index].restaurant!.name.toString(),
                         fromLanguage: "English",
                         toLanguage: defaultLanguage,
                         builder: (translatedMessage) => Text(
@@ -159,7 +159,7 @@ class _GridWidgetCategoryFoodsState extends State<GridWidgetCategoryFoods> {
                         color: Theme.of(context).primaryColor,
                         size: 21,
                       ),
-                      color: Theme.of(context).accentColor.withOpacity(0.9),
+                    //  color: Theme.of(context).accentColor.withOpacity(0.9),
                       shape: StadiumBorder(),
                     ),
                   ),

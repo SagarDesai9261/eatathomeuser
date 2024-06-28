@@ -13,7 +13,7 @@ class FoodsCarouselWidget extends StatefulWidget {
   final String heroTag;
   bool delivery;
   int enjoy;
-  FoodsCarouselWidget({Key key, this.foodsList, this.heroTag, this.delivery,this.enjoy})
+  FoodsCarouselWidget({Key? key,required  this.foodsList,required this.heroTag,required this.delivery,required this.enjoy})
       : super(key: key);
 
   @override
@@ -42,11 +42,11 @@ class _FoodsCarouselWidgetState extends State<FoodsCarouselWidget> {
                 return GestureDetector(
                   onTap: (){
                     // print("DS>> print delivery"+widget.delivery.toString());
-                    widget.delivery!=true? showCalendarDialog(context, widget.foodsList.elementAt(index).restaurant.id, widget.delivery,-1):
+                    widget.delivery!=true? showCalendarDialog(context, widget.foodsList.elementAt(index).restaurant!.id, widget.delivery,-1):
                     Navigator.of(context).pushNamed('/Details',
                         arguments: RouteArgument(
                           id: '0',
-                          param: widget.foodsList.elementAt(index).restaurant.id,
+                          param: widget.foodsList.elementAt(index).restaurant!.id,
                           heroTag: widget.heroTag,
                           isDelivery: true,
                           selectedDate: widget.enjoy.toString(),

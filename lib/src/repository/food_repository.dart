@@ -43,7 +43,7 @@ Future<Stream<Food>> getTrendingFoods(Address myLocation) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -75,7 +75,7 @@ Future<Stream<Food>> getTrendingFoodsforDelivery(Address myLocation) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -151,7 +151,7 @@ Future<Stream<Food>> getFood(String foodId) async {
   try {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -177,7 +177,7 @@ Future<Stream<Food>> searchFoods(String search, Address address) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -251,7 +251,7 @@ Future<Stream<Food>> getFoodsByCategoryAndRestaurant(categoryId, restaurantId) a
     // // print('Request URL1: ${uri.toString()}'); // // print the request URL
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -306,7 +306,7 @@ Future<KitchenDetailResponse> getFoodsByCategoryAndKitchen(categoryId, restauran
 Future<Stream<Favorite>> isFavoriteFood(String foodId) async {
   User _user = userRepo.currentUser.value;
   if (_user.apiToken == null) {
-    return Stream.value(null);
+    return Stream.value(Favorite());
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
   final String url = '${GlobalConfiguration().getValue('api_base_url')}favorites/exist?${_apiToken}food_id=$foodId&user_id=${_user.id}';
@@ -314,7 +314,7 @@ Future<Stream<Favorite>> isFavoriteFood(String foodId) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getObjectData(data)).map((data) => Favorite.fromJSON(data));
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getObjectData(data as Map<String,dynamic>)).map((data) => Favorite.fromJSON(data));
   } catch (e) {
     // // print(CustomTrace(StackTrace.current, message: url).toString());
     return new Stream.value(new Favorite.fromJSON({}));
@@ -358,7 +358,8 @@ Future<Map<String, dynamic>> getFavorites() async {
     // You can handle the success and failure cases based on responseData
     return responseData;
   } catch (e) {
-   /* // // print(CustomTrace(StackTrace.current, message: url).toString());
+    throw Exception(e);
+       /* // // print(CustomTrace(StackTrace.current, message: url).toString());
     return new Stream.value(new FavouriteModel.fromJson({}));*/
   }
 }
@@ -405,7 +406,7 @@ Future<Favorite> removeFavorite(Favorite favorite) async {
   }
 }
 
-Future<Stream<Food>> getFoodsOfRestaurant(String restaurantId, {List<String> categories}) async {
+Future<Stream<Food>> getFoodsOfRestaurant(String restaurantId, {List<String>? categories}) async {
   Uri uri = Helper.getUri('api/foods/categories');
   Map<String, dynamic> query = {
     'with': 'restaurant;category;extras;foodReviews',
@@ -421,7 +422,7 @@ Future<Stream<Food>> getFoodsOfRestaurant(String restaurantId, {List<String> cat
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -445,7 +446,7 @@ Future<List<Food>> getIndividualFoodsOfRestaurant(String restaurantId) async {
 
     // // print('Response of food for ind: $response'); // // print the response before processing
 
-    final responseData = Helper.getData(response);
+    final responseData = Helper.getData(response as Map<String,dynamic>);
     final foodList = responseData['food'] as List<dynamic>;
 
     return foodList.map((data) => Food.fromJSON(data)).toList();
@@ -472,7 +473,7 @@ Future<Stream<Food>> getTrendingFoodsOfRestaurant(String restaurantId) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -493,7 +494,7 @@ Future<Stream<Food>> getFeaturedFoodsOfRestaurant(String restaurantId) async {
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', uri));
 
-    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+    return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
       return Food.fromJSON(data);
     });
   } catch (e) {
@@ -552,7 +553,7 @@ Future<List<Restaurant>> getKetchainDetails() async
     throw Exception('Failed to load restaurants');
   }
 }
-Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String restaurantId,{int limit = 2, int offset = 0,String enjoy}) async {
+Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String restaurantId,{int limit = 2, int offset = 0,String enjoy = "1"}) async {
   print("enjoy ====> ${enjoy}");
 
   DateTime now = DateTime.now();
@@ -586,7 +587,7 @@ Future<List<FoodItem>> getFoodsByCategoryAndKitchenlist(int categoryId, String r
     }
 
     // Find the key associated with the list of food items
-    String foodItemsKey;
+    String? foodItemsKey;
     responseData['data'].forEach((key, value) {
       if (value is List<dynamic>) {
         foodItemsKey = key;
@@ -630,7 +631,7 @@ Future<FoodItem> getFoodsByCategoryAndKitchenData(String restaurantId, {int limi
     if (responseData["success"] == false) {
       print("=>>=>>111");
       // Return an empty list when no data is available
-      return FoodItem();
+      throw Exception('Failed to load food data');
     }
     Map<String,dynamic> data = {};
     print(responseData["data"].runtimeType);

@@ -30,17 +30,17 @@ import '../repository/restaurant_repository.dart';
 import '../repository/settings_repository.dart' as settingRepo;
 import 'package:provider/provider.dart';
 class KitchenListDeliveryWidget extends StatefulWidget {
-  List<Restaurant> restaurantsList;
-  String heroTag;
-  bool delivery;
-  int enjoy_now;
+  List<Restaurant>? restaurantsList;
+  String? heroTag;
+  bool? delivery;
+  int? enjoy_now;
   HomeController _con = HomeController();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   dynamic currentTab;
-  RouteArgument routeArgument;
+  RouteArgument? routeArgument;
   Widget currentPage = HomePage();
 
-  KitchenListDeliveryWidget({Key key, this.heroTag, this.delivery, this.restaurantsList,this.enjoy_now})
+  KitchenListDeliveryWidget({Key? key, this.heroTag, this.delivery, this.restaurantsList,this.enjoy_now})
       : super(key: key);
 
   @override
@@ -49,8 +49,8 @@ class KitchenListDeliveryWidget extends StatefulWidget {
 
 class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
   ScrollController _scrollController = ScrollController();
-  String defaultLanguage;
-  HomeController _con;
+  String defaultLanguage = "";
+  HomeController? _con;
   //_OverflowMenuDialogState overflowMenuDialog;
   bool isDataLoaded = false;
   bool isDatamoreLoaded = false;
@@ -64,7 +64,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
   @override
   void initState() {
     getCurrentDefaultLanguage();
-    if(widget.restaurantsList.length == 0){
+    if(widget.restaurantsList!.length == 0){
       _con = HomeController();
      // _con.refreshSubHome();
 
@@ -105,7 +105,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
       try {
         List<Restaurant> allRestaurants = [];
         while (true) {
-          Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,enjoy_now: widget.enjoy_now);
+          Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,enjoy_now: widget.enjoy_now!);
           List<Restaurant> restaurants = await restaurantsStream.toList();
 
           if (restaurants.isEmpty) {
@@ -121,12 +121,12 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
           allRestaurants.addAll(restaurants);
           offset += limit; // Increment offset for the next page
         }
-        List<Restaurant> filteredRestaurants = allRestaurants.where((restaurant) => !widget.restaurantsList.any((existing) => existing.id == restaurant.id)).toList();
+        List<Restaurant> filteredRestaurants = allRestaurants.where((restaurant) => !widget.restaurantsList!.any((existing) => existing.id == restaurant.id)).toList();
 
 
         setState(() {
 
-          widget.restaurantsList.addAll(filteredRestaurants);
+          widget.restaurantsList!.addAll(filteredRestaurants);
           // isDataLoaded = true;
         });
       } catch (e) {
@@ -135,7 +135,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
   }
   Future<void> fetchRestaurants_firsttime() async {
 
-    if(widget.restaurantsList.isNotEmpty){
+    if(widget.restaurantsList!.isNotEmpty){
       setState(() {
         isDataLoaded = true;
 
@@ -151,7 +151,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
     try {
       List<Restaurant> allRestaurants = [];
 
-      Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,enjoy_now: widget.enjoy_now);
+      Stream<Restaurant> restaurantsStream = await getAllRestaurants(kitchenType, todayDate, numberOfPerson, category, limit: limit, offset: offset,enjoy_now: widget.enjoy_now!);
       List<Restaurant> restaurants = await restaurantsStream.toList();
 
       allRestaurants.addAll(restaurants);
@@ -177,9 +177,9 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Filter filter = Filter.fromJSON(json.decode(prefs.getString('filter') ?? '{}'));
 
-    String latitude = prefs.getString("latitude");
-    String longitude = prefs.getString("longitude");
-    String permission = prefs.getString("permission");
+    String? latitude = prefs.getString("latitude");
+    String? longitude = prefs.getString("longitude");
+    String? permission = prefs.getString("permission");
     // print("current permission  + ${permission} ");
     //_queryParams['limit'] = '6';
     _queryParams['kitchenList'] = 'true';
@@ -219,7 +219,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
       final client = new http.Client();
       final streamedRest = await client.send(http.Request('get', uri));
       //print("DS>>> Request delivery: "+uri.toString());
-      return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data)).expand((data) => (data as List)).map((data) {
+      return streamedRest.stream.transform(utf8.decoder).transform(json.decoder).map((data) => Helper.getData(data as Map<String,dynamic>)).expand((data) => (data as List)).map((data) {
         return Restaurant.fromJSON(data);
       });
     } catch (e) {
@@ -300,14 +300,14 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                     translatedMessage,
                     overflow: TextOverflow.fade,
                     softWrap: false,
-                    style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
+                    style: Theme.of(context).textTheme.headline6!.merge(TextStyle(letterSpacing: 1.3)),
                   ),
                 ),
               ),
               body: isDataLoaded
                   ? RefreshIndicator(
                 onRefresh: widget._con.refreshHome,
-                child: widget.restaurantsList.isEmpty
+                child: widget.restaurantsList!.isEmpty
                     ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -338,18 +338,18 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                         childAspectRatio: .9
                     ),
                     scrollDirection: Axis.vertical,
-                    itemCount: widget.restaurantsList.length,
+                    itemCount: widget.restaurantsList!.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          if (widget.restaurantsList.elementAt(index).availableForDelivery ) {
+                          if (widget.restaurantsList!.elementAt(index).availableForDelivery !) {
                             Navigator.of(context).pushNamed('/Details',
                                 arguments: RouteArgument(
                                   id: '0',
-                                  param: widget.restaurantsList.elementAt(index).id,
+                                  param: widget.restaurantsList!.elementAt(index).id,
                                   heroTag: widget.heroTag,
                                   isDelivery: true,
-                                  selectedDate: "",
+                                  selectedDate: widget.enjoy_now.toString(),
                                   parentScaffoldKey: new GlobalKey(),
                                 ));
                           }
@@ -360,8 +360,8 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: KitchenListItem(
-                            restaurant: widget.restaurantsList.elementAt(index),
-                            heroTag: widget.heroTag,
+                            restaurant: widget.restaurantsList!.elementAt(index),
+                            heroTag: widget.heroTag!,
                           ),
                         ),
                       );
@@ -369,8 +369,8 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                   ),
                 ),
               ) : Shimmer.fromColors(
-                baseColor: Colors.grey[300],
-                highlightColor: Colors.grey[100],
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -549,7 +549,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                                 value.toString() +
                                 " index " +
                                 filteredCuisineList[index].id.toString());
-                            filteredCuisineList[index].selected = value;
+                            filteredCuisineList[index].selected = value!;
                           });
                         }
                       /*onChanged: (value) {
@@ -597,7 +597,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                           fromLanguage: "English",
                           toLanguage: defaultLanguage,
                           builder: (translatedMessage) => Text(translatedMessage,
-                              style: Theme.of(context).textTheme.bodyText1.merge(
+                              style: Theme.of(context).textTheme.bodyText1!.merge(
                                   TextStyle(
                                       color: Theme.of(context).primaryColor))),
                         ),
@@ -690,7 +690,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
       widget.currentTab = tabItem;
       switch (tabItem) {
         case 0:
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -725,7 +725,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
           fetchRestaurants();
           break;
         case 4:
-          if(currentUser.value.apiToken != null){
+          if(currentUser.value.apiToken != ""){
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -871,7 +871,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                               "index value" +
                               filteredLocationList[index].address.toString());
                           filteredLocationList[index].selected =
-                              value; // Update the state of the selected cuisine
+                              value!; // Update the state of the selected cuisine
 
                           Provider.of<LocationProvider>(context, listen: false)
                               .toggleLocation(
@@ -911,7 +911,7 @@ class _KitchenListDeliveryState extends StateMVC<KitchenListDeliveryWidget> {
                           fromLanguage: "English",
                           toLanguage: defaultLanguage,
                           builder: (translatedMessage) => Text(translatedMessage,
-                              style: Theme.of(context).textTheme.bodyText1.merge(
+                              style: Theme.of(context).textTheme.bodyText1!.merge(
                                   TextStyle(
                                       color: Theme.of(context).primaryColor))),
                         ),

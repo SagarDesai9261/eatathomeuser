@@ -26,8 +26,9 @@ import 'FoodItemWidget.dart'; // Import your RestaurantModel class
 class SearchResultWidget extends StatefulWidget {
   final String heroTag;
   final bool isDinein;
-  final GlobalKey<ScaffoldState> parentScaffoldKey;
-  SearchResultWidget({Key key, this.heroTag, this.isDinein,this.parentScaffoldKey}) : super(key: key);
+  int enjoy;
+  final GlobalKey<ScaffoldState>? parentScaffoldKey;
+  SearchResultWidget({Key? key, required this.heroTag,required this.isDinein,this.parentScaffoldKey,required this.enjoy}) : super(key: key);
 
   @override
   _SearchResultWidgetState createState() => _SearchResultWidgetState();
@@ -39,11 +40,11 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
   bool isLunchVisible = true;
   bool isSnacksVisible = true;
   bool isDinnerVisible = true;
-  TabController _tabController;
+  TabController? _tabController;
   int _quantity = 1;
   List<Food> foodList = [];
   bool iscartload = false;
-  FoodController _foodcon;
+  FoodController? _foodcon;
   bool isBreakfastSelected = false;
   bool isLunchSelected = false;
   bool isSnacksSelected = false;
@@ -61,14 +62,14 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
   var snacksslot_end ;
   var dinnerslot_start ;
   var dinnerslot_end ;
-  DateTime b_startTime ;
-  DateTime b_endTime ;
-  DateTime l_startTime ;
-  DateTime l_endTime ;
-  DateTime s_startTime ;
-  DateTime s_endTime ;
-  DateTime d_startTime ;
-  DateTime d_endTime ;
+  DateTime? b_startTime ;
+  DateTime? b_endTime ;
+  DateTime? l_startTime ;
+  DateTime? l_endTime ;
+  DateTime? s_startTime ;
+  DateTime? s_endTime ;
+  DateTime? d_startTime ;
+  DateTime? d_endTime ;
   List<Map<String,dynamic>> fooditems = [];
   Map<String, int> _quantities = {};
   DateTime todayWithTime(String time) {
@@ -80,10 +81,10 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
   void _scheduleButtonPress() {
     Future.delayed(Duration(seconds: 1), () {
 
-      breakfastslot_start = Provider.of<HomeProvider>(context,listen: false).categories[0].start_slot;
-      breakfastslot_end = Provider.of<HomeProvider>(context,listen: false).categories[0].end_slot;
-      lunchslot_start = Provider.of<HomeProvider>(context,listen: false).categories[1].start_slot;
-      lunchslot_end = Provider.of<HomeProvider>(context,listen: false).categories[1].end_slot;
+      breakfastslot_start = Provider.of<HomeProvider>(context,listen: false).categories[0]!.start_slot;
+      breakfastslot_end = Provider.of<HomeProvider>(context,listen: false).categories[0]!.end_slot;
+      lunchslot_start = Provider.of<HomeProvider>(context,listen: false).categories[1]!.start_slot;
+      lunchslot_end = Provider.of<HomeProvider>(context,listen: false).categories[1]!.end_slot;
       snacksslot_start = Provider.of<HomeProvider>(context,listen: false).categories[2].start_slot;
       snacksslot_end = Provider.of<HomeProvider>(context,listen: false).categories[2].end_slot;
       dinnerslot_start = Provider.of<HomeProvider>(context,listen: false).categories[3].start_slot;
@@ -102,8 +103,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
       d_endTime = todayWithTime(dinnerslot_end);
 
       print(b_endTime);
-      print( currentTime.isBefore(b_endTime));
-      if (currentTime.isAfter(d_startTime)) {
+      print( currentTime.isBefore(b_endTime!));
+      if (currentTime.isAfter(d_startTime!)) {
         setState(() {
           isbreckfastenable = false;
           islunchenable = false;
@@ -115,7 +116,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
           isSnacksSelected = false;
           isDinnerSelected = true;
         });
-      } else if (currentTime.isAfter(s_startTime)) {
+      } else if (currentTime.isAfter(s_startTime!)) {
         setState(() {
           isbreckfastenable = false;
           islunchenable = false;
@@ -127,7 +128,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
           isSnacksSelected = true;
           isDinnerSelected = false;
         });
-      } else if (currentTime.isAfter(l_startTime)) {
+      } else if (currentTime.isAfter(l_startTime!)) {
         setState(() {
           isbreckfastenable = false;
           islunchenable = true;
@@ -139,7 +140,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
           isSnacksSelected = false;
           isDinnerSelected = false;
         });
-      } else if (currentTime.isAfter(b_startTime)) {
+      } else if (currentTime.isAfter(b_startTime!)) {
         setState(() {
           isbreckfastenable = true;
           islunchenable = true;
@@ -213,8 +214,13 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
             padding: const EdgeInsets.all(20),
             child: TextField(
               onChanged: (text) async {
-                await searchController.refreshSearch(text);
-                searchController.saveSearch(text);
+                if(text.length >= 3)
+                {
+                  await searchController.refreshSearch(text);
+
+                  searchController.saveSearch(text);
+                }
+
               },
               autofocus: true,
               decoration: InputDecoration(
@@ -223,9 +229,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                 hintStyle: Theme.of(context)
                     .textTheme
                     .caption
-                    .merge(TextStyle(fontSize: 14)),
+                    !.merge(TextStyle(fontSize: 14)),
                 prefixIcon:
-                Icon(Icons.search, color: Theme.of(context).accentColor),
+                Icon(Icons.search, color: mainColor(1)),
                 border: OutlineInputBorder(
                     borderSide: BorderSide(
                         color: Theme.of(context).focusColor.withOpacity(0.1))),
@@ -239,6 +245,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
             ),
           ),
           TabBar(
+            dividerColor: Colors.redAccent,
+            indicatorColor: Colors.redAccent,
             controller: _tabController,
             tabs: [
               Tab(text: 'Restaurants'),
@@ -255,394 +263,78 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                     print(searchController.foodsbreakfast.length);
                     return searchController.isLoading
                         ? CircularLoadingWidget(height: 288)
-                        : Expanded(
-                      child: ListView(
-                        children: <Widget>[
-                         /* Padding(
-                            padding:
-                            const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12),
-                            child: IntrinsicHeight(
-                              child: Row(
-                                children: [
-                                  if (searchController.foodsbreakfast.isNotEmpty)
-                                  Expanded(
-                                    child: Container(
-                                      // width:235,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                          BorderRadius.only(
-                                              topLeft: Radius.circular(0),
-                                              bottomLeft: Radius.circular(0)),
-                                          color: *//*currentHour < 7 || *//* !isbreckfastenable ? Colors.grey[200] : isBreakfastSelected ? kPrimaryColororange : Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors
-                                                    .grey,
-                                                blurRadius:
-                                                12,
-                                                spreadRadius:
-                                                -9)
-                                          ]),
-                                      child: TextButton(
-                                        child:
-                                        GestureDetector(
-                                         *//* onTap: !isbreckfastenable ? null : () {
-
-
-                                            _controller
-                                                .isDateUpdated =
-                                            false;
-                                            // _controller.listenForFoodsByCategoryAndKitchen(id: "8", restaurantId: _con.restaurant.id);
-                                            showBreakFastView();
-                                          },*//*
-                                          child:
-                                          TranslationWidget(
-                                            message:
-                                            "Breakfast",
-                                            fromLanguage:
-                                            "English",
-                                            toLanguage:
-                                            defaultLanguage,
-                                            builder:
-                                                (translatedMessage) =>
-                                                Text(
-                                                  translatedMessage,
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                      12,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .normal,
-                                                      color: isBreakfastSelected
-                                                          ? Colors
-                                                          .white
-                                                          : Colors
-                                                          .black),
-                                                ),
-                                          ),
-                                        ),
-                                      ),
+                        : searchController.restaurants.length ==0 ? Center(child: Text("No matchs found. Please try different criteria.")) :  ListView.builder(
+                          shrinkWrap: true,
+                          primary: false,
+                          scrollDirection: Axis.vertical,
+                          itemCount: searchController.restaurants.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                print( searchController.restaurants[index].id);
+                                if (widget.isDinein) {
+                                  showCalendarDialog(context, searchController.restaurants[index].id, false, -1);
+                                } else {
+                                  Navigator.of(context).pushNamed('/Details',
+                                      arguments: RouteArgument(
+                                        id: '0',
+                                        param: searchController.restaurants[index].id,
+                                        heroTag: widget.heroTag,
+                                        isDelivery: true,
+                                        selectedDate: widget.enjoy.toString(),
+                                      ));
+                                }
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor.withOpacity(0.9),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).focusColor.withOpacity(0.1),
+                                      blurRadius: 5,
+                                      offset: Offset(0, 2),
                                     ),
-                                  ),
-                                  VerticalDivider(
-                                    color: Colors
-                                        .grey.shade100,
-                                    thickness: 1,
-                                    indent: 0,
-                                    width: 2,
-                                  ),
-                                  if (searchController.foodslunch.isNotEmpty)
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: *//*currentHour < 11 || *//*
-                                          !islunchenable ? Colors.grey[200]:
-                                         isLunchSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors
-                                                    .grey,
-                                                blurRadius:
-                                                12,
-                                                spreadRadius:
-                                                -9)
-                                          ]),
-                                      child: TextButton(
-                                        child:
-                                        GestureDetector(
-                                          // onTap: !islunchenable ? null: () {
-                                          //   _controller
-                                          //       .isDateUpdated =
-                                          //   false;
-                                          //
-                                          //   showLunchView();
-                                          // },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                            children: [
-                                              TranslationWidget(
-                                                message:
-                                                "Lunch",
-                                                fromLanguage:
-                                                "English",
-                                                toLanguage:
-                                                defaultLanguage,
-                                                builder:
-                                                    (translatedMessage) =>
-                                                    Text(
-                                                      translatedMessage,
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                          12,
-                                                          fontWeight: FontWeight
-                                                              .normal,
-                                                          color: isLunchSelected
-                                                              ? Colors.white
-                                                              : Colors.black),
-                                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Hero(
+                                      tag: widget.heroTag,
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                                            child: searchController.restaurants[index].closed == "0"
+                                                ? CachedNetworkImage(
+                                              height: 60,
+                                              width: 60,
+                                              fit: BoxFit.cover,
+                                              imageUrl: searchController.restaurants[index].media!.length == 0
+                                                  ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ14AJXokxXlQNidFd1P1rK_JuRjzRpaFC4DQ&usqp=CAU"
+                                                  : searchController.restaurants[index].media![0].url!,
+                                              placeholder: (context, url) => Image.asset(
+                                                'assets/img/loading.gif',
+                                                fit: BoxFit.cover,
+                                                height: 60,
+                                                width: 60,
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  VerticalDivider(
-                                    color: Colors
-                                        .grey.shade100,
-                                    thickness: 1,
-                                    indent: 0,
-                                    width: 2,
-                                  ),
-                                  if (searchController.foodssnacks.isNotEmpty)
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: !issnacksenable ? Colors.grey[200]: isSnacksSelected
-                                              ? kPrimaryColororange
-                                              : Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors
-                                                    .grey,
-                                                blurRadius:
-                                                12,
-                                                spreadRadius:
-                                                -9)
-                                          ]),
-                                      child: TextButton(
-                                        child:
-                                        GestureDetector(
-                                        *//*  onTap: !issnacksenable ?null : () {
-                                            _controller
-                                                .isDateUpdated =
-                                            false;
-
-                                            showSnacksView();
-                                          },*//*
-                                          child:
-                                          TranslationWidget(
-                                            message:
-                                            "Snacks",
-                                            fromLanguage:
-                                            "English",
-                                            toLanguage:
-                                            defaultLanguage,
-                                            builder:
-                                                (translatedMessage) =>
-                                                Text(
-                                                  translatedMessage,
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                      12,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .normal,
-                                                      color: isSnacksSelected
-                                                          ? Colors
-                                                          .white
-                                                          : Colors
-                                                          .black),
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  VerticalDivider(
-                                    color: Colors
-                                        .grey.shade100,
-                                    thickness: 1,
-                                    indent: 0,
-                                    width: 2,
-                                  ),
-                                  if (searchController.foodsdinner.isNotEmpty)
-                                  Expanded(
-                                    child: Container(
-                                      decoration:
-                                      BoxDecoration(
-                                          borderRadius:
-                                          BorderRadius
-                                              .only(
-                                            topRight: Radius
-                                                .circular(
-                                                0),
-                                            bottomRight:
-                                            Radius.circular(
-                                                0),
-                                          ),
-                                          color: *//*currentHour < 19 || *//* !isdinnerenable ?  Colors.grey[200]  : isDinnerSelected ? kPrimaryColororange : Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors
-                                                    .grey,
-                                                blurRadius:
-                                                12,
-                                                spreadRadius:
-                                                -9)
-                                          ]),
-                                      child: TextButton(
-                                        child:
-                                        GestureDetector(
-                                          // onTap: !isdinnerenable ? null : () {
-                                          //   _controller
-                                          //       .isDateUpdated =
-                                          //   false;
-                                          //
-                                          //   showDinnerView();
-                                          // },
-                                          child:
-                                          TranslationWidget(
-                                            message:
-                                            "Dinner",
-                                            fromLanguage:
-                                            "English",
-                                            toLanguage:
-                                            defaultLanguage,
-                                            builder:
-                                                (translatedMessage) =>
-                                                Text(
-                                                  translatedMessage,
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                      12,
-                                                      fontWeight:
-                                                      FontWeight
-                                                          .normal,
-                                                      color: isDinnerSelected
-                                                          ? Colors
-                                                          .white
-                                                          : Colors
-                                                          .black),
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (searchController.foodsbreakfast.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 20, right: 20),
-                              child: ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.symmetric(vertical: 0),
-                                title: Text(
-                                  S.of(context).foods_results,
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                              ),
-                            ),
-                          ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: searchController.foodsbreakfast.length,
-                            separatorBuilder: (context, index) {
-                              return SizedBox(height: 10);
-                            },
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                 print(searchController.foodsbreakfast.elementAt(index).name);
-                                  *//* Navigator.of(context).pushNamed('/Food',
-                                  arguments: RouteArgument(
-                                  id:searchController.foods[index].id
-                                  ));*//*
-
-                                 *//* if (isDinein) {
-                                    showCalendarDialog(context, searchController.foods.elementAt(index).restaurant.id, false, -1);
-                                  } else {
-                                    Navigator.of(context).pushNamed('/Details',
-                                        arguments: RouteArgument(
-                                          id: '0',
-                                          param: searchController.foods.elementAt(index).restaurant.id,
-                                          heroTag: widget.heroTag,
-                                          isDelivery: true,
-                                          selectedDate: "",
-                                        ));
-                                  }*//*
-                                },
-                                child: FoodItemWidget(
-                                  heroTag: 'search_list',
-                                  food: searchController.foodsbreakfast.elementAt(index),
-                                ),
-                              );
-                            },
-                          ),
-                          if (searchController.restaurants.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-                              child: ListTile(
-                                dense: true,
-                                contentPadding: EdgeInsets.symmetric(vertical: 0),
-                                title: Text(
-                                  S.of(context).restaurants_results,
-                                  style: Theme.of(context).textTheme.subtitle1,
-                                ),
-                              ),
-                            ),*/
-
-                          ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            itemCount: searchController.restaurants.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  print( searchController.restaurants[index].id);
-                                  if (widget.isDinein) {
-                                    showCalendarDialog(context, searchController.restaurants[index].id, false, -1);
-                                  } else {
-                                    Navigator.of(context).pushNamed('/Details',
-                                        arguments: RouteArgument(
-                                          id: '0',
-                                          param: searchController.restaurants[index].id,
-                                          heroTag: widget.heroTag,
-                                          isDelivery: true,
-                                          selectedDate: "",
-                                        ));
-                                  }
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(vertical: 5),
-                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor.withOpacity(0.9),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Theme.of(context).focusColor.withOpacity(0.1),
-                                        blurRadius: 5,
-                                        offset: Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Hero(
-                                        tag: widget.heroTag,
-                                        child: Stack(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.all(Radius.circular(5)),
-                                              child: searchController.restaurants[index].closed == "0"
-                                                  ? CachedNetworkImage(
+                                              errorWidget: (context, url, error) => Icon(Icons.error),
+                                            )
+                                                : ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                Colors.black, // Apply a black and white filter
+                                                BlendMode.saturation,
+                                              ),
+                                              child: CachedNetworkImage(
                                                 height: 60,
                                                 width: 60,
                                                 fit: BoxFit.cover,
-                                                imageUrl: searchController.restaurants[index].media.length == 0
+                                                imageUrl: searchController.restaurants[index].media!.length == 0
                                                     ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ14AJXokxXlQNidFd1P1rK_JuRjzRpaFC4DQ&usqp=CAU"
-                                                    : searchController.restaurants[index].media[0].url,
+                                                    : searchController.restaurants[index].media![0].url!,
                                                 placeholder: (context, url) => Image.asset(
                                                   'assets/img/loading.gif',
                                                   fit: BoxFit.cover,
@@ -650,96 +342,73 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                   width: 60,
                                                 ),
                                                 errorWidget: (context, url, error) => Icon(Icons.error),
-                                              )
-                                                  : ColorFiltered(
-                                                colorFilter: ColorFilter.mode(
-                                                  Colors.black, // Apply a black and white filter
-                                                  BlendMode.saturation,
-                                                ),
-                                                child: CachedNetworkImage(
-                                                  height: 60,
-                                                  width: 60,
-                                                  fit: BoxFit.cover,
-                                                  imageUrl: searchController.restaurants[index].media.length == 0
-                                                      ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ14AJXokxXlQNidFd1P1rK_JuRjzRpaFC4DQ&usqp=CAU"
-                                                      : searchController.restaurants[index].media[0].url,
-                                                  placeholder: (context, url) => Image.asset(
-                                                    'assets/img/loading.gif',
-                                                    fit: BoxFit.cover,
-                                                    height: 60,
-                                                    width: 60,
-                                                  ),
-                                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                                ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 15),
-                                      Flexible(
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Text(
-                                                    searchController.restaurants[index].name,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                    style: Theme.of(context).textTheme.subtitle1,
-                                                  ),
-                                                  RatingBar.builder(
-                                                    itemSize: 18,
-                                                    initialRating: searchController.restaurants[index].rate != "null"
-                                                        ? double.parse(searchController.restaurants[index].rate)
-                                                        : 0.0,
-                                                    minRating: 0,
-                                                    direction: Axis.horizontal,
-                                                    allowHalfRating: true,
-                                                    itemCount: 5,
-                                                    itemBuilder: (context, _) => ShaderMask(
-                                                      shaderCallback: (Rect bounds) {
-                                                        return LinearGradient(
-                                                          colors: [
-                                                            kPrimaryColororange,
-                                                            kPrimaryColorLiteorange
-                                                          ],
-                                                        ).createShader(bounds);
-                                                      },
-                                                      child: Icon(
-                                                        Icons.star,
-                                                        color: Colors.white,
-                                                        size: 18.0,
-                                                      ),
-                                                    ),
-                                                    onRatingUpdate: (rating) {
-                                                      print(rating);
+                                    ),
+                                    SizedBox(width: 15),
+                                    Flexible(
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  searchController.restaurants[index].name,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 2,
+                                                  style: Theme.of(context).textTheme.subtitle1,
+                                                ),
+                                                RatingBar.builder(
+                                                  itemSize: 18,
+                                                  initialRating: searchController.restaurants[index].rate != "null"
+                                                      ? double.parse(searchController.restaurants[index].rate!)
+                                                      : 0.0,
+                                                  minRating: 0,
+                                                  direction: Axis.horizontal,
+                                                  allowHalfRating: true,
+                                                  itemCount: 5,
+                                                  itemBuilder: (context, _) => ShaderMask(
+                                                    shaderCallback: (Rect bounds) {
+                                                      return LinearGradient(
+                                                        colors: [
+                                                          kPrimaryColororange,
+                                                          kPrimaryColorLiteorange
+                                                        ],
+                                                      ).createShader(bounds);
                                                     },
+                                                    child: Icon(
+                                                      Icons.star,
+                                                      color: Colors.white,
+                                                      size: 18.0,
+                                                    ),
                                                   ),
-                                                  if (searchController.restaurants[index].closed == "1")
-                                                    Text(
-                                                      "Currently not accepting order",
-                                                      style: TextStyle(color: Colors.redAccent),
-                                                    )
-                                                ],
-                                              ),
+                                                  onRatingUpdate: (rating) {
+                                                    print(rating);
+                                                  },
+                                                ),
+                                                if (searchController.restaurants[index].closed == "1")
+                                                  Text(
+                                                    "Currently not accepting order",
+                                                    style: TextStyle(color: Colors.redAccent),
+                                                  )
+                                              ],
                                             ),
-                                            SizedBox(width: 8),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                          ),
+                                          SizedBox(width: 8),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    );
+                              ),
+                            );
+                          },
+                        );
                   },
                 ),
                 Consumer<RestaurantDataProvider>(
@@ -762,7 +431,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
 
                     return searchController.isLoading
                         ? CircularLoadingWidget(height: 288)
-                        : SingleChildScrollView(
+                        : searchController.foodsbreakfast.length ==0&& searchController.foodslunch.length ==0 && searchController.foodssnacks.length ==0 && searchController.foodsdinner.length ==0 ? Center(child: Text("No matchs found. Please try different criteria.")) : SingleChildScrollView(
                           child: Column(
                             children: <Widget>[
                               Padding(
@@ -793,6 +462,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                       -9)
                                                 ]),
                                             child: TextButton(
+                                              onPressed: () {  },
                                               child:
                                               GestureDetector(
                                                  onTap: !isbreckfastenable ? null : () {
@@ -858,8 +528,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                       -9)
                                                 ]),
                                             child: TextButton(
-                                              child:
-                                              GestureDetector(
+
+                                              onPressed: () {  },
+                                              child: GestureDetector(
                                                 onTap: !islunchenable ? null: () {
                                                   setState(() {
                                                     isBreakfastSelected = false;
@@ -924,8 +595,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                       -9)
                                                 ]),
                                             child: TextButton(
-                                              child:
-                                              GestureDetector(
+
+                                              onPressed: () {  },
+                                              child: GestureDetector(
                                                   onTap: !issnacksenable ?null : () {
                                                     setState(() {
                                                       isBreakfastSelected = false;
@@ -996,8 +668,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                       -9)
                                                 ]),
                                             child: TextButton(
-                                              child:
-                                              GestureDetector(
+
+                                              onPressed: () {  },
+                                              child: GestureDetector(
                                                 onTap: !isdinnerenable ? null : () {
                                                   setState(() {
                                                     isBreakfastSelected = false;
@@ -1467,7 +1140,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(4),
                                       child: Image.network(
-                                        food.image.url.toString(),
+                                        food.image!.url.toString(),
                                         height: 200,
                                         width: MediaQuery.of(context).size.width * 0.9,
                                         fit: BoxFit.fill,
@@ -1538,8 +1211,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                 child: GestureDetector(
                                                   onTap: (){
                                                     setState(() {
-                                                      if (_quantities[food.id] > 1) {
-                                                        _quantities[food.id] = _quantities[food.id] - 1;
+                                                      if (_quantities[food.id]! > 1) {
+                                                        _quantities[food.id] = _quantities[food.id]! - 1;
                                                       }
                                                     });
 
@@ -1607,7 +1280,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                                 child: GestureDetector(
                                                   onTap: () {
                                                     setState(() {
-                                                      _quantities[food.id] = _quantities[food.id] + 1;
+                                                      _quantities[food.id] = _quantities[food.id]! + 1;
                                                     });
                                                   },
                                                   // onTap: onTap,
@@ -1662,36 +1335,35 @@ class _SearchResultWidgetState extends State<SearchResultWidget>  with SingleTic
                                       Expanded(
                                         child: InkWell(
                                           onTap: (){
-                                            if(currentUser.value.apiToken != null )
+                                            if(currentUser.value.apiToken != "" )
                                             {
                                               if(widget.isDinein){
                                                 foodList.clear();
                                                 fooditems.clear();
-                                                fooditems.add({"food":food,"Quantity" : _quantities[food.id].toDouble()});
+                                                fooditems.add({"food":food,"Quantity" : _quantities[food.id]!.toDouble()});
                                                 foodList.add(food);
 
                                                 showCalendarDialogsearch(
-                                                  context,food.restaurant.id,false,fooditems,-1 ,(food.price * _quantities[food.id]).toInt(),foodList,food.restaurant,
+                                                  context,food.restaurant!.id!,false,fooditems,-1 ,(food.price * _quantities[food.id]!).toInt(),foodList,food.restaurant!,
                                                 );
                                               }
                                               else {
                                                 setState(() {
                                                   iscartload = true;
                                                 });
-                                                _foodcon.addToCart(food,
+                                                _foodcon!.addToCart(food,
                                                     quantity: _quantities[food
-                                                        .id].toDouble(),
+                                                        .id]!.toDouble(),
                                                     restaurant_id: food
-                                                        .restaurant.id,
-                                                    coupon_id: null);
+                                                        .restaurant!.id,
+                                                    coupon_id: "");
                                                 Future.delayed(
                                                     Duration(seconds: 3), () {
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           CartWidget(
-                                                              parentScaffoldKey: widget
-                                                                  .parentScaffoldKey),
+                                                             ),
                                                     ),
                                                   );
                                                   setState(() {

@@ -8,11 +8,11 @@ import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/user_repository.dart' as userRepo;
 
 class PayPalController extends ControllerMVC {
-  GlobalKey<ScaffoldState> scaffoldKey;
-  WebViewController webView;
+  GlobalKey<ScaffoldState>? scaffoldKey;
+  WebViewController? webView;
   String url = "";
   double progress = 0;
-  Address deliveryAddress;
+  Address? deliveryAddress;
 
   PayPalController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
